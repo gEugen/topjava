@@ -10,6 +10,8 @@ import java.time.Month;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.javawebinar.topjava.util.UserMealWithExcessCollector.toUserMealWithExcessCollector;
+
 public class UserMealsUtil {
     public static void main(String[] args) {
         List<UserMeal> meals = Arrays.asList(
@@ -26,6 +28,9 @@ public class UserMealsUtil {
         mealsTo.forEach(System.out::println);
 
         System.out.println(filteredByStreams(meals, LocalTime.of(7, 0), LocalTime.of(12, 0), 2000));
+
+        List<UserMealWithExcess> mealsToByOpt2 = filteredByStreamForOpt2(meals, LocalTime.of(7, 0), LocalTime.of(12, 0), 2000);
+        mealsToByOpt2.forEach(System.out::println);
     }
 
     // Return filtered list with excess. Implemented by cycles
@@ -53,6 +58,7 @@ public class UserMealsUtil {
 
         for (UserMeal userMeal : meals) {
             LocalDate mealDate = userMeal.getDateTime().toLocalDate();
+            // Integer::sum <=> (v1, v2) -> v1 + v2)
             mealsCaloriesPerDate.merge(mealDate, userMeal.getCalories(), Integer::sum);
         }
 
@@ -64,15 +70,22 @@ public class UserMealsUtil {
         // Get hashmap where a key is a meal date and a value is a total amount of meal calories per date
         Map<LocalDate, Integer> mealsCaloriesPerDate = meals
                 .stream()
+                // UserMeal::getCalories <=> v -> v.getCalories() and Integer::sum <=> (v1, v2) -> v1 + v2
                 .collect(Collectors.toMap(p -> p.getDateTime().toLocalDate(), UserMeal::getCalories, Integer::sum, HashMap::new));
 
         // Get filtered list with excess
-
         return meals
                 .stream()
                 .filter(meal -> TimeUtil.isBetweenHalfOpen(meal.getDateTime().toLocalTime(), startTime, endTime))
                 .map(meal -> new UserMealWithExcess(meal.getDateTime(), meal.getDescription(), meal.getCalories(), isExcess(mealsCaloriesPerDate.get(meal.getDateTime().toLocalDate()), caloriesPerDay)))
                 .collect(Collectors.toList());
+    }
+
+    // Returns filtered list with excess. Implemented by custom collector
+    public static List<UserMealWithExcess> filteredByStreamForOpt2(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+        return meals
+                .stream()
+                .collect(toUserMealWithExcessCollector(startTime, endTime, caloriesPerDay));
     }
 
     private static boolean isExcess(Integer mealCaloriesPerDate, int caloriesPerDay) {
