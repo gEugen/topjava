@@ -55,19 +55,10 @@ public class UserMealWithExcessCollector implements Collector<UserMeal, List<Use
     // result container to the final result.
     @Override
     public Function<List<UserMeal>, List<UserMealWithExcess>> finisher() {
-        return list -> {
-
-            List<UserMealWithExcess> mealWithExcess = new ArrayList<>();
-            for (UserMeal meal:
-                 list) {
-
-                if (meal.getDateTime().toLocalTime().isAfter(startTime) && meal.getDateTime().toLocalTime().isBefore(endTime)) {
-                    mealWithExcess.add(new UserMealWithExcess(meal.getDateTime(), meal.getDescription(), meal.getCalories(), isExcess(mealsCaloriesPerDate.get(meal.getDateTime().toLocalDate()), caloriesPerDay)));
-                }
-            }
-
-            return mealWithExcess;
-        };
+        return list -> list.stream()
+                .filter(meal -> TimeUtil.isBetweenHalfOpen(meal.getDateTime().toLocalTime(), startTime, endTime))
+                .map(meal -> new UserMealWithExcess(meal.getDateTime(), meal.getDescription(), meal.getCalories(), isExcess(mealsCaloriesPerDate.get(meal.getDateTime().toLocalDate()), caloriesPerDay)))
+                .collect(Collectors.toList());
     }
 
     // Returns an immutable set of Characteristics which define the behavior of the collector.
