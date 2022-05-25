@@ -73,7 +73,8 @@ public class UserMealWithExcessCollector implements Collector<UserMeal, List<Use
         return new UserMealWithExcessCollector(startTime, endTime,caloriesPerDay);
     }
 
-    private static boolean isExcess(Integer mealCaloriesPerDate, int caloriesPerDay) {
+    // Indicates the presence of an excess.
+    private boolean isExcess(Integer mealCaloriesPerDate, int caloriesPerDay) {
         return mealCaloriesPerDate > caloriesPerDay;
     }
 }

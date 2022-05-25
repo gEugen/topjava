@@ -31,6 +31,8 @@ public class UserMealsUtil {
 
         List<UserMealWithExcess> mealsToByOpt2 = filteredByStreamForOpt2(meals, LocalTime.of(7, 0), LocalTime.of(12, 0), 2000);
         mealsToByOpt2.forEach(System.out::println);
+
+        System.out.println(filteredByOneCycleForOpt2(meals, LocalTime.of(7, 0), LocalTime.of(12, 0), 2000));
     }
 
     // Return filtered list with excess. Implemented by cycles
@@ -52,7 +54,8 @@ public class UserMealsUtil {
         return mealWithExcessResult;
     }
 
-    // Returns hashmap where a key is a meal date and a value is a total amount of meal calories per date
+    // Returns hashmap where a key is a meal date and a value is a total amount of meal calories per date.
+    // Method for base learning task.
     private static Map<LocalDate, Integer> getMealsCaloriesPerDate(List<UserMeal> meals) {
         Map<LocalDate, Integer> mealsCaloriesPerDate = new HashMap<>();
 
@@ -65,7 +68,8 @@ public class UserMealsUtil {
         return mealsCaloriesPerDate;
     }
 
-    // Returns filtered list with excess. Implemented by streams
+    // Returns filtered list with excess. Implemented by streams.
+    // Method for base learning task.
     public static List<UserMealWithExcess> filteredByStreams(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
         // Get hashmap where a key is a meal date and a value is a total amount of meal calories per date
         Map<LocalDate, Integer> mealsCaloriesPerDate = meals
@@ -81,13 +85,21 @@ public class UserMealsUtil {
                 .collect(Collectors.toList());
     }
 
-    // Returns filtered list with excess. Implemented by custom collector
+    // Returns filtered list with excess. Implemented by custom collector.
+    // Method for optional learning task.
     public static List<UserMealWithExcess> filteredByStreamForOpt2(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
         return meals
                 .stream()
                 .collect(toUserMealWithExcessCollector(startTime, endTime, caloriesPerDay));
     }
 
+    // Returns filtered list with excess. Implemented by one cycle scan of List<UserMeal> meals
+    // Method for optional learning task.
+    public static List<UserMealWithExcess> filteredByOneCycleForOpt2(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+        return new UserMealExtractor().userMealByDayExtractCalculateFilterByTime(meals, caloriesPerDay, startTime, endTime);
+    }
+
+    // Indicates the presence of an excess.
     private static boolean isExcess(Integer mealCaloriesPerDate, int caloriesPerDay) {
         return mealCaloriesPerDate > caloriesPerDay;
     }
