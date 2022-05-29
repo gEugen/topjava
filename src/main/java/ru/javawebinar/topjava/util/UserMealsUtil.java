@@ -3,14 +3,15 @@ package ru.javawebinar.topjava.util;
 import ru.javawebinar.topjava.model.UserMeal;
 import ru.javawebinar.topjava.model.UserMealWithExcess;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static ru.javawebinar.topjava.util.SuperNovaUserMealWithExcessCollector.toSuperNovaUserMealWithExcessCollector;
+import static ru.javawebinar.topjava.util.UserMealMultiCycleExtractor.extractUserMealWithExcessByCycles;
+import static ru.javawebinar.topjava.util.UserMealOneCycleExtractor.extractUserMealWithExcessByOneCycle;
+import static ru.javawebinar.topjava.util.UserMealStreamApiExtractor.extractUserMealWithExcessByStreams;
 
 public class UserMealsUtil {
     public static void main(String[] args) {
@@ -36,53 +37,14 @@ public class UserMealsUtil {
     }
 
     // Return filtered list with excess. Implemented by cycles
-    public static List<UserMealWithExcess> filteredByCycles(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
-        List<UserMealWithExcess> mealWithExcessResult = new ArrayList<>();
-        Map<LocalDate, Integer> mealsCaloriesPerDate = getMealsCaloriesPerDate(meals);
-
-        for (UserMeal userMeal : meals) {
-            LocalDate mealDate = userMeal.getDateTime().toLocalDate();
-            Integer mealCaloriesPerDate = mealsCaloriesPerDate.get(mealDate);
-            LocalTime mealTime = userMeal.getDateTime().toLocalTime();
-
-            if (TimeUtil.isBetweenHalfOpen(mealTime, startTime, endTime)) {
-                UserMealWithExcess mealWithExcess = new UserMealWithExcess(userMeal.getDateTime(), userMeal.getDescription(), userMeal.getCalories(), isExcess(mealCaloriesPerDate, caloriesPerDay));
-                mealWithExcessResult.add(mealWithExcess);
-            }
-        }
-
-        return mealWithExcessResult;
-    }
-
-    // Returns hashmap where a key is a meal date and a value is a total amount of meal calories per date.
-    // Method for base learning task.
-    private static Map<LocalDate, Integer> getMealsCaloriesPerDate(List<UserMeal> meals) {
-        Map<LocalDate, Integer> mealsCaloriesPerDate = new HashMap<>();
-
-        for (UserMeal userMeal : meals) {
-            LocalDate mealDate = userMeal.getDateTime().toLocalDate();
-            // Integer::sum <=> (v1, v2) -> v1 + v2)
-            mealsCaloriesPerDate.merge(mealDate, userMeal.getCalories(), Integer::sum);
-        }
-
-        return mealsCaloriesPerDate;
+    public static synchronized List<UserMealWithExcess> filteredByCycles(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+        return extractUserMealWithExcessByCycles(meals, startTime, endTime, caloriesPerDay);
     }
 
     // Returns filtered list with excess. Implemented by streams.
     // Method for base learning task.
-    public static List<UserMealWithExcess> filteredByStreams(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
-        // Get hashmap where a key is a meal date and a value is a total amount of meal calories per date
-        Map<LocalDate, Integer> mealsCaloriesPerDate = meals
-                .stream()
-                // UserMeal::getCalories <=> v -> v.getCalories() and Integer::sum <=> (v1, v2) -> v1 + v2
-                .collect(Collectors.toMap(p -> p.getDateTime().toLocalDate(), UserMeal::getCalories, Integer::sum, HashMap::new));
-
-        // Get filtered list with excess
-        return meals
-                .stream()
-                .filter(meal -> TimeUtil.isBetweenHalfOpen(meal.getDateTime().toLocalTime(), startTime, endTime))
-                .map(meal -> new UserMealWithExcess(meal.getDateTime(), meal.getDescription(), meal.getCalories(), isExcess(mealsCaloriesPerDate.get(meal.getDateTime().toLocalDate()), caloriesPerDay)))
-                .collect(Collectors.toList());
+    public static synchronized List<UserMealWithExcess> filteredByStreams(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+        return extractUserMealWithExcessByStreams(meals, startTime, endTime, caloriesPerDay);
     }
 
     // Returns filtered list with excess. Implemented by custom collector.
@@ -91,7 +53,7 @@ public class UserMealsUtil {
     // Second the method used a collector of NewUserMealWithExcessCollector class and its methods.
     // The SuperNovaUserMealWithExcessCollector and its methods used now.
     // The class of old collectors were left in the HW0 project for future comparative analysis.
-    public static List<UserMealWithExcess> filteredByStreamForOpt2(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+    public static synchronized List<UserMealWithExcess> filteredByStreamForOpt2(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
         return meals
                 .stream()
                 .collect(toSuperNovaUserMealWithExcessCollector(startTime, endTime, caloriesPerDay));
@@ -99,12 +61,7 @@ public class UserMealsUtil {
 
     // Returns filtered list with excess. Implemented by one cycle scan of List<UserMeal> meals
     // Method for optional learning task.
-    public static List<UserMealWithExcess> filteredByOneCycleForOpt2(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
-        return new UserMealExtractor().userMealByDayExtractCalculateFilterByTime(meals, caloriesPerDay, startTime, endTime);
-    }
-
-    // Indicates the presence of an excess.
-    private static boolean isExcess(Integer mealCaloriesPerDate, int caloriesPerDay) {
-        return mealCaloriesPerDate > caloriesPerDay;
+    public static synchronized List<UserMealWithExcess> filteredByOneCycleForOpt2(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+        return extractUserMealWithExcessByOneCycle(meals, startTime, endTime, caloriesPerDay);
     }
 }

@@ -28,6 +28,11 @@ public class UserMealWithExcessCollector implements Collector<UserMeal, List<Use
         this.caloriesPerDay = caloriesPerDay;
     }
 
+    // Returns a new custom collector.
+    public static UserMealWithExcessCollector toUserMealWithExcessCollector (LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+        return new UserMealWithExcessCollector(startTime, endTime,caloriesPerDay);
+    }
+
     // Returns a function that creates an empty accumulator.
     @Override
     public Supplier<List<UserMeal>> supplier() {
@@ -66,11 +71,6 @@ public class UserMealWithExcessCollector implements Collector<UserMeal, List<Use
     @Override
     public Set<Characteristics> characteristics() {
         return EnumSet.of(Characteristics.UNORDERED);
-    }
-
-    // Returns a new custom collector.
-    public static UserMealWithExcessCollector toUserMealWithExcessCollector (LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
-        return new UserMealWithExcessCollector(startTime, endTime,caloriesPerDay);
     }
 
     // Indicates the presence of an excess.

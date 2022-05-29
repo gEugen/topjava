@@ -10,23 +10,36 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class UserMealExtractor {
+public class UserMealOneCycleExtractor {
     private final Map<LocalDate, Integer> mealsCaloriesPerDate = new HashMap<>();
     private final List<UserMealWithExcess> mealsWithExcesses = new ArrayList<>();
     private int index;
+    private final LocalTime  startTime;
+    private final LocalTime endTime;
+    private final int caloriesPerDay;
+
+    private UserMealOneCycleExtractor(LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.caloriesPerDay = caloriesPerDay;
+    }
+
+    public static List<UserMealWithExcess> extractUserMealWithExcessByOneCycle(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+        return new UserMealOneCycleExtractor(startTime, endTime, caloriesPerDay).userMealByDayExtractCalculateFilterByTime(meals);
+    }
 
     // Returns filtered list with excess.
-    public List<UserMealWithExcess> userMealByDayExtractCalculateFilterByTime(List<UserMeal> meals, int caloriesPerDay, LocalTime startTime, LocalTime endTime) {
+    private List<UserMealWithExcess> userMealByDayExtractCalculateFilterByTime(List<UserMeal> meals) {
         index = meals.size() - 1;
         if (index >= 0) {
-            userMealExtractFromMeals(meals, caloriesPerDay, startTime, endTime);
+            userMealExtractFromMeals(meals);
         }
 
         return mealsWithExcesses;
     }
 
     // Calculates daily calorie excess and filters out meals in the given time interval.
-    private void userMealExtractFromMeals(List<UserMeal> meals, int caloriesPerDay, LocalTime startTime, LocalTime endTime) {
+    private void userMealExtractFromMeals(List<UserMeal> meals) {
         UserMeal userMeal = meals.get(index);
         LocalDate date = userMeal.getDateTime().toLocalDate();
         int calories = userMeal.getCalories();
@@ -35,7 +48,7 @@ class UserMealExtractor {
 
         if (index > 0) {
             index--;
-           userMealExtractFromMeals(meals, caloriesPerDay, startTime, endTime);
+           userMealExtractFromMeals(meals);
         }
 
         if (TimeUtil.isBetweenHalfOpen(userMeal.getDateTime().toLocalTime(),startTime, endTime)) {
@@ -47,4 +60,5 @@ class UserMealExtractor {
     private boolean isExcess(Integer mealCaloriesPerDate, int caloriesPerDay) {
         return mealCaloriesPerDate > caloriesPerDay;
     }
+
 }

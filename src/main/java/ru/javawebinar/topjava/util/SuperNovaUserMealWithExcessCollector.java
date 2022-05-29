@@ -25,6 +25,11 @@ public class SuperNovaUserMealWithExcessCollector implements Collector<UserMeal,
         this.caloriesPerDay = caloriesPerDay;
     }
 
+    // Returns a new custom collector.
+    public static SuperNovaUserMealWithExcessCollector toSuperNovaUserMealWithExcessCollector (LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+        return new SuperNovaUserMealWithExcessCollector(startTime, endTime,caloriesPerDay);
+    }
+
     // Returns a function that creates an empty accumulator as a list of meals.
     @Override
     public Supplier<List<UserMeal>> supplier() {
@@ -70,11 +75,6 @@ public class SuperNovaUserMealWithExcessCollector implements Collector<UserMeal,
     @Override
     public Set<Characteristics> characteristics() {
         return EnumSet.of(Characteristics.UNORDERED);
-    }
-
-    // Returns a new custom collector.
-    public static SuperNovaUserMealWithExcessCollector toSuperNovaUserMealWithExcessCollector (LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
-        return new SuperNovaUserMealWithExcessCollector(startTime, endTime,caloriesPerDay);
     }
 
     // Indicates the presence of an excess.

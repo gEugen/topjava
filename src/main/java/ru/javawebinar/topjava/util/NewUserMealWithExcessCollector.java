@@ -25,6 +25,11 @@ public class NewUserMealWithExcessCollector implements Collector<UserMeal, Map<L
         this.caloriesPerDay = caloriesPerDay;
     }
 
+    // Returns a new custom collector.
+    public static NewUserMealWithExcessCollector toNewUserMealWithExcessCollector (LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+        return new NewUserMealWithExcessCollector(startTime, endTime,caloriesPerDay);
+    }
+
     // Returns a function that creates an empty accumulator as a map
     // where the key is the date, the value is the list of meals for that date.
     @Override
@@ -79,11 +84,6 @@ public class NewUserMealWithExcessCollector implements Collector<UserMeal, Map<L
     @Override
     public Set<Characteristics> characteristics() {
         return EnumSet.of(Characteristics.UNORDERED);
-    }
-
-    // Returns a new custom collector.
-    public static NewUserMealWithExcessCollector toNewUserMealWithExcessCollector (LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
-        return new NewUserMealWithExcessCollector(startTime, endTime,caloriesPerDay);
     }
 
     // Indicates the presence of an excess.
