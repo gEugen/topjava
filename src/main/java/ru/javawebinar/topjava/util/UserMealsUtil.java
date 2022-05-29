@@ -10,6 +10,7 @@ import java.time.Month;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.javawebinar.topjava.util.NewUserMealWithExcessCollector.toNewUserMealWithExcessCollector;
 import static ru.javawebinar.topjava.util.UserMealWithExcessCollector.toUserMealWithExcessCollector;
 
 public class UserMealsUtil {
@@ -87,10 +88,13 @@ public class UserMealsUtil {
 
     // Returns filtered list with excess. Implemented by custom collector.
     // Method for optional learning task.
+    // Previously, the method used a collector of UserMealWithExcessCollector class and its methods.
+    // The NewUserMealWithExcessCollector and its methods used now.
+    // The class of old collector was left in the HW0 project for future comparative analysis.
     public static List<UserMealWithExcess> filteredByStreamForOpt2(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
         return meals
                 .stream()
-                .collect(toUserMealWithExcessCollector(startTime, endTime, caloriesPerDay));
+                .collect(toNewUserMealWithExcessCollector(startTime, endTime, caloriesPerDay));
     }
 
     // Returns filtered list with excess. Implemented by one cycle scan of List<UserMeal> meals
