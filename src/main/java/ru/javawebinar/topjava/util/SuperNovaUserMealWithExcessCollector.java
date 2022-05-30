@@ -3,7 +3,6 @@ package ru.javawebinar.topjava.util;
 import ru.javawebinar.topjava.model.UserMeal;
 import ru.javawebinar.topjava.model.UserMealWithExcess;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -13,6 +12,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+
+import static ru.javawebinar.topjava.util.MealValidator.isValidMeal;
 
 public class SuperNovaUserMealWithExcessCollector implements Collector<UserMeal, List<UserMeal>, List<UserMealWithExcess>>{
     private final LocalTime startTime;
@@ -37,10 +38,14 @@ public class SuperNovaUserMealWithExcessCollector implements Collector<UserMeal,
     }
 
     // Accepts two arguments: mutable result container (accumulator) and the stream element.
-    // Returns a function which performs the reduction operation.
+    // Returns a function which performs the reduction operation for valid elements.
     @Override
     public BiConsumer<List<UserMeal>, UserMeal> accumulator() {
-        return List::add;
+            return (meals, userMeal) -> {
+                if (isValidMeal(userMeal)) {
+                    meals.add(userMeal);
+                }
+            };
     }
 
     // The combiner() method is used when the stream is collected in parallel to return a function

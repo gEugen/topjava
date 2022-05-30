@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static ru.javawebinar.topjava.util.MealValidator.isValidMeal;
+
 public class UserMealOneCycleExtractor {
     private final Map<LocalDate, Integer> mealsCaloriesPerDate = new HashMap<>();
     private final List<UserMealWithExcess> mealsWithExcesses = new ArrayList<>();
@@ -41,18 +43,22 @@ public class UserMealOneCycleExtractor {
     // Calculates daily calorie excess and filters out meals in the given time interval.
     private void userMealExtractFromMeals(List<UserMeal> meals) {
         UserMeal userMeal = meals.get(index);
-        LocalDate date = userMeal.getDateTime().toLocalDate();
-        int calories = userMeal.getCalories();
-        // Integer::sum <=> (v1, v2) -> v1 + v2)
-        mealsCaloriesPerDate.merge(date, calories, Integer::sum);
+        if (isValidMeal(userMeal)) {
+            LocalDate date = userMeal.getDateTime().toLocalDate();
+            int calories = userMeal.getCalories();
+            // Integer::sum <=> (v1, v2) -> v1 + v2)
+            mealsCaloriesPerDate.merge(date, calories, Integer::sum);
+        }
 
         if (index > 0) {
             index--;
            userMealExtractFromMeals(meals);
         }
 
-        if (TimeUtil.isBetweenHalfOpen(userMeal.getDateTime().toLocalTime(),startTime, endTime)) {
-            mealsWithExcesses.add(new UserMealWithExcess(userMeal.getDateTime(), userMeal.getDescription(), userMeal.getCalories(), isExcess(mealsCaloriesPerDate.get(date), caloriesPerDay)));
+        if (isValidMeal(userMeal)) {
+            if (TimeUtil.isBetweenHalfOpen(userMeal.getDateTime().toLocalTime(),startTime, endTime)) {
+                mealsWithExcesses.add(new UserMealWithExcess(userMeal.getDateTime(), userMeal.getDescription(), userMeal.getCalories(), isExcess(mealsCaloriesPerDate.get(userMeal.getDateTime().toLocalDate()), caloriesPerDay)));
+            }
         }
     }
 

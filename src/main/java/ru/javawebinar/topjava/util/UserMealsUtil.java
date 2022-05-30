@@ -36,14 +36,22 @@ public class UserMealsUtil {
         System.out.println(filteredByOneCycleForOpt2(meals, LocalTime.of(7, 0), LocalTime.of(12, 0), 2000));
     }
 
-    // Return filtered list with excess. Implemented by cycles
-    public static synchronized List<UserMealWithExcess> filteredByCycles(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+    // Returns filtered list with excess. Implemented by cycles
+    // If method arguments are not valid returns an empty ArrayList.
+    public static List<UserMealWithExcess> filteredByCycles(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+        if (isValidArguments(meals, startTime, endTime, caloriesPerDay)) {
+            return new ArrayList<>();
+        }
         return extractUserMealWithExcessByCycles(meals, startTime, endTime, caloriesPerDay);
     }
 
     // Returns filtered list with excess. Implemented by streams.
     // Method for base learning task.
-    public static synchronized List<UserMealWithExcess> filteredByStreams(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+    // If method arguments are not valid returns an empty ArrayList.
+    public static List<UserMealWithExcess> filteredByStreams(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+        if (isValidArguments(meals, startTime, endTime, caloriesPerDay)) {
+            return new ArrayList<>();
+        }
         return extractUserMealWithExcessByStreams(meals, startTime, endTime, caloriesPerDay);
     }
 
@@ -53,7 +61,11 @@ public class UserMealsUtil {
     // Second the method used a collector of NewUserMealWithExcessCollector class and its methods.
     // The SuperNovaUserMealWithExcessCollector and its methods used now.
     // The class of old collectors were left in the HW0 project for future comparative analysis.
-    public static synchronized List<UserMealWithExcess> filteredByStreamForOpt2(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+    // If method arguments are not valid returns an empty ArrayList.
+    public static List<UserMealWithExcess> filteredByStreamForOpt2(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+        if (isValidArguments(meals, startTime, endTime, caloriesPerDay)) {
+            return new ArrayList<>();
+        }
         return meals
                 .stream()
                 .collect(toSuperNovaUserMealWithExcessCollector(startTime, endTime, caloriesPerDay));
@@ -61,7 +73,20 @@ public class UserMealsUtil {
 
     // Returns filtered list with excess. Implemented by one cycle scan of List<UserMeal> meals
     // Method for optional learning task.
-    public static synchronized List<UserMealWithExcess> filteredByOneCycleForOpt2(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+    // If method arguments are not valid returns an empty ArrayList.
+    public static List<UserMealWithExcess> filteredByOneCycleForOpt2(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+        if (isValidArguments(meals, startTime, endTime, caloriesPerDay)) {
+            return new ArrayList<>();
+        }
         return extractUserMealWithExcessByOneCycle(meals, startTime, endTime, caloriesPerDay);
+    }
+
+    // Returns flag that method arguments are valid.
+    private static boolean isValidArguments(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+        if (meals != null) {
+            return meals.size() == 0 || startTime == null || endTime == null || !startTime.isBefore(endTime) || caloriesPerDay <= 0;
+        }
+
+        return true;
     }
 }

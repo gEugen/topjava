@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static ru.javawebinar.topjava.util.MealValidator.isValidMeal;
+
 public class UserMealMultiCycleExtractor {
     private final Map<LocalDate, Integer> mealsCaloriesPerDate = new HashMap<>();
     private final List<UserMealWithExcess> mealsWithExcesses = new ArrayList<>();
@@ -32,13 +34,15 @@ public class UserMealMultiCycleExtractor {
         Map<LocalDate, Integer> mealsCaloriesPerDate = getMealsCaloriesPerDate(meals);
 
         for (UserMeal userMeal : meals) {
-            LocalDate mealDate = userMeal.getDateTime().toLocalDate();
-            Integer mealCaloriesPerDate = mealsCaloriesPerDate.get(mealDate);
-            LocalTime mealTime = userMeal.getDateTime().toLocalTime();
+            if (isValidMeal(userMeal)) {
+                LocalDate mealDate = userMeal.getDateTime().toLocalDate();
+                Integer mealCaloriesPerDate = mealsCaloriesPerDate.get(mealDate);
+                LocalTime mealTime = userMeal.getDateTime().toLocalTime();
 
-            if (TimeUtil.isBetweenHalfOpen(mealTime, startTime, endTime)) {
-                UserMealWithExcess mealWithExcess = new UserMealWithExcess(userMeal.getDateTime(), userMeal.getDescription(), userMeal.getCalories(), isExcess(mealCaloriesPerDate, caloriesPerDay));
-                mealsWithExcesses.add(mealWithExcess);
+                if (TimeUtil.isBetweenHalfOpen(mealTime, startTime, endTime)) {
+                    UserMealWithExcess mealWithExcess = new UserMealWithExcess(userMeal.getDateTime(), userMeal.getDescription(), userMeal.getCalories(), isExcess(mealCaloriesPerDate, caloriesPerDay));
+                    mealsWithExcesses.add(mealWithExcess);
+                }
             }
         }
 
@@ -49,9 +53,11 @@ public class UserMealMultiCycleExtractor {
     // Method for base learning task.
     private Map<LocalDate, Integer> getMealsCaloriesPerDate(List<UserMeal> meals) {
         for (UserMeal userMeal : meals) {
-            LocalDate mealDate = userMeal.getDateTime().toLocalDate();
-            // Integer::sum <=> (v1, v2) -> v1 + v2)
-            mealsCaloriesPerDate.merge(mealDate, userMeal.getCalories(), Integer::sum);
+            if (isValidMeal(userMeal)) {
+                LocalDate mealDate = userMeal.getDateTime().toLocalDate();
+                // Integer::sum <=> (v1, v2) -> v1 + v2)
+                mealsCaloriesPerDate.merge(mealDate, userMeal.getCalories(), Integer::sum);
+            }
         }
 
         return mealsCaloriesPerDate;

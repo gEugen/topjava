@@ -14,6 +14,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import static ru.javawebinar.topjava.util.MealValidator.isValidMeal;
+
 public class NewUserMealWithExcessCollector implements Collector<UserMeal, Map<LocalDate, List<UserMeal>>, List<UserMealWithExcess>>{
     private final LocalTime startTime;
     private final LocalTime endTime;
@@ -42,14 +44,16 @@ public class NewUserMealWithExcessCollector implements Collector<UserMeal, Map<L
     @Override
     public BiConsumer<Map<LocalDate, List<UserMeal>>, UserMeal> accumulator() {
         return (map, val) -> {
-            LocalDate date = val.getDateTime().toLocalDate();
+            if (isValidMeal(val)) {
+                LocalDate date = val.getDateTime().toLocalDate();
 
-            try {
-                map.get(date).add(val);
-            } catch (NullPointerException e) {
-                List<UserMeal> list = new ArrayList<>();
-                list.add(val);
-                map.put(date, list);
+                try {
+                    map.get(date).add(val);
+                } catch (NullPointerException e) {
+                    List<UserMeal> list = new ArrayList<>();
+                    list.add(val);
+                    map.put(date, list);
+                }
             }
         };
     }

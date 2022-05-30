@@ -13,6 +13,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import static ru.javawebinar.topjava.util.MealValidator.isValidMeal;
+
 public class UserMealWithExcessCollector implements Collector<UserMeal, List<UserMeal>, List<UserMealWithExcess>>{
     private final LocalTime startTime;
     private final LocalTime endTime;
@@ -44,8 +46,10 @@ public class UserMealWithExcessCollector implements Collector<UserMeal, List<Use
     @Override
     public BiConsumer<List<UserMeal>, UserMeal> accumulator() {
         return (list, val) -> {
-            mealsCaloriesPerDate.merge(val.getDateTime().toLocalDate(), val.getCalories(), Integer::sum);
-            list.add(val);
+            if (isValidMeal(val)) {
+                mealsCaloriesPerDate.merge(val.getDateTime().toLocalDate(), val.getCalories(), Integer::sum);
+                list.add(val);
+            }
         };
     }
 

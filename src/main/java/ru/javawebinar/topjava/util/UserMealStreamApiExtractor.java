@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static ru.javawebinar.topjava.util.MealValidator.isValidMeal;
+
 public class UserMealStreamApiExtractor {
     private Map<LocalDate, Integer> mealsCaloriesPerDate;
     private final LocalTime startTime;
@@ -29,19 +31,26 @@ public class UserMealStreamApiExtractor {
     private List<UserMealWithExcess> userMealByDayExtractCalculateFilterByTime(List<UserMeal> meals) {
         // Get hashmap where a key is a meal date and a value is a total amount of meal calories per date
         mealsCaloriesPerDate = meals.stream()
+                // MealValidator::isValidMeal <=> meal -> isValidMeal(meal)
+                .filter(MealValidator::isValidMeal)
                 // UserMeal::getCalories <=> v -> v.getCalories() and Integer::sum <=> (v1, v2) -> v1 + v2
                 .collect(Collectors.toMap(p -> p.getDateTime().toLocalDate(), UserMeal::getCalories, Integer::sum, HashMap::new));
 
         // Get filtered list with excess
         return meals
                 .stream()
-                .filter(meal -> TimeUtil.isBetweenHalfOpen(meal.getDateTime().toLocalTime(), startTime, endTime))
+                .filter(meal -> {
+                    if (isValidMeal(meal)) {
+                        return TimeUtil.isBetweenHalfOpen(meal.getDateTime().toLocalTime(), startTime, endTime);
+                    }
+                    return false;
+                })
                 .map(meal -> new UserMealWithExcess(meal.getDateTime(), meal.getDescription(), meal.getCalories(), isExcess(mealsCaloriesPerDate.get(meal.getDateTime().toLocalDate()), caloriesPerDay)))
                 .collect(Collectors.toList());
     }
 
     // Indicates the presence of an excess.
-    private static boolean isExcess(Integer mealCaloriesPerDate, int caloriesPerDay) {
+    private boolean isExcess(Integer mealCaloriesPerDate, int caloriesPerDay) {
         return mealCaloriesPerDate > caloriesPerDay;
     }
 }
