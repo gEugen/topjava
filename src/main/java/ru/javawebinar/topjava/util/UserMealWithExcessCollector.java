@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 import static ru.javawebinar.topjava.util.MealValidator.isValidMeal;
 
+// The class of old collector was left in the HW0 project for future comparative analysis.
 public class UserMealWithExcessCollector implements Collector<UserMeal, List<UserMeal>, List<UserMealWithExcess>>{
     private final LocalTime startTime;
     private final LocalTime endTime;
