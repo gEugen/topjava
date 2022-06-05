@@ -12,19 +12,20 @@
 
 <form method = "POST">
     <table border = "0">
+        <jsp:useBean id="meal" scope="request" type="java.lang.Object"/>
         <tr>
             <td colspan="2"><b>DateTime</b></td>
-            <td colspan="2"><input name="date" type="datetime-local" value=""/></td>
+            <td colspan="2"><input name="date" type="datetime-local" value="<c:out value="${meal.dateTime}" />"/></td>
         </tr>
 
         <tr>
             <td colspan="2"><b>Description</b></td>
-            <td colspan="2"><input name="description" size="50" type="text" value=""/></td>
+            <td colspan="2"><input name="description" size="50" type="text" value="<c:out value="${meal.description}" />"/></td>
         </tr>
 
         <tr>
             <td colspan="2">Calories</td>
-            <td colspan="2"><input name="calories" size="50" type="text" value=""/></td>
+            <td colspan="2"><input name="calories" size="50" type="text" value="<c:out value="${meal.calories}" />"/></td>
         </tr>
 
         <tr>

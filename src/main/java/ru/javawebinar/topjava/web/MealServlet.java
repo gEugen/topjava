@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Month;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,20 +32,23 @@ public class MealServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         log.debug("redirect to meal");
 
-        String forward="";
-        String action = req.getParameter("action");
-        if (action == null) {
-            action = "";
+        req.setCharacterEncoding("UTF-8");
+
+
+        String forward;
+//        String action = req.getParameter("action");
+//        if (action == null) {
+//            action = "";
+//        }
+
+        LocalDateTime dateTime = getDateTime(req.getParameter("date"));
+        String description = req.getParameter("description");
+        int calories = Integer.parseInt(req.getParameter("calories"));
+        if (!dateTime.equals(LocalDateTime.of(1970, Month.JANUARY, 1, 0, 0))) {
+            new CrudMemoryServiceImp().saveMeal(dateTime, description, calories);
         }
 
-        if (action.equalsIgnoreCase("save")){
-            int id = Integer.parseInt(req.getParameter("id"));
-            String dateString = req.getParameter("date");
-            String description = req.getParameter("description");
-//            new CrudMemoryServiceImp().saveMeal(id, new Meal());
-            forward = LIST_MEAL_TO;
-        }
-
+        forward = LIST_MEAL_TO;
         req.setAttribute("mealsTo", new CrudMemoryServiceImp().getMeals(lowerLimit, upperLimit, caloriesPerDay));
         RequestDispatcher view = req.getRequestDispatcher(forward);
         view.forward(req, resp);
@@ -63,14 +68,14 @@ public class MealServlet extends HttpServlet {
         }
 
         if (action.equalsIgnoreCase("delete")){
-            int id = Integer.parseInt(req.getParameter("id"));
-            new CrudMemoryServiceImp().deleteMeal(id);
+            LocalDateTime dateTime = getDateTime(req.getParameter("date"));
+            new CrudMemoryServiceImp().deleteMeal(dateTime);
             forward = LIST_MEAL_TO;
             req.setAttribute("mealsTo", new CrudMemoryServiceImp().getMeals(lowerLimit, upperLimit, caloriesPerDay));
         } else if (action.equalsIgnoreCase("update")){
             forward = ADD_OR_UPDATE;
-            int id = Integer.parseInt(req.getParameter("id"));
-            Meal meal = new CrudMemoryServiceImp().getMeal(id);
+            LocalDateTime dateTime = getDateTime(req.getParameter("date"));
+            Meal meal = new CrudMemoryServiceImp().getMeal(dateTime);
             req.setAttribute("meal", meal);
         } else if (action.equalsIgnoreCase("add")){
             forward = ADD_OR_UPDATE;
@@ -84,6 +89,13 @@ public class MealServlet extends HttpServlet {
 //        req.setAttribute("mealsTo", mealToList);
         view.forward(req, resp);
     }
+
+    private LocalDateTime getDateTime(String dateTime) {
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        return LocalDateTime.parse(dateTime);
+
+    }
+
 
 
 }

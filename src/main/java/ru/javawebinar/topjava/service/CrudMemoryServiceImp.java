@@ -17,16 +17,16 @@ public class CrudMemoryServiceImp implements CrudMemoryService{
         return CrudMemory.getAll(startTime, endTime, caloriesPerDay);
     }
 
-    public synchronized void saveMeal(Integer id, Meal meal) {
-        CrudMemory.add(id, meal);
+    public synchronized void saveMeal(LocalDateTime dateTime, String description, int calories) {
+        CrudMemory.add(dateTime, description, calories);
     }
 
-    public synchronized void deleteMeal(Integer id) {
-        CrudMemory.delete(id);
+    public synchronized void deleteMeal(LocalDateTime dateTime) {
+        CrudMemory.delete(dateTime);
     }
 
-    public synchronized Meal getMeal(Integer id) {
-        return CrudMemory.get(id);
+    public synchronized Meal getMeal(LocalDateTime dateTime) {
+        return CrudMemory.get(dateTime);
     }
 
     @Override
