@@ -2,8 +2,8 @@ package ru.javawebinar.topjava.web;
 
 import org.slf4j.Logger;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.model.MealTo;
-import ru.javawebinar.topjava.service.CrudMemoryServiceImp;
+import ru.javawebinar.topjava.service.MealCrudMemoryService;
+import ru.javawebinar.topjava.service.MealCrudMemoryServiceImp;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -13,10 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.Month;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Optional;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -28,28 +24,32 @@ public class MealServlet extends HttpServlet {
     int caloriesPerDay = 2000;
     private static final Logger log = getLogger(MealServlet.class);
 
+    // This is the Singleton of the CRUD Memory interface.
+    private static final MealCrudMemoryService crudService = MealCrudMemoryServiceImp.getInstance();
+
+    // This is the accumulator of meal for its field values updating.
+    private static Meal mealAccumulator;
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         log.debug("redirect to meal");
 
         req.setCharacterEncoding("UTF-8");
-
-
         String forward;
-//        String action = req.getParameter("action");
-//        if (action == null) {
-//            action = "";
-//        }
+        String action = req.getParameter("action");
+        if (action == null) {
+            action = "";
+        }
 
-        LocalDateTime dateTime = getDateTime(req.getParameter("date"));
-        String description = req.getParameter("description");
-        int calories = Integer.parseInt(req.getParameter("calories"));
-        if (!dateTime.equals(LocalDateTime.of(1970, Month.JANUARY, 1, 0, 0))) {
-            new CrudMemoryServiceImp().saveMeal(dateTime, description, calories);
+        if (action.equalsIgnoreCase("save")) {
+            LocalDateTime dateTime = getDateTime(req.getParameter("date"));
+            String description = req.getParameter("description");
+            int calories = Integer.parseInt(req.getParameter("calories"));
+            crudService.saveMeal(mealAccumulator, dateTime, description, calories);
         }
 
         forward = LIST_MEAL_TO;
-        req.setAttribute("mealsTo", new CrudMemoryServiceImp().getMeals(lowerLimit, upperLimit, caloriesPerDay));
+        req.setAttribute("mealsTo", crudService.getMeals(lowerLimit, upperLimit, caloriesPerDay));
         RequestDispatcher view = req.getRequestDispatcher(forward);
         view.forward(req, resp);
     }
@@ -69,24 +69,33 @@ public class MealServlet extends HttpServlet {
 
         if (action.equalsIgnoreCase("delete")){
             LocalDateTime dateTime = getDateTime(req.getParameter("date"));
-            new CrudMemoryServiceImp().deleteMeal(dateTime);
+            crudService.deleteMeal(dateTime);
             forward = LIST_MEAL_TO;
-            req.setAttribute("mealsTo", new CrudMemoryServiceImp().getMeals(lowerLimit, upperLimit, caloriesPerDay));
+            req.setAttribute("mealsTo", crudService.getMeals(lowerLimit, upperLimit, caloriesPerDay));
+
         } else if (action.equalsIgnoreCase("update")){
-            forward = ADD_OR_UPDATE;
             LocalDateTime dateTime = getDateTime(req.getParameter("date"));
-            Meal meal = new CrudMemoryServiceImp().getMeal(dateTime);
-            req.setAttribute("meal", meal);
+            mealAccumulator = crudService.getMeal(dateTime);
+            if (mealAccumulator != null) {
+                forward = ADD_OR_UPDATE;
+                req.setAttribute("meal", mealAccumulator);
+
+            } else {
+                forward = LIST_MEAL_TO;
+                req.setAttribute("mealsTo", crudService.getMeals(lowerLimit, upperLimit, caloriesPerDay));
+            }
+
         } else if (action.equalsIgnoreCase("add")){
+            mealAccumulator = null;
             forward = ADD_OR_UPDATE;
-            req.setAttribute("meal", new CrudMemoryServiceImp().getDefaultMeal());
+            req.setAttribute("meal", crudService.getDefaultMeal());
+
         } else {
             forward = LIST_MEAL_TO;
-            req.setAttribute("mealsTo", new CrudMemoryServiceImp().getMeals(lowerLimit, upperLimit, caloriesPerDay));
+            req.setAttribute("mealsTo", crudService.getMeals(lowerLimit, upperLimit, caloriesPerDay));
         }
 
         RequestDispatcher view = req.getRequestDispatcher(forward);
-//        req.setAttribute("mealsTo", mealToList);
         view.forward(req, resp);
     }
 
@@ -95,7 +104,4 @@ public class MealServlet extends HttpServlet {
         return LocalDateTime.parse(dateTime);
 
     }
-
-
-
 }

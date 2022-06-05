@@ -7,10 +7,10 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
-public interface CrudMemoryService {
+public interface MealCrudMemoryService {
     List<MealTo> getMeals(LocalTime startTime, LocalTime endTime, int caloriesPerDay);
 
-    void saveMeal(LocalDateTime dateTime, String description, int calories);
+    void saveMeal(Meal mealAccumulator, LocalDateTime dateTime, String description, int calories);
 
     void deleteMeal(LocalDateTime dateTime);
 

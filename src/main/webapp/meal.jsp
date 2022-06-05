@@ -10,7 +10,7 @@
 <hr>
 <h2>Edit meal</h2>
 
-<form method = "POST">
+<form method = "POST" action="meals">
     <table border = "0">
         <jsp:useBean id="meal" scope="request" type="java.lang.Object"/>
         <tr>
@@ -29,8 +29,8 @@
         </tr>
 
         <tr>
-            <td colspan = "0"><input type = "submit" value = "Save"/></td>
-            <td colspan = "0"><input type = "submit" value = "Cancel"/></td>
+            <td colspan = "0"><input type = "submit" name="action" value = "save"/></td>
+            <td colspan = "0"><input type = "submit" name="action" value = "cancel"/></td>
         </tr>
     </table>
 </form>
