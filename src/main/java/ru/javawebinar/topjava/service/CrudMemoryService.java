@@ -1,4 +1,4 @@
-package ru.javawebinar.topjava.servise;
+package ru.javawebinar.topjava.service;
 
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.MealTo;
@@ -14,4 +14,6 @@ public interface CrudMemoryService {
     void deleteMeal(Integer id);
 
     Meal getMeal(Integer id);
+
+    Meal getDefaultMeal();
 }

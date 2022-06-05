@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -31,30 +30,35 @@ public class CrudMemory {
         public static final CrudMemory HOLDER_INSTANCE = new CrudMemory();
     }
 
-    public static CrudMemory getInstance() {
+    private static CrudMemory getInstance() {
         return CrudMemoryHolder.HOLDER_INSTANCE;
     }
 
-    public static Map<Integer, Meal> getStorage() {
+    private static Map<Integer, Meal> getStorage() {
         if (storage == null) {
             getInstance();
         }
 
         return storage;
     }
-//    public static synchronized List<Meal> getAllMeals() {
-//        return new ArrayList<>(getStorage().values());
-//    }
-//
-//    public static synchronized void saveMeal (Integer id, Meal meal) {
-//        storage.put(id, meal);
-//    }
-//
-//    public static synchronized void deleteMeal (Integer id) {
-//        storage.remove(id);
-//    }
-//
-//    public static synchronized Meal getMeal (Integer id) {
-//        return storage.get(id);
-//    }
+
+    public static void add(Integer id, Meal meal) {
+        getStorage().put(id, meal);
+    }
+
+    public static void delete(Integer id) {
+        getStorage().remove(id);
+    }
+
+    public static Meal get(Integer id) {
+        return getStorage().get(id);
+    }
+
+    public static List<MealTo> getAll(LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+        return MealsUtil.filteredByStreams(new ArrayList<>(getStorage().values()), startTime, endTime, caloriesPerDay);
+    }
+
+    public static Meal getDefault() {
+        return new Meal(0, LocalDateTime.of(1970, Month.JANUARY, 1, 0, 0), "Завтрак", 0);
+    }
 }
