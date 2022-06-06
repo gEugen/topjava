@@ -18,7 +18,7 @@ public class MealCrudMemory {
     // This is the Meal ID generator.
     private static MealIdGenerator idGenerator;
 
-    // ***** The code is left here and for future analysis.
+// ***** The code is left here for future analysis.
 //    private static Map<Integer, Meal> storageById;
 
     private MealCrudMemory() {
@@ -34,7 +34,7 @@ public class MealCrudMemory {
         ));
         storageByDateTime = new ConcurrentHashMap<>(initMeals.stream().collect(Collectors.toMap(Meal::getDateTime, Function.identity())));
 
-        // *****  The code is left here for future analysis.
+// ***** The code is left here for future analysis.
 //        storageById = new ConcurrentHashMap<>(initMeals.stream().collect(Collectors.toMap(Meal::getId, Function.identity())));
     }
 
@@ -50,7 +50,7 @@ public class MealCrudMemory {
     private static Map<LocalDateTime, Meal> getStorageByDateTime() {
         if (storageByDateTime == null) {
 
-        // ***** The code is left here for future analysis.
+// ***** The code is left here for future analysis.
 //        if (storageByDateTime == null && storageById == null) {
 
             // Initialize the Meal CRUD Memory.
@@ -60,7 +60,7 @@ public class MealCrudMemory {
         return storageByDateTime;
     }
 
-    // ***** The code is left here for future analysis.
+// ***** The code is left here for future analysis.
 //    private static Map<Integer, Meal> getStorageById() {
 //        if (storageByDateTime == null && storageById == null) {
 //            getInstance();
@@ -85,14 +85,14 @@ public class MealCrudMemory {
 
             storageByDateTime.put(dateTime, meal);
 
-            // ***** The code is left here for future analysis.
+// ***** The code is left here for future analysis.
 //            storageById.put(id, meal);
 
         } else {
             meal = new Meal(idGenerator.getId(), dateTime, description, calories);
             storageByDateTime.put(dateTime, meal);
 
-            // ***** The code is left here for future analysis.
+// ***** The code is left here for future analysis.
 //            storageById.put(meal.getId(), meal);
         }
     }
@@ -101,7 +101,7 @@ public class MealCrudMemory {
         Meal meal = getCopy(dateTime);
         if (meal != null) {
 
-            // ***** The code is left here for future analysis.
+// ***** The code is left here for future analysis.
 //            Integer id = meal.getId();
 //            storageById.remove(id);
 
