@@ -18,7 +18,7 @@ public class MealCrudMemory {
     // This is the Meal ID generator.
     private static MealIdGenerator idGenerator;
     // This is the map of requested meals.
-    private static final Map<Integer, Meal> requestedMeals = new HashMap<>();
+    private static final Map<LocalDateTime, Meal> requestedMeals = new HashMap<>();
 
 // ***** The code is left here for future analysis.
 //    private static Map<Integer, Meal> storageById;
@@ -57,42 +57,29 @@ public class MealCrudMemory {
     }
 
     public static void addOrUpdate(Meal accumulatorMeal, LocalDateTime dateTime, String description, int calories) {
-        Meal crudMeal = getCopy(dateTime);
-        Integer requestedMealId = getRequestedMealId(crudMeal);
-
-        // Updates the CRUD Memory without moving.
-        if (isMealValidToUpdate(crudMeal, accumulatorMeal)) {
-            crudMeal = new Meal(crudMeal.getId(), dateTime, description, calories);
-
-        // Updates the CRUD Memory with move.
-        } else if (isMealValidToUpdateWithMove(crudMeal, accumulatorMeal)) {
-            crudMeal = new Meal(idGenerator.getId(), dateTime, description, calories);
-            delete(accumulatorMeal.getDateTime());
-
-        // Creates a new meal in the CRUD Memory.
-        } else if (isMealValidToCreate(crudMeal, accumulatorMeal)) {
-            crudMeal = new Meal(idGenerator.getId(), dateTime, description, calories);
-
-        } else {
-            return;
-        }
-
-        storageByDateTime.put(dateTime, crudMeal);
-        if (requestedMealId != null) {
-            requestedMeals.remove(requestedMealId);
+        Meal mealSource = getMealSource(dateTime, accumulatorMeal, description, calories);
+        if (mealSource != null) {
+            // Stores in CRUD Memory
+            storageByDateTime.put(dateTime, mealSource);
+            if (isMealMoved(accumulatorMeal, dateTime)) {
+                // Deletes after updating with move.
+                storageByDateTime.remove(accumulatorMeal.getDateTime());
+            }
+            // Removes the meal from requested meals list.
+            requestedMeals.remove(mealSource.getDateTime());
         }
     }
 
     public static void delete(LocalDateTime dateTime) {
-        Meal meal = getCopy(dateTime);
-        if (meal != null) {
+        Meal mealSource = getMealSource(dateTime, null, null, 0);
+        if (mealSource != null) {
             storageByDateTime.remove(dateTime);
-            requestedMeals.remove(meal.getId());
+            requestedMeals.remove(mealSource.getDateTime());
         }
     }
 
     public static Meal get(LocalDateTime dateTime) {
-        return getCopy(dateTime);
+        return getStorageByDateTime().get(dateTime);
     }
 
     public static List<MealTo> getAll(LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
@@ -103,38 +90,49 @@ public class MealCrudMemory {
         return new Meal(0, LocalDateTime.of(LocalDateTime.now().toLocalDate().getYear(), LocalDateTime.now().getMonth(), LocalDateTime.now().getDayOfMonth(), 0, 0), "", 0);
     }
 
-    // Provides getting of existing meal object in the CRUD memory.
+    // Provides getting of meal object for working with CRUD memory.
     // Provides holding of the meal for the duration of the operation
-    private static synchronized Meal getCopy(LocalDateTime dateTime) {
-        Meal crudMeal = getStorageByDateTime().get(dateTime);
-        if (crudMeal == null || isMealRequested(crudMeal)) {
+    private static synchronized Meal getMealSource(LocalDateTime dateTime, Meal accumulatorMeal, String description, int calories) {
+        if (isDateTimeRequested(dateTime)) {
             return null;
         }
-        requestedMeals.put(crudMeal.getId(), crudMeal);
+        Meal crudMeal = getStorageByDateTime().get(dateTime);
 
-        return new Meal(crudMeal.getId(), crudMeal.getDateTime(), crudMeal.getDescription(), crudMeal.getCalories());
-    }
-
-    private static boolean isMealValidToUpdate(Meal crudMeal, Meal accumulatorMeal) {
-        return crudMeal != null && accumulatorMeal != null && crudMeal.getId().equals(accumulatorMeal.getId());
-    }
-
-    private static boolean isMealValidToUpdateWithMove(Meal crudMeal, Meal accumulatorMeal) {
-        return crudMeal == null && accumulatorMeal != null;
-    }
-
-    private static boolean isMealValidToCreate(Meal crudMeal, Meal accumulatorMeal) {
-        return crudMeal == null && accumulatorMeal == null;
-    }
-
-    private static boolean isMealRequested(Meal testMeal) {
-        return requestedMeals.containsKey(testMeal.getId());
-    }
-
-    private static Integer getRequestedMealId(Meal crudMeal) {
-        if (crudMeal != null) {
-            return crudMeal.getId();
+        // Provides delete operation.
+        if(crudMeal != null && accumulatorMeal == null && description == null && calories == 0) {
+            Meal deleteMealSource = new Meal(crudMeal.getId(), dateTime, crudMeal.getDescription(), crudMeal.getCalories());
+            requestedMeals.put(deleteMealSource.getDateTime(), deleteMealSource);
+            return deleteMealSource;
+        } else if (crudMeal == null && accumulatorMeal == null && description == null && calories == 0) {
+            return null;
         }
+
+        // Provides creating operation.
+        if (crudMeal == null) {
+            Meal newMealSource = new Meal(idGenerator.getId(), dateTime, description, calories);
+            requestedMeals.put(newMealSource.getDateTime(), newMealSource);
+            return newMealSource;
+
+        } else {
+            if (accumulatorMeal == null) {
+                return null;
+
+            // Provides updating operation without move.
+            } else if (dateTime.equals(accumulatorMeal.getDateTime())) {
+                Meal replaceMealSource = new Meal(crudMeal.getId(), dateTime, description, calories);
+                requestedMeals.put(replaceMealSource.getDateTime(), replaceMealSource);
+                return replaceMealSource;
+            }
+        }
+
         return null;
+    }
+
+    private static boolean isDateTimeRequested(LocalDateTime dateTime) {
+        return requestedMeals.containsKey(dateTime);
+    }
+
+    private static boolean isMealMoved(Meal accumulatorMeal, LocalDateTime dateTime) {
+        return accumulatorMeal != null && !dateTime.equals(accumulatorMeal.getDateTime());
     }
 }
