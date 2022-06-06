@@ -2,7 +2,7 @@ package ru.javawebinar.topjava.service;
 
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.MealTo;
-import ru.javawebinar.topjava.optional.MealCrudMemory;
+import ru.javawebinar.topjava.repository.MealCrudMemory;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;

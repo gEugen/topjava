@@ -1,20 +1,21 @@
-package ru.javawebinar.topjava.optional;
+package ru.javawebinar.topjava.repository;
 
 public class MealIdGenerator {
-    private static Integer id;
+    private Integer id;
+
+    private MealIdGenerator() {
+        id = 0;
+    }
+
     private static class IdGeneratorHolder {
         public static final MealIdGenerator HOLDER_INSTANCE = new MealIdGenerator();
     }
 
-    private static MealIdGenerator getInstance() {
+    public static MealIdGenerator getInstance() {
         return MealIdGenerator.IdGeneratorHolder.HOLDER_INSTANCE;
     }
 
-    public static synchronized Integer getId() {
-        if (id == null) {
-            getInstance();
-            id = 0;
-        }
+    public synchronized Integer getId() {
         return ++id;
     }
 }

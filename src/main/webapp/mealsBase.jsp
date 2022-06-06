@@ -19,7 +19,6 @@
     </tr>
     </thead>
     <tbody>
-
     <jsp:useBean id="mealsTo" scope="request" type="java.util.List"/>
     <c:forEach items="${mealsTo}" var="MealTo">
         <tr>
@@ -32,7 +31,6 @@
             <td><c:out value="${MealTo.calories}"/></td>
         </tr>
     </c:forEach>
-
     </tbody>
 </table>
 </body>

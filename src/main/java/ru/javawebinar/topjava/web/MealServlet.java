@@ -58,6 +58,7 @@ public class MealServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         log.debug("redirect to meals");
 
+        // ***** The code is left here for future analysis.
 //        req.getRequestDispatcher("/meals.jsp").forward(req, resp);
 //        resp.sendRedirect("meals.jsp");
 
@@ -70,8 +71,13 @@ public class MealServlet extends HttpServlet {
         if (action.equalsIgnoreCase("delete")){
             LocalDateTime dateTime = getDateTime(req.getParameter("date"));
             crudService.deleteMeal(dateTime);
-            forward = LIST_MEAL_TO;
-            req.setAttribute("mealsTo", crudService.getMeals(lowerLimit, upperLimit, caloriesPerDay));
+
+            // ***** The code is left here for future analysis.
+//            forward = LIST_MEAL_TO;
+//            req.setAttribute("mealsTo", crudService.getMeals(lowerLimit, upperLimit, caloriesPerDay));
+
+            resp.sendRedirect("meals");
+            return;
 
         } else if (action.equalsIgnoreCase("update")){
             LocalDateTime dateTime = getDateTime(req.getParameter("date"));
@@ -100,7 +106,10 @@ public class MealServlet extends HttpServlet {
     }
 
     private LocalDateTime getDateTime(String dateTime) {
+
+        // ***** The code is left here for future analysis.
 //        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
         return LocalDateTime.parse(dateTime);
 
     }
