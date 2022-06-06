@@ -17,24 +17,24 @@ public class MealCrudMemoryServiceImp implements MealCrudMemoryService {
         return MealCrudMemoryServiceImp.CrudMemoryServiceHolder.HOLDER_INSTANCE;
     }
 
-    public synchronized List<MealTo> getMeals(LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+    public List<MealTo> getMeals(LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
         return MealCrudMemory.getAll(startTime, endTime, caloriesPerDay);
     }
 
-    public synchronized void saveMeal(Meal mealAccumulator, LocalDateTime dateTime, String description, int calories) {
-        MealCrudMemory.add(mealAccumulator, dateTime, description, calories);
+    public void saveMeal(Meal mealAccumulator, LocalDateTime dateTime, String description, int calories) {
+        MealCrudMemory.addOrUpdate(mealAccumulator, dateTime, description, calories);
     }
 
-    public synchronized void deleteMeal(LocalDateTime dateTime) {
+    public void deleteMeal(LocalDateTime dateTime) {
         MealCrudMemory.delete(dateTime);
     }
 
-    public synchronized Meal getMeal(LocalDateTime dateTime) {
+    public Meal getMeal(LocalDateTime dateTime) {
         return MealCrudMemory.get(dateTime);
     }
 
     @Override
-    public synchronized Meal getDefaultMeal() {
+    public Meal getDefaultMeal() {
         return MealCrudMemory.getDefault();
     }
 }

@@ -17,6 +17,8 @@ public class MealCrudMemory {
     private static Map<LocalDateTime, Meal> storageByDateTime;
     // This is the Meal ID generator.
     private static MealIdGenerator idGenerator;
+    // This is the map of requested meals.
+    private static final Map<Integer, Meal> requestedMeals = new HashMap<>();
 
 // ***** The code is left here for future analysis.
 //    private static Map<Integer, Meal> storageById;
@@ -33,7 +35,6 @@ public class MealCrudMemory {
                 new Meal(idGenerator.getId(), LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410)
         ));
         storageByDateTime = new ConcurrentHashMap<>(initMeals.stream().collect(Collectors.toMap(Meal::getDateTime, Function.identity())));
-
 // ***** The code is left here for future analysis.
 //        storageById = new ConcurrentHashMap<>(initMeals.stream().collect(Collectors.toMap(Meal::getId, Function.identity())));
     }
@@ -49,63 +50,44 @@ public class MealCrudMemory {
 
     private static Map<LocalDateTime, Meal> getStorageByDateTime() {
         if (storageByDateTime == null) {
-
-// ***** The code is left here for future analysis.
-//        if (storageByDateTime == null && storageById == null) {
-
-            // Initialize the Meal CRUD Memory.
+            // Initializes the Meal CRUD Memory.
             getInstance();
         }
-
         return storageByDateTime;
     }
 
-// ***** The code is left here for future analysis.
-//    private static Map<Integer, Meal> getStorageById() {
-//        if (storageByDateTime == null && storageById == null) {
-//            getInstance();
-//        }
-//
-//        return storageById;
-//    }
+    public static void addOrUpdate(Meal accumulatorMeal, LocalDateTime dateTime, String description, int calories) {
+        Meal crudMeal = getCopy(dateTime);
+        Integer requestedMealId = getRequestedMealId(crudMeal);
 
-    public static void add(Meal mealAccumulator, LocalDateTime dateTime, String description, int calories) {
-        Meal meal = getCopy(dateTime);
-        if (meal != null || mealAccumulator != null) {
-            Integer id;
-            if (meal != null) {
-                id = meal.getId();
-                meal = new Meal(id, dateTime, description, calories);
+        // Updates the CRUD Memory without moving.
+        if (isMealValidToUpdate(crudMeal, accumulatorMeal)) {
+            crudMeal = new Meal(crudMeal.getId(), dateTime, description, calories);
 
-            } else {
-                id = mealAccumulator.getId();
-                meal = new Meal(id, dateTime, description, calories);
-                delete(mealAccumulator.getDateTime());
-            }
+        // Updates the CRUD Memory with move.
+        } else if (isMealValidToUpdateWithMove(crudMeal, accumulatorMeal)) {
+            crudMeal = new Meal(idGenerator.getId(), dateTime, description, calories);
+            delete(accumulatorMeal.getDateTime());
 
-            storageByDateTime.put(dateTime, meal);
-
-// ***** The code is left here for future analysis.
-//            storageById.put(id, meal);
+        // Creates a new meal in the CRUD Memory.
+        } else if (isMealValidToCreate(crudMeal, accumulatorMeal)) {
+            crudMeal = new Meal(idGenerator.getId(), dateTime, description, calories);
 
         } else {
-            meal = new Meal(idGenerator.getId(), dateTime, description, calories);
-            storageByDateTime.put(dateTime, meal);
+            return;
+        }
 
-// ***** The code is left here for future analysis.
-//            storageById.put(meal.getId(), meal);
+        storageByDateTime.put(dateTime, crudMeal);
+        if (requestedMealId != null) {
+            requestedMeals.remove(requestedMealId);
         }
     }
 
     public static void delete(LocalDateTime dateTime) {
         Meal meal = getCopy(dateTime);
         if (meal != null) {
-
-// ***** The code is left here for future analysis.
-//            Integer id = meal.getId();
-//            storageById.remove(id);
-
             storageByDateTime.remove(dateTime);
+            requestedMeals.remove(meal.getId());
         }
     }
 
@@ -121,12 +103,38 @@ public class MealCrudMemory {
         return new Meal(0, LocalDateTime.of(LocalDateTime.now().toLocalDate().getYear(), LocalDateTime.now().getMonth(), LocalDateTime.now().getDayOfMonth(), 0, 0), "", 0);
     }
 
-    // Provide getting of existing meal object in the CRUD memory.
+    // Provides getting of existing meal object in the CRUD memory.
+    // Provides holding of the meal for the duration of the operation
     private static synchronized Meal getCopy(LocalDateTime dateTime) {
-        Meal meal = getStorageByDateTime().get(dateTime);
-        if (meal == null) {
+        Meal crudMeal = getStorageByDateTime().get(dateTime);
+        if (crudMeal == null || isMealRequested(crudMeal)) {
             return null;
         }
-        return new Meal(meal.getId(), meal.getDateTime(), meal.getDescription(), meal.getCalories());
+        requestedMeals.put(crudMeal.getId(), crudMeal);
+
+        return new Meal(crudMeal.getId(), crudMeal.getDateTime(), crudMeal.getDescription(), crudMeal.getCalories());
+    }
+
+    private static boolean isMealValidToUpdate(Meal crudMeal, Meal accumulatorMeal) {
+        return crudMeal != null && accumulatorMeal != null && crudMeal.getId().equals(accumulatorMeal.getId());
+    }
+
+    private static boolean isMealValidToUpdateWithMove(Meal crudMeal, Meal accumulatorMeal) {
+        return crudMeal == null && accumulatorMeal != null;
+    }
+
+    private static boolean isMealValidToCreate(Meal crudMeal, Meal accumulatorMeal) {
+        return crudMeal == null && accumulatorMeal == null;
+    }
+
+    private static boolean isMealRequested(Meal testMeal) {
+        return requestedMeals.containsKey(testMeal.getId());
+    }
+
+    private static Integer getRequestedMealId(Meal crudMeal) {
+        if (crudMeal != null) {
+            return crudMeal.getId();
+        }
+        return null;
     }
 }
