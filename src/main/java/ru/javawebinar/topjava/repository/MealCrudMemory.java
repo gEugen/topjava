@@ -13,6 +13,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class MealCrudMemory {
+    // This is the Memory of CRUD.
     private static Map<LocalDateTime, Meal> storageByDateTime;
     // This is the Meal ID generator.
     private static MealIdGenerator idGenerator;
@@ -120,6 +121,7 @@ public class MealCrudMemory {
         return new Meal(0, LocalDateTime.of(LocalDateTime.now().toLocalDate().getYear(), LocalDateTime.now().getMonth(), LocalDateTime.now().getDayOfMonth(), 0, 0), "", 0);
     }
 
+    // Provide getting of existing meal object in the CRUD memory.
     private static synchronized Meal getCopy(LocalDateTime dateTime) {
         Meal meal = getStorageByDateTime().get(dateTime);
         if (meal == null) {

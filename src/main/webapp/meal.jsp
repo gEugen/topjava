@@ -5,6 +5,25 @@
 <head>
     <title>Edit meal</title>
 </head>
+<style>
+    TABLE {
+        width: 500px; /* table width */
+        border-collapse: collapse;
+    }
+    .col1 {
+        width: 21%;
+    }
+    .col2 {
+        width: 79%;
+    }
+    TD, TH {
+        padding: 2px; /* field around width */
+        border: 1px solid black;
+    }
+    TH {
+        background: whitesmoke;
+    }
+</style>
 <body>
 <h3><a href="index.html">Home</a></h3>
 <hr>
@@ -13,8 +32,8 @@
     <table border = "0">
         <jsp:useBean id="meal" scope="request" type="java.lang.Object"/>
         <tr style = "background: lightgrey">
-            <td colspan="2"><b>DateTime</b></td>
-            <td colspan="2"><label>
+            <td class="col1" colspan="2"><b>DateTime</b></td>
+            <td class="col2" colspan="2"><label>
                 <input name="date" type="datetime-local" value="<c:out value="${meal.dateTime}" />"/>
             </label></td>
         </tr>
@@ -30,11 +49,11 @@
                 <input name="calories" size="50" type="text" value="<c:out value="${meal.calories}" />"/>
             </label></td>
         </tr>
-        <tr style = "background: yellowgreen">
-            <td colspan = "0"><input type = "submit" name="action" value = "save"/></td>
-            <td colspan = "0"><input type = "submit" name="action" value = "cancel"/></td>
-        </tr>
     </table>
+    <p>
+        <input style="padding: 7px" type = "submit" name="action" value = "save"/>
+        <input style="padding: 7px" type = "submit" name="action" value = "cancel"/>
+    </p>
 </form>
 </body>
 </html>
