@@ -20,15 +20,16 @@ class IdGenerator {
         return changeId();
     }
 
-    void resetMealId() {
-        rollback();
+    void resetMealId(int id) {
+        rollback(id);
     }
 
     private int changeId() {
         return mealId.addAndGet(1);
     }
 
-    private void rollback() {
-        mealId.decrementAndGet();
+    // Tries to roll back the generated ID to the previous value
+    private void rollback(int id) {
+        mealId.compareAndSet(id, --id);
     }
 }

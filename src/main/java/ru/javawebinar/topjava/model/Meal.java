@@ -38,7 +38,7 @@ public class Meal {
         return dateTime.toLocalTime();
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 

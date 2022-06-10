@@ -21,6 +21,10 @@ public class MealCrudMemory {
     private static IdGenerator idGenerator;
     private static final Logger LOG = getLogger(MealCrudMemory.class);
 
+    private static class CrudMemoryHolder {
+        public static final MealCrudMemory HOLDER_INSTANCE = new MealCrudMemory();
+    }
+
     private MealCrudMemory() {
         idGenerator = IdGenerator.getInstance();
         final List<Meal> initMeals = new ArrayList<>(Arrays.asList(
@@ -42,10 +46,6 @@ public class MealCrudMemory {
         return CrudMemoryHolder.HOLDER_INSTANCE;
     }
 
-    private static class CrudMemoryHolder {
-        public static final MealCrudMemory HOLDER_INSTANCE = new MealCrudMemory();
-    }
-
     public Map<Integer, Meal> getMealStorage() {
         return storageById;
     }
@@ -56,15 +56,19 @@ public class MealCrudMemory {
 
     public void add(Meal newMeal) {
         int id = idGenerator.setMealId();
+        // Tries to load the pair of the date/time as a key and the generated ID into
+        // the map where stores similar pairs of meals previously loaded into CRUD memory
         int testId = storageDateTimeWithId.merge(newMeal.getDateTime(), id, ((v1, v2) -> v1));
-        // Checks the similarity of new meal and crud meal IDs after executing the merge method
+        // Checks the equality of new meal and crud meal IDs after executing the merge method
+        // if equals load the new meal in CRUD memory
         if (testId == id) {
             Meal newCrudMeal = new Meal(id, newMeal.getDateTime(), newMeal.getDescription(), newMeal.getCalories());
             storageById.put(id, newCrudMeal);
             LOG.debug("added a new meal to CRUD memory");
 
         } else {
-            idGenerator.resetMealId();
+            // if not equals, tries to roll back the generated ID to the previous value
+            idGenerator.resetMealId(id);
             LOG.debug("didn't add a new meal with similar date/time");
         }
     }

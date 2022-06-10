@@ -5,6 +5,8 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.MealTo;
 import ru.javawebinar.topjava.service.MealCrudMemoryService;
 import ru.javawebinar.topjava.service.MealCrudMemoryServiceImp;
+import ru.javawebinar.topjava.util.MealsUtil;
+import ru.javawebinar.topjava.util.TimeUtil;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -14,20 +16,20 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class MealServlet extends HttpServlet {
-    static final LocalTime LOWER_LIMIT_TIME = LocalTime.MIN;
-    static final LocalTime UPPER_LIMIT_TIME = LocalTime.MAX;
+    static final LocalTime FILTER_LOWER_LIMIT_TIME = LocalTime.MIN;
+    static final LocalTime FILTER_UPPER_LIMIT_TIME = LocalTime.MAX;
     static final int CALORIES_PER_DAY = 2000;
     static final String MEAL_JSP = "/meal.jsp";
     static final String MEALS_JSP = "/meals.jsp";
     static final String MEAL_SERVLET_URL = "meals";
     private static final Logger LOG = getLogger(MealServlet.class);
     private final MealCrudMemoryService crudService = new MealCrudMemoryServiceImp();
-//    private final Meal defaultMealTo = new Meal(0, LocalDateTime.of(LocalDateTime.now().toLocalDate().getYear(), LocalDateTime.now().getMonth(), LocalDateTime.now().getDayOfMonth(), 0, 0), "", 0);
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -40,9 +42,9 @@ public class MealServlet extends HttpServlet {
         }
 
         if (action.equalsIgnoreCase("save")) {
-            LOG.debug("chooses a doPost action branch");
+            LOG.debug("chooses doPost action branch");
             Integer mealId = Integer.parseInt(req.getParameter("id"));
-            LocalDateTime dateTime = getDateTime(req.getParameter("date"));
+            LocalDateTime dateTime = TimeUtil.getDateTime(req.getParameter("date"));
             String description = req.getParameter("description");
             int calories = Integer.parseInt(req.getParameter("calories"));
 
@@ -94,7 +96,7 @@ public class MealServlet extends HttpServlet {
             case "delete":
                 LOG.debug("switched to doGet delete branch");
                 id = Integer.parseInt(req.getParameter("id"));
-                LocalDateTime dateTime = getDateTime(req.getParameter("date"));
+                LocalDateTime dateTime = TimeUtil.getDateTime(req.getParameter("date"));
                 String description = req.getParameter("description");
                 int calories = Integer.parseInt(req.getParameter("calories"));
                 Meal deletedMeal = getFormMeal(id, dateTime, description, calories);
@@ -104,8 +106,12 @@ public class MealServlet extends HttpServlet {
 
             default:
                 LOG.debug("switched to doGet default branch");
-                List<MealTo> mealToList = crudService.getMeals(LOWER_LIMIT_TIME, UPPER_LIMIT_TIME, CALORIES_PER_DAY);
-                req.setAttribute("mealsTo", mealToList);
+                LocalTime startTime = FILTER_LOWER_LIMIT_TIME;
+                LocalTime endTime = FILTER_UPPER_LIMIT_TIME;
+                int caloriesPerDay = CALORIES_PER_DAY;
+                List<Meal> meals = crudService.getAllMeals();
+                List<MealTo> mealsTo = MealsUtil.filteredByStreams(meals, startTime, endTime, caloriesPerDay);
+                req.setAttribute("mealsTo", mealsTo);
                 break;
         }
 
@@ -117,10 +123,6 @@ public class MealServlet extends HttpServlet {
         return new Meal(0, LocalDateTime.of(LocalDateTime.now().toLocalDate().getYear(),
                 LocalDateTime.now().getMonth(), LocalDateTime.now().getDayOfMonth(),
                 0, 0), "", 0);
-    }
-
-    private LocalDateTime getDateTime(String dateTime) {
-        return LocalDateTime.parse(dateTime);
     }
 
     private Meal getFormMeal(Integer mealId, LocalDateTime dateTime, String description, int calories) {
