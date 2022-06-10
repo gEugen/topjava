@@ -31,22 +31,25 @@
 <form method = "POST" action="meals">
     <table border = "0">
         <jsp:useBean id="meal" scope="request" type="java.lang.Object"/>
+        <td style="display: none"><label>
+            <input name="id" type="text" value="${meal.id}"/>
+        </label></td>
         <tr style = "background: lightgrey">
             <td class="col1" colspan="2"><b>DateTime</b></td>
             <td class="col2" colspan="2"><label>
-                <input name="date" type="datetime-local" value="<c:out value="${meal.dateTime}" />"/>
+                <input name="date" type="datetime-local" value="${meal.dateTime}"/>
             </label></td>
         </tr>
         <tr style = "background: beige">
             <td colspan="2"><b>Description</b></td>
             <td colspan="2"><label>
-                <input name="description" size="50" type="text" value="<c:out value="${meal.description}" />"/>
+                <input name="description" size="50" type="text" value="${meal.description}"/>
             </label></td>
         </tr>
         <tr style = "background: lightgrey">
             <td colspan="2">Calories</td>
             <td colspan="2"><label>
-                <input name="calories" size="50" type="text" value="<c:out value="${meal.calories}" />"/>
+                <input name="calories" size="50" type="text" value="${meal.calories}"/>
             </label></td>
         </tr>
     </table>

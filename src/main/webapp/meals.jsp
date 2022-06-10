@@ -24,6 +24,9 @@
         .col5 {
             width: 10%;
         }
+        /*.col6 {*/
+        /*    width: 10%;*/
+        /*}*/
         TD, TH {
             padding: 2px; /* field around width */
             border: 1px solid black;
@@ -42,6 +45,7 @@
 <table>
     <thead>
     <tr style = "background: lightgrey">
+<%--        <th>ID</th>--%>
         <th>Date</th>
         <th>Description</th>
         <th>Calories</th>
@@ -52,17 +56,18 @@
     <tbody>
 
     <jsp:useBean id="mealsTo" scope="request" type="java.util.List"/>
-    <c:forEach items="${mealsTo}" var="MealTo">
+    <c:forEach items="${mealsTo}" var="mealTo">
         <tr>
-            <tr style="color:${MealTo.excess ? 'red' : 'green'}">
+            <tr style="color:${mealTo.excess ? 'red' : 'green'}">
+<%--            <td class="col6">${mealTo.id}</td>--%>
             <td class="col1" style="text-align: center">
-                <fmt:parseDate  value="${MealTo.dateTime}" type="date" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDate"/>
+                <fmt:parseDate value="${mealTo.dateTime}" type="date" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDate"/>
                 <fmt:formatDate value="${parsedDate}" type="date" pattern="yyyy-MM-dd HH:mm"/>
             </td>
-            <td class="col2" style="text-align: left"><c:out value="${MealTo.description}" /></td>
-            <td class="col3" style="text-align: center"><c:out value="${MealTo.calories}"/></td>
-            <td class="col4" style="text-align: center"><a href="meals?action=update&date=<c:out value="${MealTo.dateTime}"/>">Update</a></td>
-            <td class="col5" style="text-align: center"><a href="meals?action=delete&date=<c:out value="${MealTo.dateTime}"/>">Delete</a></td>
+            <td class="col2" style="text-align: left">${mealTo.description}</td>
+            <td class="col3" style="text-align: center">${mealTo.calories}</td>
+            <td class="col4" style="text-align: center"><a href="meals?action=update&id=${mealTo.id}">Update</a></td>
+            <td class="col5" style="text-align: center"><a href="meals?action=delete&id=${mealTo.id}&date=${mealTo.dateTime}&description=${mealTo.description}&calories=${mealTo.calories}">Delete</a></td>
         </tr>
     </c:forEach>
 

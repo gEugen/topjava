@@ -2,6 +2,7 @@ package ru.javawebinar.topjava.web;
 
 import org.slf4j.Logger;
 import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.model.MealTo;
 import ru.javawebinar.topjava.service.MealCrudMemoryService;
 import ru.javawebinar.topjava.service.MealCrudMemoryServiceImp;
 
@@ -13,104 +14,120 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class MealServlet extends HttpServlet {
-    private static final String ADD_OR_UPDATE = "/meal.jsp";
-    private static final String LIST_MEAL_TO = "/meals.jsp";
-    LocalTime lowerLimit = LocalTime.of(0, 0);
-    LocalTime upperLimit = LocalTime.of(23, 59);
-    int caloriesPerDay = 2000;
-    private static final Logger log = getLogger(MealServlet.class);
-
-    // This is the Singleton of the CRUD Memory interface.
-    private static final MealCrudMemoryService crudService = MealCrudMemoryServiceImp.getInstance();
-
-    // This is the accumulator of meal for its field values updating.
-    private static Meal mealAccumulator;
+    static final LocalTime LOWER_LIMIT_TIME = LocalTime.MIN;
+    static final LocalTime UPPER_LIMIT_TIME = LocalTime.MAX;
+    static final int CALORIES_PER_DAY = 2000;
+    static final String MEAL_JSP = "/meal.jsp";
+    static final String MEALS_JSP = "/meals.jsp";
+    static final String MEAL_SERVLET_URL = "meals";
+    private static final Logger LOG = getLogger(MealServlet.class);
+    private final MealCrudMemoryService crudService = new MealCrudMemoryServiceImp();
+//    private final Meal defaultMealTo = new Meal(0, LocalDateTime.of(LocalDateTime.now().toLocalDate().getYear(), LocalDateTime.now().getMonth(), LocalDateTime.now().getDayOfMonth(), 0, 0), "", 0);
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        log.debug("redirect to meal");
+        LOG.debug("redirects to meal");
 
         req.setCharacterEncoding("UTF-8");
-        String forward;
         String action = req.getParameter("action");
         if (action == null) {
             action = "";
         }
 
         if (action.equalsIgnoreCase("save")) {
+            LOG.debug("chooses a doPost action branch");
+            Integer mealId = Integer.parseInt(req.getParameter("id"));
             LocalDateTime dateTime = getDateTime(req.getParameter("date"));
             String description = req.getParameter("description");
             int calories = Integer.parseInt(req.getParameter("calories"));
-            crudService.saveMeal(mealAccumulator, dateTime, description, calories);
+
+            switch (getAction(mealId)){
+                case "add":
+                    LOG.debug("switched to doPost add branch");
+                    crudService.add(getFormMeal(mealId, dateTime, description, calories));
+                    break;
+
+                case "update":
+                    LOG.debug("switched to doPost update branch");
+                    crudService.update(getFormMeal(mealId, dateTime, description, calories));
+                    break;
+            }
+
+        } else {
+            LOG.debug("switched to cancel or no action doPost branch");
         }
 
-        forward = LIST_MEAL_TO;
-        req.setAttribute("mealsTo", crudService.getMeals(lowerLimit, upperLimit, caloriesPerDay));
-        RequestDispatcher view = req.getRequestDispatcher(forward);
-        view.forward(req, resp);
+        resp.sendRedirect("meals");
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        log.debug("redirect to meals");
+        LOG.debug("redirects to meals");
 
-// ***** The code is left here for future analysis.
-//        req.getRequestDispatcher("/meals.jsp").forward(req, resp);
-//        resp.sendRedirect("meals.jsp");
-
-        String forward;
+        String forward = MEALS_JSP;
         String action = req.getParameter("action");
         if (action == null) {
             action = "";
         }
 
-        if (action.equalsIgnoreCase("delete")){
-            LocalDateTime dateTime = getDateTime(req.getParameter("date"));
-            crudService.deleteMeal(dateTime);
+        switch (action) {
+            case "add":
+                LOG.debug("switched to doGet add branch");
+                forward = MEAL_JSP;
+                req.setAttribute("meal", getDefaultMealTo());
+                break;
 
-// ***** The code is left here for future analysis.
-//            forward = LIST_MEAL_TO;
-//            req.setAttribute("mealsTo", crudService.getMeals(lowerLimit, upperLimit, caloriesPerDay));
+            case "update":
+                LOG.debug("switched to doGet update branch");
+                String s = req.getParameter("id");
+                int id = Integer.parseInt(req.getParameter("id"));
+                Meal requestedMeal = crudService.getMeal(id);
+                forward = MEAL_JSP;
+                req.setAttribute("meal", requestedMeal);
+                break;
 
-            resp.sendRedirect("meals");
-            return;
+            case "delete":
+                LOG.debug("switched to doGet delete branch");
+                id = Integer.parseInt(req.getParameter("id"));
+                LocalDateTime dateTime = getDateTime(req.getParameter("date"));
+                String description = req.getParameter("description");
+                int calories = Integer.parseInt(req.getParameter("calories"));
+                Meal deletedMeal = getFormMeal(id, dateTime, description, calories);
+                crudService.deleteMeal(id, deletedMeal);
+                resp.sendRedirect(MEAL_SERVLET_URL);
+                return;
 
-        } else if (action.equalsIgnoreCase("update")){
-            LocalDateTime dateTime = getDateTime(req.getParameter("date"));
-            mealAccumulator = crudService.getMeal(dateTime);
-            if (mealAccumulator != null) {
-                forward = ADD_OR_UPDATE;
-                req.setAttribute("meal", mealAccumulator);
-
-            } else {
-                forward = LIST_MEAL_TO;
-                req.setAttribute("mealsTo", crudService.getMeals(lowerLimit, upperLimit, caloriesPerDay));
-            }
-
-        } else if (action.equalsIgnoreCase("add")){
-            mealAccumulator = null;
-            forward = ADD_OR_UPDATE;
-            req.setAttribute("meal", crudService.getDefaultMeal());
-
-        } else {
-            forward = LIST_MEAL_TO;
-            req.setAttribute("mealsTo", crudService.getMeals(lowerLimit, upperLimit, caloriesPerDay));
+            default:
+                LOG.debug("switched to doGet default branch");
+                List<MealTo> mealToList = crudService.getMeals(LOWER_LIMIT_TIME, UPPER_LIMIT_TIME, CALORIES_PER_DAY);
+                req.setAttribute("mealsTo", mealToList);
+                break;
         }
 
         RequestDispatcher view = req.getRequestDispatcher(forward);
         view.forward(req, resp);
     }
 
+    private Meal getDefaultMealTo() {
+        return new Meal(0, LocalDateTime.of(LocalDateTime.now().toLocalDate().getYear(),
+                LocalDateTime.now().getMonth(), LocalDateTime.now().getDayOfMonth(),
+                0, 0), "", 0);
+    }
+
     private LocalDateTime getDateTime(String dateTime) {
-
-// ***** The code is left here for future analysis.
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
         return LocalDateTime.parse(dateTime);
+    }
 
+    private Meal getFormMeal(Integer mealId, LocalDateTime dateTime, String description, int calories) {
+        return new Meal(mealId, dateTime, description, calories);
+    }
+
+    private String getAction(Integer mealId) {
+        return mealId == 0 ? "add" : "update";
     }
 }
