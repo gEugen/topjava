@@ -1,4 +1,4 @@
-package ru.javawebinar.topjava.repository;
+package ru.javawebinar.topjava.service;
 
 import org.slf4j.Logger;
 import ru.javawebinar.topjava.model.Meal;
@@ -14,10 +14,14 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 public class MealCrudMemory {
     // This is the Memory of Meal CRUD
+    // Это CRUD память еды
     private static Map<Integer, Meal> storageById;
     // This is the Memory of Meal date and time with ID for date and time presence checking
+    // Это память пар дата/время и ID для проверки совпадения даты/времены
+    // обрабатываемого объекта с датой временем объекта находящемся в CRUD памяти
     private static Map<LocalDateTime, Integer> storageDateTimeWithId;
-    // This is the Meal ID generator.
+    // This is the Meal ID generator
+    // Это генератор ID
     private static IdGenerator idGenerator;
     private static final Logger LOG = getLogger(MealCrudMemory.class);
 
@@ -41,26 +45,31 @@ public class MealCrudMemory {
         LOG.debug("initialized the Meals CRUD memory and Date/Time Pairs map");
     }
 
-    // For CRUD Memory initialisation
-    public static MealCrudMemory getInstance() {
+    // Initializes CRUD Memory
+    // Инициализирует CRUD память
+    static MealCrudMemory getInstance() {
         return CrudMemoryHolder.HOLDER_INSTANCE;
     }
 
-    public Map<Integer, Meal> getMealStorage() {
+    Map<Integer, Meal> getMealStorage() {
         return storageById;
     }
 
-    public Map<LocalDateTime, Integer> getDateTimeStorage() {
+    Map<LocalDateTime, Integer> getDateTimeStorage() {
         return storageDateTimeWithId;
     }
 
-    public void add(Meal newMeal) {
+    void add(Meal newMeal) {
         int id = idGenerator.setMealId();
-        // Tries to load the pair of the date/time as a key and the generated ID into
-        // the map where stores similar pairs of meals previously loaded into CRUD memory
+        // Tries to load the pair of the date/time as a key and the generated ID as a value
+        // into the map where stores similar pairs of meals previously loaded into CRUD memory
+        // Пробует загрузить пару дата/время как ключ и сгенерированный ID как значение в map,
+        // где хранятся анологичные пары ранее сохранненой еды в памяти CRUD
         int testId = storageDateTimeWithId.merge(newMeal.getDateTime(), id, ((v1, v2) -> v1));
         // Checks the equality of new meal and crud meal IDs after executing the merge method
         // if equals load the new meal in CRUD memory
+        // Проверяет равенство ID новой еды и еды из CRUD после выполнения метода merge,
+        // если равны, загружает новую еду в память CRUD
         if (testId == id) {
             Meal newCrudMeal = new Meal(id, newMeal.getDateTime(), newMeal.getDescription(), newMeal.getCalories());
             storageById.put(id, newCrudMeal);
@@ -68,7 +77,9 @@ public class MealCrudMemory {
 
         } else {
             // if not equals, tries to roll back the generated ID to the previous value
-            idGenerator.resetMealId(id);
+            // если не равны, пробует откатить сгенерированный ID к предыдущему значению
+            // из-за неудачно завершившейся операции обновления
+            idGenerator.rollbackMealId(id);
             LOG.debug("didn't add a new meal with similar date/time");
         }
     }

@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -41,7 +40,7 @@ public class MealServlet extends HttpServlet {
             action = "";
         }
 
-        if (action.equalsIgnoreCase("save")) {
+        if (action.equals("save")) {
             LOG.debug("chooses doPost action branch");
             Integer mealId = Integer.parseInt(req.getParameter("id"));
             LocalDateTime dateTime = TimeUtil.getDateTime(req.getParameter("date"));
@@ -100,7 +99,7 @@ public class MealServlet extends HttpServlet {
                 String description = req.getParameter("description");
                 int calories = Integer.parseInt(req.getParameter("calories"));
                 Meal deletedMeal = getFormMeal(id, dateTime, description, calories);
-                crudService.deleteMeal(id, deletedMeal);
+                crudService.deleteMeal(deletedMeal);
                 resp.sendRedirect(MEAL_SERVLET_URL);
                 return;
 

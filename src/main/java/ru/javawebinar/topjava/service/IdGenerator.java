@@ -1,4 +1,4 @@
-package ru.javawebinar.topjava.repository;
+package ru.javawebinar.topjava.service;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -20,7 +20,7 @@ class IdGenerator {
         return changeId();
     }
 
-    void resetMealId(int id) {
+    void rollbackMealId(int id) {
         rollback(id);
     }
 
@@ -29,6 +29,7 @@ class IdGenerator {
     }
 
     // Tries to roll back the generated ID to the previous value
+    // Пробует откатить счетчик назад при условии, что ожидаемое текущее значение равно заданному
     private void rollback(int id) {
         mealId.compareAndSet(id, --id);
     }
