@@ -1,4 +1,4 @@
-package ru.javawebinar.topjava.service;
+package ru.javawebinar.topjava.repository;
 
 import org.slf4j.Logger;
 import ru.javawebinar.topjava.model.Meal;
@@ -49,19 +49,19 @@ public class MealCrudMemory {
 
     // Initializes CRUD Memory
     // Инициализирует CRUD память
-    static MealCrudMemory getInstance() {
+    public static MealCrudMemory getInstance() {
         return CrudMemoryHolder.HOLDER_INSTANCE;
     }
 
-    Map<Integer, Meal> getMealStorage() {
+    public Map<Integer, Meal> getMealStorage() {
         return storageById;
     }
 
-    Map<LocalDateTime, Integer> getDateTimeStorage() {
+    public Map<LocalDateTime, Integer> getDateTimeStorage() {
         return storageDateTimeWithId;
     }
 
-    void add(Meal newMeal) {
+    public void add(Meal newMeal) {
         int id = idGenerator.setMealId();
         // Tries to load the pair of the date/time as a key and the generated ID as a value into the Fast Search Memory
         // where stores similar pairs of meals previously loaded into the Meal Memory of CRUD memory
