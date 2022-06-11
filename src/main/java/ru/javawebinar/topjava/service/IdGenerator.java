@@ -31,18 +31,18 @@ class IdGenerator {
     }
 
     private int changeId() {
-        LOG.debug("increments the ID counter by one at " + LocalTime.now());
+        LOG.debug("increments the ID counter by one");
         return mealId.addAndGet(1);
     }
 
     // Tries to roll back the generated ID to the previous value
     // Пробует откатить счетчик назад при условии, что ожидаемое текущее значение равно заданному
     private void rollback(int id) {
-        LOG.debug("tries to decrement the ID counter by one at " + LocalTime.now());
+        LOG.debug("tries to decrement the ID counter by one");
         if (mealId.compareAndSet(id, --id)) {
-            LOG.debug("the ID counter was decremented by one at " + LocalTime.now());
+            LOG.debug("the ID counter was decremented by one");
         } else {
-            LOG.debug("didn't rollback the ID Counter to the old value at "  + LocalTime.now() + ", the counter was changed by another thread");
+            LOG.debug("didn't rollback the ID Counter to the old value, the counter was changed by another thread");
         }
     }
 }

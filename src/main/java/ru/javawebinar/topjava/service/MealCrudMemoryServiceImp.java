@@ -24,7 +24,7 @@ public class MealCrudMemoryServiceImp implements MealCrudMemoryService {
 
     @Override
     public void addMeal(Meal newMeal) {
-        LOG.debug("adds a meal to the CRUD memory at " + LocalTime.now());
+        LOG.debug("adds a meal to the CRUD memory");
 
         int id = idGenerator.setMealId();
         // Tries to load the pair of the date/time as a key and the generated ID as a value into the Fast Search Memory
@@ -39,20 +39,20 @@ public class MealCrudMemoryServiceImp implements MealCrudMemoryService {
         if (testId == id) {
             Meal newCrudMeal = new Meal(id, newMeal.getDateTime(), newMeal.getDescription(), newMeal.getCalories());
             idMealMemory.put(id, newCrudMeal);
-            LOG.debug("added a new meal to CRUD memory at " + LocalTime.now());
+            LOG.debug("added a new meal to CRUD memory");
 
         } else {
             // if not equals, tries to roll back the generated ID to the previous value
             // если не равны, пробует откатить сгенерированный ID к предыдущему значению
             // из-за неудачно завершившейся операции обновления
             idGenerator.rollbackMealId(id);
-            LOG.debug("didn't add a new meal with similar date/time at " + LocalTime.now());
+            LOG.debug("didn't add a new meal with similar date/time");
         }
     }
 
     @Override
     public void updateMeal(Meal updatedMeal) {
-        LOG.debug("updates a meal in the CRUD memory at " + LocalTime.now());
+        LOG.debug("updates a meal in the CRUD memory");
         Meal mealMem = idMealMemory.get(updatedMeal.getId());
         int testId = dateTimeIdFastSearchMemory.merge(updatedMeal.getDateTime(), updatedMeal.getId(), ((v1, v2) -> v1));
         // Checks similar date/time and ID pair presence in the Fast Search Memory
@@ -70,7 +70,7 @@ public class MealCrudMemoryServiceImp implements MealCrudMemoryService {
                     // CRUD памяти, если дата/время еды была изменена
                     dateTimeIdFastSearchMemory.remove(mealMem.getDateTime());
                 }
-                LOG.debug("updated a meal in the CRUD memory at " + LocalTime.now());
+                LOG.debug("updated a meal in the CRUD memory");
 
             } else {
                 // Deletes saved date/time and ID pair if such meal isn't exist
@@ -78,21 +78,21 @@ public class MealCrudMemoryServiceImp implements MealCrudMemoryService {
                 // Удалят сохраненную пару дата/время и ID из Памяти быстрого поиска
                 // CRUD памяти, если такая еда отсутсвует в CRUD памяти
                 dateTimeIdFastSearchMemory.remove(updatedMeal.getDateTime());
-                LOG.debug("did not updated a non-existent meal at " + LocalTime.now());
+                LOG.debug("did not updated a non-existent meal");
             }
         }
-        LOG.debug("didn't updated a meal with a similar date/time of a meal in the CRUD memory at " + LocalTime.now());
+        LOG.debug("didn't updated a meal with a similar date/time of a meal in the CRUD memory");
     }
 
     @Override
     public Meal getMeal(int mealId) {
-        LOG.debug("returns a meal on request from doGet at " + LocalTime.now());
+        LOG.debug("returns a meal on request from doGet");
         return idMealMemory.get(mealId);
     }
 
     @Override
     public void deleteMeal(Meal deletedMeal) {
-        LOG.debug("deletes a meal from the CRUD memory at " + LocalTime.now());
+        LOG.debug("deletes a meal from the CRUD memory");
         // Checks if the meal being deleted from the Meal Memory of the CRUD Memory matches the requested one
         // Проверяет, соответствует удаляемая еда из Памяти еди CRUD памяти запрошенной к удалению
         if (idMealMemory.remove(deletedMeal.getId(), deletedMeal)) {
@@ -101,15 +101,15 @@ public class MealCrudMemoryServiceImp implements MealCrudMemoryService {
             // Удаляет пару дата/время и ID удаляемой еды из Памяти быстрого поиска CRUD памяти, если ID
             // удаляемой еды соответствует запрошенной к удалению
             dateTimeIdFastSearchMemory.remove(deletedMeal.getDateTime(), deletedMeal.getId());
-            LOG.debug("deleted a meal from the CRUD memory at " + LocalTime.now());
+            LOG.debug("deleted a meal from the CRUD memory");
         } else {
-            LOG.debug("didn't find such meal for delete from the CRUD memory at " + LocalTime.now());
+            LOG.debug("didn't find such meal for delete from the CRUD memory");
         }
     }
 
     @Override
     public List<Meal> getAllMeals() {
-        LOG.debug("returns a list of meals from the CRUD memory at " + LocalTime.now());
+        LOG.debug("returns a list of meals from the CRUD memory");
         return new ArrayList<>(idMealMemory.values());
     }
 }

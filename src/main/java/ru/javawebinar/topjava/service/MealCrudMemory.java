@@ -33,7 +33,7 @@ class MealCrudMemory {
     }
 
     private MealCrudMemory() {
-        LOG.debug("initializes the Meals Memory and Fast Search Memory of the CRUD Memory at " + LocalTime.now());
+        LOG.debug("initializes the Meals Memory and Fast Search Memory of the CRUD Memory");
         idGenerator = IdGenerator.getInstance();
         final List<Meal> initMeals = new ArrayList<>(Arrays.asList(
                 new Meal(idGenerator.setMealId(), LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500),
@@ -46,7 +46,7 @@ class MealCrudMemory {
         ));
         storageMealById = new ConcurrentHashMap<>(initMeals.stream().collect(Collectors.toMap(Meal::getId, Function.identity())));
         storageIdByDateTime = new ConcurrentHashMap<>(initMeals.stream().collect(Collectors.toMap(Meal::getDateTime, Meal::getId)));
-        LOG.debug("initialized the Meals Memory and Fast Search Memory of the CRUD Memory at " + LocalTime.now());
+        LOG.debug("initialized the Meals Memory and Fast Search Memory of the CRUD Memory");
     }
 
     // Initializes CRUD Memory
