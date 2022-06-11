@@ -32,7 +32,7 @@ public class MealServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        LOG.debug("redirects to meal");
+        LOG.debug("redirects to meal at " + LocalTime.now());
 
         req.setCharacterEncoding("UTF-8");
         String action = req.getParameter("action");
@@ -41,7 +41,7 @@ public class MealServlet extends HttpServlet {
         }
 
         if (action.equals("save")) {
-            LOG.debug("chooses doPost action branch");
+            LOG.debug("chooses doPost action branch at " + LocalTime.now());
             Integer mealId = Integer.parseInt(req.getParameter("id"));
             LocalDateTime dateTime = TimeUtil.getDateTime(req.getParameter("date"));
             String description = req.getParameter("description");
@@ -49,18 +49,18 @@ public class MealServlet extends HttpServlet {
 
             switch (getAction(mealId)){
                 case "add":
-                    LOG.debug("switched to doPost add branch");
+                    LOG.debug("switched to doPost add branch at " + LocalTime.now());
                     crudService.addMeal(getFormMeal(mealId, dateTime, description, calories));
                     break;
 
                 case "update":
-                    LOG.debug("switched to doPost update branch");
+                    LOG.debug("switched to doPost update branch at " + LocalTime.now());
                     crudService.updateMeal(getFormMeal(mealId, dateTime, description, calories));
                     break;
             }
 
         } else {
-            LOG.debug("switched to cancel or no action doPost branch");
+            LOG.debug("switched to cancel or no action doPost branch at " + LocalTime.now());
         }
 
         resp.sendRedirect("meals");
@@ -68,7 +68,7 @@ public class MealServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        LOG.debug("redirects to meals");
+        LOG.debug("redirects to meals at " + LocalTime.now());
 
         String forward = MEALS_JSP;
         String action = req.getParameter("action");
@@ -78,13 +78,13 @@ public class MealServlet extends HttpServlet {
 
         switch (action) {
             case "add":
-                LOG.debug("switched to doGet add branch");
+                LOG.debug("switched to doGet add branch at " + LocalTime.now());
                 forward = MEAL_JSP;
                 req.setAttribute("meal", getDefaultMealTo());
                 break;
 
             case "update":
-                LOG.debug("switched to doGet update branch");
+                LOG.debug("switched to doGet update branch at " + LocalTime.now());
                 String s = req.getParameter("id");
                 int id = Integer.parseInt(req.getParameter("id"));
                 Meal requestedMeal = crudService.getMeal(id);
@@ -93,7 +93,7 @@ public class MealServlet extends HttpServlet {
                 break;
 
             case "delete":
-                LOG.debug("switched to doGet delete branch");
+                LOG.debug("switched to doGet delete branch at " + LocalTime.now());
                 id = Integer.parseInt(req.getParameter("id"));
                 LocalDateTime dateTime = TimeUtil.getDateTime(req.getParameter("date"));
                 String description = req.getParameter("description");
@@ -104,7 +104,7 @@ public class MealServlet extends HttpServlet {
                 return;
 
             default:
-                LOG.debug("switched to doGet default branch");
+                LOG.debug("switched to doGet default branch at " + LocalTime.now());
                 LocalTime startTime = FILTER_LOWER_LIMIT_TIME;
                 LocalTime endTime = FILTER_UPPER_LIMIT_TIME;
                 int caloriesPerDay = CALORIES_PER_DAY;
