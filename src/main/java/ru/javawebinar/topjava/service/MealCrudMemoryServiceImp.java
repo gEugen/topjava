@@ -28,22 +28,28 @@ public class MealCrudMemoryServiceImp implements MealCrudMemoryService {
     public void updateMeal(Meal updatedMeal) {
         Meal mealMem = mealMap.get(updatedMeal.getId());
         int testId = dateTimeWithIdMap.merge(updatedMeal.getDateTime(), updatedMeal.getId(), ((v1, v2) -> v1));
-        // Checks similar date/time and ID pair presence to carry out the update operation
-        // Проверяет наличие подобной пары дата/время и ID для проведения операции обновления
+        // Checks similar date/time and ID pair presence in the Fast Search Memory
+        // of the CRUD Memory to carry out the update operation
+        // Проверяет наличие подобной пары дата/время и ID в Памяти быстрого поиска
+        // CRUD памяти для проведения операции обновления
         if (testId == updatedMeal.getId()) {
             // Checks replace ability and replace
             // Проверяет возможность замещения и замещает
             if (mealMap.replace(updatedMeal.getId(), updatedMeal) != null) {
                 if (!updatedMeal.getDateTime().equals(mealMem.getDateTime())) {
-                    // Deletes date/time and ID pair from CRUD Memory if a meal date/time was changed
-                    // Удаляет пару дата/время и ID из CRUD памяти, если дата/время еды была изменена
+                    // Deletes date/time and ID pair from the Fast Search Memory
+                    // of the CRUD Memory if a meal date/time was changed
+                    // Удаляет пару дата/время и ID из Памяти быстрого поиска
+                    // CRUD памяти, если дата/время еды была изменена
                     dateTimeWithIdMap.remove(mealMem.getDateTime());
                 }
                 LOG.debug("updated a meal in the CRUD memory");
 
             } else {
-                // Deletes saved date/time and ID pair if such meal isn't exist in the CRUD Memory
-                // Удалят сохраненную пару дата/время и ID, если такая еда отсутсвует в CRUD памяти
+                // Deletes saved date/time and ID pair if such meal isn't exist
+                // in the Fast Search Memory of the CRUD Memory
+                // Удалят сохраненную пару дата/время и ID из Памяти быстрого поиска
+                // CRUD памяти, если такая еда отсутсвует в CRUD памяти
                 dateTimeWithIdMap.remove(updatedMeal.getDateTime());
                 LOG.debug("did not updated a non-existent meal");
             }
@@ -59,12 +65,12 @@ public class MealCrudMemoryServiceImp implements MealCrudMemoryService {
 
     @Override
     public void deleteMeal(Meal deletedMeal) {
-        // Checks if the meal being deleted from CRUD Memory matches the requested one
-        // Проверяет, соответствует удаляемая еда из CRUD памяти запрошенной к удалению
+        // Checks if the meal being deleted from the Meal Memory of the CRUD Memory matches the requested one
+        // Проверяет, соответствует удаляемая еда из Памяти еди CRUD памяти запрошенной к удалению
         if (mealMap.remove(deletedMeal.getId(), deletedMeal)) {
-            // Deletes the date/time and ID pair of the deleted meal
+            // Deletes the date/time and ID pair of the deleted meal from the Fast Search Memory of the CRUD Memory
             // if the ID being deleted meal matches the requested one
-            // Удаляет пару дата/время и ID удаляемой еды, если ID
+            // Удаляет пару дата/время и ID удаляемой еды из Памяти быстрого поиска CRUD памяти, если ID
             // удаляемой еды соответствует запрошенной к удалению
             dateTimeWithIdMap.remove(deletedMeal.getDateTime(), deletedMeal.getId());
             LOG.debug("deleted a meal from the CRUD memory");

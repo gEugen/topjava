@@ -13,13 +13,13 @@ import java.util.stream.Collectors;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class MealCrudMemory {
-    // This is the CRUD Memory of Meal CRUD
-    // Это CRUD память еды
+    // This is the Meal Memory of the CRUD Memory
+    // Это Память еды CRUD памяти
     private static Map<Integer, Meal> storageById;
-    // This is the CRUD Memory of Meal date and time with ID for date and time presence checking
+    // This is the Fast Search Memory of CRUD Memory for the meal date and time with ID presence checking
     // Provides the fast search of date/time in CRUD memory
-    // Это CRUD память пар дата/время и ID для проверки совпадения даты/времены
-    // обрабатываемого объекта с датой временем объекта находящемся в CRUD памяти
+    // Это Память быстрого поиска CRUD памяти для проверки совпадения даты/времены
+    // обрабатываемого объекта с датой временем объекта находящемся в Памяти еды CRUD памяти
     // Обеспечивает быстрый поиск даты/времени в CRUD памяти
     private static Map<LocalDateTime, Integer> storageDateTimeWithId;
     // This is the Meal ID generator
@@ -63,15 +63,15 @@ public class MealCrudMemory {
 
     void add(Meal newMeal) {
         int id = idGenerator.setMealId();
-        // Tries to load the pair of the date/time as a key and the generated ID as a value
-        // into the map where stores similar pairs of meals previously loaded into CRUD memory
-        // Пробует загрузить пару дата/время как ключ и сгенерированный ID как значение в map,
-        // где хранятся анологичные пары ранее сохранненой еды в памяти CRUD
+        // Tries to load the pair of the date/time as a key and the generated ID as a value into the Fast Search Memory
+        // where stores similar pairs of meals previously loaded into the Meal Memory of CRUD memory
+        // Пробует загрузить пару дата/время как ключ и сгенерированный ID как значение в Память быстрого поиска,
+        // где хранятся анологичные пары ранее сохранненой еды в Память еды CRUD памяти
         int testId = storageDateTimeWithId.merge(newMeal.getDateTime(), id, ((v1, v2) -> v1));
         // Checks the equality of new meal and crud meal IDs after executing the merge method
-        // if equals load the new meal in CRUD memory
+        // if equals load the new meal in Meal Memory CRUD memory
         // Проверяет равенство ID новой еды и еды из CRUD после выполнения метода merge,
-        // если равны, загружает новую еду в память CRUD
+        // если равны, загружает новую еду в Память еды CRUD памяти
         if (testId == id) {
             Meal newCrudMeal = new Meal(id, newMeal.getDateTime(), newMeal.getDescription(), newMeal.getCalories());
             storageById.put(id, newCrudMeal);

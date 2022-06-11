@@ -1,11 +1,16 @@
 package ru.javawebinar.topjava.service;
 
+import org.slf4j.Logger;
+
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 class IdGenerator {
     private static class IdGeneratorHolder {
         public static final IdGenerator HOLDER_INSTANCE = new IdGenerator();
     }
+    private static final Logger LOG = getLogger(MealCrudMemory.class);
     private final AtomicInteger mealId;
 
     private IdGenerator() {
@@ -25,12 +30,18 @@ class IdGenerator {
     }
 
     private int changeId() {
+        LOG.debug("increments the ID counter by one");
         return mealId.addAndGet(1);
     }
 
     // Tries to roll back the generated ID to the previous value
     // Пробует откатить счетчик назад при условии, что ожидаемое текущее значение равно заданному
     private void rollback(int id) {
-        mealId.compareAndSet(id, --id);
+        LOG.debug("tries to decrement the ID counter by one");
+        if (mealId.compareAndSet(id, --id)) {
+            LOG.debug("decrements the ID counter by one");
+        } else {
+            LOG.debug("didn't rollback the ID Counter to the old value, the counter was changed by another thread");
+        }
     }
 }
