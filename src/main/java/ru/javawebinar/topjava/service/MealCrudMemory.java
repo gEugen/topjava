@@ -16,13 +16,13 @@ import static org.slf4j.LoggerFactory.getLogger;
 class MealCrudMemory {
     // This is the Meal Memory of the CRUD Memory
     // Это Память еды CRUD памяти
-    private static Map<Integer, Meal> storageById;
+    private static Map<Integer, Meal> storageMealById;
     // This is the Fast Search Memory of CRUD Memory for the meal date and time with ID presence checking
     // Provides the fast search of date/time in CRUD memory
     // Это Память быстрого поиска CRUD памяти для проверки совпадения даты/времены
     // обрабатываемого объекта с датой временем объекта находящемся в Памяти еды CRUD памяти
     // Обеспечивает быстрый поиск даты/времени в CRUD памяти
-    private static Map<LocalDateTime, Integer> storageDateTimeWithId;
+    private static Map<LocalDateTime, Integer> storageIdByDateTime;
     // This is the Meal ID generator
     // Это генератор ID
     private static IdGenerator idGenerator;
@@ -44,8 +44,8 @@ class MealCrudMemory {
                 new Meal(idGenerator.setMealId(), LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500),
                 new Meal(idGenerator.setMealId(), LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410)
         ));
-        storageById = new ConcurrentHashMap<>(initMeals.stream().collect(Collectors.toMap(Meal::getId, Function.identity())));
-        storageDateTimeWithId = new ConcurrentHashMap<>(initMeals.stream().collect(Collectors.toMap(Meal::getDateTime, Meal::getId)));
+        storageMealById = new ConcurrentHashMap<>(initMeals.stream().collect(Collectors.toMap(Meal::getId, Function.identity())));
+        storageIdByDateTime = new ConcurrentHashMap<>(initMeals.stream().collect(Collectors.toMap(Meal::getDateTime, Meal::getId)));
         LOG.debug("initialized the Meals Memory and Fast Search Memory of the CRUD Memory at " + LocalTime.now());
     }
 
@@ -56,11 +56,11 @@ class MealCrudMemory {
     }
 
     Map<Integer, Meal> getMealStorage() {
-        return storageById;
+        return storageMealById;
     }
 
     Map<LocalDateTime, Integer> getDateTimeStorage() {
-        return storageDateTimeWithId;
+        return storageIdByDateTime;
     }
 
     IdGenerator getIdGenerator() {
