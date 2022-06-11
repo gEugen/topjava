@@ -17,7 +17,7 @@ public class MealCrudMemoryServiceImp implements MealCrudMemoryService {
     private final Map<LocalDateTime, Integer> dateTimeWithIdMap = mealMemory.getDateTimeStorage();
 
     @Override
-    public void add(Meal newMeal) {
+    public void addMeal(Meal newMeal) {
         LOG.debug("adds a meal to the CRUD memory");
         // Adds new meal with new ID generation to the CRUD Memory
         // Добавляет новую еду с генерацией нового ID в CRUD память
@@ -25,7 +25,7 @@ public class MealCrudMemoryServiceImp implements MealCrudMemoryService {
     }
 
     @Override
-    public void update(Meal updatedMeal) {
+    public void updateMeal(Meal updatedMeal) {
         Meal mealMem = mealMap.get(updatedMeal.getId());
         int testId = dateTimeWithIdMap.merge(updatedMeal.getDateTime(), updatedMeal.getId(), ((v1, v2) -> v1));
         // Checks similar date/time and ID pair presence to carry out the update operation

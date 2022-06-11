@@ -50,12 +50,12 @@ public class MealServlet extends HttpServlet {
             switch (getAction(mealId)){
                 case "add":
                     LOG.debug("switched to doPost add branch");
-                    crudService.add(getFormMeal(mealId, dateTime, description, calories));
+                    crudService.addMeal(getFormMeal(mealId, dateTime, description, calories));
                     break;
 
                 case "update":
                     LOG.debug("switched to doPost update branch");
-                    crudService.update(getFormMeal(mealId, dateTime, description, calories));
+                    crudService.updateMeal(getFormMeal(mealId, dateTime, description, calories));
                     break;
             }
 

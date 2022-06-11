@@ -5,9 +5,9 @@ import ru.javawebinar.topjava.model.Meal;
 import java.util.List;
 
 public interface MealCrudMemoryService {
-    void add(Meal formMeal);
+    void addMeal(Meal formMeal);
 
-    void update(Meal formMeal);
+    void updateMeal(Meal formMeal);
 
     Meal getMeal(int mealId);
 
