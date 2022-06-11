@@ -2,7 +2,6 @@ package ru.javawebinar.topjava.service;
 
 import org.slf4j.Logger;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.repository.MealCrudMemory;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
