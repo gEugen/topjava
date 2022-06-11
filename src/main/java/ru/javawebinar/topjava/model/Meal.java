@@ -47,11 +47,11 @@ public class Meal {
         if (this == o) return true;
         if (!(o instanceof Meal)) return false;
         Meal meal = (Meal) o;
-        return getCalories() == meal.getCalories() && getDateTime().equals(meal.getDateTime()) && getDescription().equals(meal.getDescription());
+        return getId() == meal.getId() && getDateTime().equals(meal.getDateTime());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getDateTime(), getDescription(), getCalories());
+        return Objects.hash(getId(), getDateTime());
     }
 }

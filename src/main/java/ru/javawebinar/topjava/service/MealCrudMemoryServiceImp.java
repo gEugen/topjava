@@ -26,6 +26,7 @@ public class MealCrudMemoryServiceImp implements MealCrudMemoryService {
 
     @Override
     public void update(Meal updatedMeal) {
+        Meal mealMem = mealMap.get(updatedMeal.getId());
         int testId = dateTimeWithIdMap.merge(updatedMeal.getDateTime(), updatedMeal.getId(), ((v1, v2) -> v1));
         // Checks similar date/time and ID pair presence to carry out the update operation
         // Проверяет наличие подобной пары дата/время и ID для проведения операции обновления
@@ -33,6 +34,11 @@ public class MealCrudMemoryServiceImp implements MealCrudMemoryService {
             // Checks replace ability and replace
             // Проверяет возможность замещения и замещает
             if (mealMap.replace(updatedMeal.getId(), updatedMeal) != null) {
+                if (!updatedMeal.getDateTime().equals(mealMem.getDateTime())) {
+                    // Deletes date/time and ID pair from CRUD Memory if a meal date/time was changed
+                    // Удаляет пару дата/время и ID из CRUD памяти, если дата/время еды была изменена
+                    dateTimeWithIdMap.remove(mealMem.getDateTime());
+                }
                 LOG.debug("updated a meal in the CRUD memory");
 
             } else {

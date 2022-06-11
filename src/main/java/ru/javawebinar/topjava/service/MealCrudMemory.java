@@ -13,12 +13,14 @@ import java.util.stream.Collectors;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class MealCrudMemory {
-    // This is the Memory of Meal CRUD
+    // This is the CRUD Memory of Meal CRUD
     // Это CRUD память еды
     private static Map<Integer, Meal> storageById;
-    // This is the Memory of Meal date and time with ID for date and time presence checking
-    // Это память пар дата/время и ID для проверки совпадения даты/времены
+    // This is the CRUD Memory of Meal date and time with ID for date and time presence checking
+    // Provides the fast search of date/time in CRUD memory
+    // Это CRUD память пар дата/время и ID для проверки совпадения даты/времены
     // обрабатываемого объекта с датой временем объекта находящемся в CRUD памяти
+    // Обеспечивает быстрый поиск даты/времени в CRUD памяти
     private static Map<LocalDateTime, Integer> storageDateTimeWithId;
     // This is the Meal ID generator
     // Это генератор ID
