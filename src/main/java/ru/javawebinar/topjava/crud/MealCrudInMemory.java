@@ -22,7 +22,7 @@ public class MealCrudInMemory implements MealCrud {
     private static final Map<Integer, Meal> storageById;
 
     static {
-        log.debug("initializes the Meals Memory and Fast Search Memory of the CRUD Memory");
+        log.debug("initializes the storage");
         final List<Meal> initMeals = new ArrayList<>(Arrays.asList(
                 new Meal(crudId.incrementAndGet(),
                         LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500),
@@ -41,12 +41,12 @@ public class MealCrudInMemory implements MealCrud {
         ));
         storageById = new ConcurrentHashMap<>(initMeals.stream()
                 .collect(Collectors.toMap(Meal::getId, Function.identity())));
-        log.debug("initialized the Meals Memory and Fast Search Memory of the CRUD Memory");
+        log.debug("initialized the storage");
     }
 
     @Override
     public Meal add(Meal meal) {
-        log.debug("adds a meal to the CRUD memory");
+        log.debug("adds a meal to the storage");
         int id = crudId.incrementAndGet();
         return storageById.put(id, new Meal(id,
                 meal.getDateTime(), meal.getDescription(), meal.getCalories()));
@@ -54,7 +54,7 @@ public class MealCrudInMemory implements MealCrud {
 
     @Override
     public Meal update(Meal meal) {
-        log.debug("updates a meal in the CRUD memory");
+        log.debug("updates a meal in the storage");
         return storageById.replace(meal.getId(), meal);
     }
 
@@ -66,13 +66,13 @@ public class MealCrudInMemory implements MealCrud {
 
     @Override
     public void delete(int id) {
-        log.debug("deletes a meal from the CRUD memory");
+        log.debug("deletes a meal from the storage");
         storageById.remove(id);
     }
 
     @Override
     public List<Meal> getAll() {
-        log.debug("returns a list of meals from the CRUD memory");
+        log.debug("returns a list of meals from the storage");
         return new ArrayList<>(storageById.values());
     }
 }
