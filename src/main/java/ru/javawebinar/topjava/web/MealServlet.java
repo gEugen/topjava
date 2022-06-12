@@ -24,7 +24,12 @@ public class MealServlet extends HttpServlet {
     private static final String MEALS_JSP = "/meals.jsp";
     private static final String SERVLET_URL = "meals";
     private static final Logger log = getLogger(MealServlet.class);
-    private final MealCrudAccess crudAccess = new MealCrudAccessImp();
+    private MealCrudAccess crudAccess;
+
+    @Override
+    public void init() throws ServletException {
+        crudAccess = new MealCrudAccessImp();
+    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
