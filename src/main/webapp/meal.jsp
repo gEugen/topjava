@@ -27,10 +27,11 @@
 <body>
 <h3><a href="index.html">Home</a></h3>
 <hr>
-<h2>Edit meal</h2>
+<jsp:useBean id="headName" scope="request" type="java.lang.String"/>
+<h2>${headName}</h2>
 <form method = "POST" action="meals">
     <table>
-        <jsp:useBean id="meal" scope="request" type="java.lang.Object"/>
+        <jsp:useBean id="meal" scope="request" type="ru.javawebinar.topjava.model.Meal"/>
         <td style="display: none"><label>
             <input name="id" type="text" value="${meal.id}"/>
         </label></td>
