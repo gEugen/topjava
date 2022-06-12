@@ -39,20 +39,17 @@ public class MealStorageAccessImp implements MealStorageAccess {
     }
 
     @Override
-    public void add(Meal meal) {
+    public Meal add(Meal meal) {
         log.debug("adds a meal to the CRUD memory");
-
         int id = crudId.incrementAndGet();
         int testId = storageIdByDateTime.merge(meal.getDateTime(), id, ((v1, v2) -> v1));
-
         if (testId == id) {
-            Meal newCrudMeal = new Meal(id, meal.getDateTime(), meal.getDescription(), meal.getCalories());
-            storageById.put(id, newCrudMeal);
-            log.debug("added a new meal to CRUD memory");
-
+            Meal newMeal = new Meal(id, meal.getDateTime(), meal.getDescription(), meal.getCalories());
+            storageById.put(id, newMeal);
+            return newMeal;
         } else {
-            rollbackCrudId(id);
             log.debug("didn't add a new meal with similar date/time");
+            return meal;
         }
     }
 
@@ -92,14 +89,5 @@ public class MealStorageAccessImp implements MealStorageAccess {
     public List<Meal> getAll() {
         log.debug("returns a list of meals from the CRUD memory");
         return new ArrayList<>(storageById.values());
-    }
-
-    private void rollbackCrudId(int id) {
-        log.debug("tries to decrement the ID counter by one");
-        if (crudId.compareAndSet(id, --id)) {
-            log.debug("the ID counter was decremented by one");
-        } else {
-            log.debug("didn't rollback the ID Counter to the old value, the counter was changed by another thread");
-        }
     }
 }
