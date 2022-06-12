@@ -32,7 +32,8 @@ public class MealServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
         log.debug("redirects to meal");
         req.setCharacterEncoding("UTF-8");
         String action = req.getParameter("action");
@@ -57,7 +58,8 @@ public class MealServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
         log.debug("redirects to meals");
         String forward = MEALS_JSP;
         String action = req.getParameter("action");
