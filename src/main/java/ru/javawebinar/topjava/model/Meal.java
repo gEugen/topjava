@@ -41,17 +41,4 @@ public class Meal {
     public Integer getId() {
         return id;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Meal)) return false;
-        Meal meal = (Meal) o;
-        return Objects.equals(getId(), meal.getId()) && getDateTime().equals(meal.getDateTime());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getDateTime());
-    }
 }

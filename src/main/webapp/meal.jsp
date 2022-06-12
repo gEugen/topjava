@@ -7,7 +7,7 @@
 </head>
 <style>
     TABLE {
-        width: 500px; /* table width */
+        width: 500px;
         border-collapse: collapse;
     }
     .col1 {
@@ -17,7 +17,7 @@
         width: 79%;
     }
     TD, TH {
-        padding: 2px; /* field around width */
+        padding: 2px;
         border: 1px solid black;
     }
     TH {
