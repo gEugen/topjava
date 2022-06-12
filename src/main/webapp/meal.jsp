@@ -49,7 +49,7 @@
         <tr style = "background: lightgrey">
             <td colspan="2">Calories</td>
             <td colspan="2"><label>
-                <input name="calories" size="50" type="text" value="${meal.calories}"/>
+                <input name="calories" size="50" type="number" value="${meal.calories}"/>
             </label></td>
         </tr>
     </table>
