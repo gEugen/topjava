@@ -38,7 +38,7 @@ public class Meal {
         return dateTime.toLocalTime();
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -47,7 +47,7 @@ public class Meal {
         if (this == o) return true;
         if (!(o instanceof Meal)) return false;
         Meal meal = (Meal) o;
-        return getId() == meal.getId() && getDateTime().equals(meal.getDateTime());
+        return Objects.equals(getId(), meal.getId()) && getDateTime().equals(meal.getDateTime());
     }
 
     @Override

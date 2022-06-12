@@ -34,17 +34,17 @@ public class MealServlet extends HttpServlet {
 
         if ("save".equals(action)) {
             log.debug("chooses doPost action branch");
-            int id = Integer.parseInt(req.getParameter("id"));
             LocalDateTime dateTime = LocalDateTime.parse(req.getParameter("date"));
             String description = req.getParameter("description");
             int calories = Integer.parseInt(req.getParameter("calories"));
 
-            if (getAction(id).equals("add")) {
-                log.debug("switched to doPost add branch");
-                crudAccess.add(new Meal(id, dateTime, description, calories));
-            } else {
+            try {
+                int id = Integer.parseInt(req.getParameter("id"));
                 log.debug("switched to doPost update branch");
                 crudAccess.update(new Meal(id, dateTime, description, calories));
+            } catch (NumberFormatException e) {
+                log.debug("switched to doPost add branch");
+                crudAccess.add(new Meal(null, dateTime, description, calories));
             }
         }
 
@@ -98,12 +98,8 @@ public class MealServlet extends HttpServlet {
     }
 
     private Meal getDefaultMealTo() {
-        return new Meal(0, LocalDateTime.of(LocalDateTime.now().toLocalDate().getYear(),
+        return new Meal(null, LocalDateTime.of(LocalDateTime.now().toLocalDate().getYear(),
                 LocalDateTime.now().getMonth(), LocalDateTime.now().getDayOfMonth(),
                 0, 0), "", 0);
-    }
-
-    private String getAction(int id) {
-        return id == 0 ? "add" : "update";
     }
 }
