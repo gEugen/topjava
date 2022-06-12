@@ -33,8 +33,10 @@ public class MealStorageAccessImp implements MealStorageAccess {
                 new Meal(crudId.incrementAndGet(), LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500),
                 new Meal(crudId.incrementAndGet(), LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410)
         ));
-        storageById = new ConcurrentHashMap<>(initMeals.stream().collect(Collectors.toMap(Meal::getId, Function.identity())));
-        storageIdByDateTime = new ConcurrentHashMap<>(initMeals.stream().collect(Collectors.toMap(Meal::getDateTime, Meal::getId)));
+        storageById = new ConcurrentHashMap<>(initMeals.stream()
+                .collect(Collectors.toMap(Meal::getId, Function.identity())));
+        storageIdByDateTime = new ConcurrentHashMap<>(initMeals.stream()
+                .collect(Collectors.toMap(Meal::getDateTime, Meal::getId)));
         log.debug("initialized the Meals Memory and Fast Search Memory of the CRUD Memory");
     }
 
@@ -54,23 +56,22 @@ public class MealStorageAccessImp implements MealStorageAccess {
     }
 
     @Override
-    public void update(Meal meal) {
+    public Meal update(Meal meal) {
         log.debug("updates a meal in the CRUD memory");
-        Meal mealMem = storageById.get(meal.getId());
-        int testId = storageIdByDateTime.merge(meal.getDateTime(), meal.getId(), ((v1, v2) -> v1));
-
-        if (testId == meal.getId()) {
-            if (storageById.replace(meal.getId(), meal) != null) {
-                if (!meal.getDateTime().equals(mealMem.getDateTime())) {
-                    storageIdByDateTime.remove(mealMem.getDateTime());
-                }
-                log.debug("updated a meal in the CRUD memory");
+        int id = meal.getId();
+        int testId = storageIdByDateTime.merge(meal.getDateTime(), id, ((v1, v2) -> v1));
+        if (testId == id) {
+            Meal oldMeal = storageById.get(id);
+            storageById.replace(id, meal);
+            if (!meal.getDateTime().equals(oldMeal.getDateTime())) {
+                storageIdByDateTime.remove(oldMeal.getDateTime());
+                return oldMeal;
             } else {
-                storageIdByDateTime.remove(meal.getDateTime());
-                log.debug("did not updated a non-existent meal");
+                return meal;
             }
         }
         log.debug("didn't updated a meal with a similar date/time of a meal in the CRUD memory");
+        return null;
     }
 
     @Override

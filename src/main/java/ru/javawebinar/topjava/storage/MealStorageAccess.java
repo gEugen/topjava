@@ -7,7 +7,7 @@ import java.util.List;
 public interface MealStorageAccess {
     Meal add(Meal meal);
 
-    void update(Meal meal);
+    Meal update(Meal meal);
 
     Meal get(int id);
 
