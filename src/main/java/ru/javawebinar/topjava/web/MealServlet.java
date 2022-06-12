@@ -2,8 +2,8 @@ package ru.javawebinar.topjava.web;
 
 import org.slf4j.Logger;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.storage.MealStorageAccess;
-import ru.javawebinar.topjava.storage.MealStorageAccessImp;
+import ru.javawebinar.topjava.crud.MealCrud;
+import ru.javawebinar.topjava.crud.MealCrudInMemory;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import javax.servlet.RequestDispatcher;
@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -23,11 +24,11 @@ public class MealServlet extends HttpServlet {
     private static final String MEALS_JSP = "/meals.jsp";
     private static final String SERVLET_URL = "meals";
     private static final Logger log = getLogger(MealServlet.class);
-    private MealStorageAccess crudAccess;
+    private MealCrud crud;
 
     @Override
     public void init() throws ServletException {
-        crudAccess = new MealStorageAccessImp();
+        crud = new MealCrudInMemory();
     }
 
     @Override
@@ -45,10 +46,10 @@ public class MealServlet extends HttpServlet {
             try {
                 int id = Integer.parseInt(req.getParameter("id"));
                 log.debug("switched to doPost update branch");
-                crudAccess.update(new Meal(id, dateTime, description, calories));
+                crud.update(new Meal(id, dateTime, description, calories));
             } catch (NumberFormatException e) {
                 log.debug("switched to doPost add branch");
-                crudAccess.add(new Meal(null, dateTime, description, calories));
+                crud.add(new Meal(null, dateTime, description, calories));
             }
         }
 
@@ -77,18 +78,18 @@ public class MealServlet extends HttpServlet {
                 int id = Integer.parseInt(req.getParameter("id"));
                 forward = MEAL_JSP;
                 req.setAttribute("headName", "Edit meal");
-                req.setAttribute("meal", crudAccess.get(id));
+                req.setAttribute("meal", crud.get(id));
                 break;
 
             case "delete":
                 log.debug("switched to doGet delete branch");
-                crudAccess.delete(Integer.parseInt(req.getParameter("id")));
+                crud.delete(Integer.parseInt(req.getParameter("id")));
                 resp.sendRedirect(SERVLET_URL);
                 return;
 
             default:
                 log.debug("switched to doGet default branch");
-                req.setAttribute("mealsTo", MealsUtil.filteredByStreams(crudAccess.getAll(),
+                req.setAttribute("mealsTo", MealsUtil.filteredByStreams(crud.getAll(),
                         LocalTime.MIN, LocalTime.MAX, CALORIES_PER_DAY));
                 break;
         }
@@ -98,8 +99,6 @@ public class MealServlet extends HttpServlet {
     }
 
     private Meal getDefaultMealTo() {
-        return new Meal(null, LocalDateTime.of(LocalDateTime.now().toLocalDate().getYear(),
-                LocalDateTime.now().getMonth(), LocalDateTime.now().getDayOfMonth(),
-                0, 0), "", 0);
+        return new Meal(null, LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 0);
     }
 }

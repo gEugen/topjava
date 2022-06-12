@@ -1,4 +1,4 @@
-package ru.javawebinar.topjava.storage;
+package ru.javawebinar.topjava.crud;
 
 import org.slf4j.Logger;
 import ru.javawebinar.topjava.model.Meal;
@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-public class MealStorageAccessImp implements MealStorageAccess {
-    private static final Logger log = getLogger(MealStorageAccessImp.class);
+public class MealCrudInMemory implements MealCrud {
+    private static final Logger log = getLogger(MealCrudInMemory.class);
     private static final AtomicInteger crudId = new AtomicInteger(0);
     private static final Map<Integer, Meal> storageById;
     private static final Map<LocalDateTime, Integer> storageIdByDateTime;

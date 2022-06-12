@@ -1,10 +1,10 @@
-package ru.javawebinar.topjava.storage;
+package ru.javawebinar.topjava.crud;
 
 import ru.javawebinar.topjava.model.Meal;
 
 import java.util.List;
 
-public interface MealStorageAccess {
+public interface MealCrud {
     Meal add(Meal meal);
 
     Meal update(Meal meal);
