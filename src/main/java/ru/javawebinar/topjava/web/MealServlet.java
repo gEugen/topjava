@@ -29,33 +29,23 @@ public class MealServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         log.debug("redirects to meal");
-
         req.setCharacterEncoding("UTF-8");
         String action = req.getParameter("action");
-        if (action == null) {
-            action = "";
-        }
 
-        if (action.equals("save")) {
+        if ("save".equals(action)) {
             log.debug("chooses doPost action branch");
             int id = Integer.parseInt(req.getParameter("id"));
             LocalDateTime dateTime = LocalDateTime.parse(req.getParameter("date"));
             String description = req.getParameter("description");
             int calories = Integer.parseInt(req.getParameter("calories"));
 
-            switch (getAction(id)) {
-                case "add":
-                    log.debug("switched to doPost add branch");
-                    crudAccess.add(new Meal(id, dateTime, description, calories));
-                    break;
-
-                case "update":
-                    log.debug("switched to doPost update branch");
-                    crudAccess.update(new Meal(id, dateTime, description, calories));
-                    break;
+            if (getAction(id).equals("add")) {
+                log.debug("switched to doPost add branch");
+                crudAccess.add(new Meal(id, dateTime, description, calories));
+            } else {
+                log.debug("switched to doPost update branch");
+                crudAccess.update(new Meal(id, dateTime, description, calories));
             }
-        } else {
-            log.debug("switched to cancel or no action doPost branch");
         }
 
         resp.sendRedirect("meals");
