@@ -1,10 +1,9 @@
-package ru.javawebinar.topjava.service;
+package ru.javawebinar.topjava.repository;
 
 import org.slf4j.Logger;
 import ru.javawebinar.topjava.model.Meal;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.Month;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,10 +12,10 @@ import java.util.stream.Collectors;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-class MealCrudMemory {
+class MealCrud {
     // This is the Meal Memory of the CRUD Memory
     // Это Память еды CRUD памяти
-    private static Map<Integer, Meal> storageMealById;
+    private static Map<Integer, Meal> storageById;
     // This is the Fast Search Memory of CRUD Memory for the meal date and time with ID presence checking
     // Provides the fast search of date/time in CRUD memory
     // Это Память быстрого поиска CRUD памяти для проверки совпадения даты/времены
@@ -26,14 +25,14 @@ class MealCrudMemory {
     // This is the Meal ID generator
     // Это генератор ID
     private static IdGenerator idGenerator;
-    private static final Logger LOG = getLogger(MealCrudMemory.class);
+    private static final Logger log = getLogger(MealCrud.class);
 
     private static class CrudMemoryHolder {
-        public static final MealCrudMemory HOLDER_INSTANCE = new MealCrudMemory();
+        public static final MealCrud HOLDER_INSTANCE = new MealCrud();
     }
 
-    private MealCrudMemory() {
-        LOG.debug("initializes the Meals Memory and Fast Search Memory of the CRUD Memory");
+    private MealCrud() {
+        log.debug("initializes the Meals Memory and Fast Search Memory of the CRUD Memory");
         idGenerator = IdGenerator.getInstance();
         final List<Meal> initMeals = new ArrayList<>(Arrays.asList(
                 new Meal(idGenerator.setMealId(), LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500),
@@ -44,19 +43,19 @@ class MealCrudMemory {
                 new Meal(idGenerator.setMealId(), LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500),
                 new Meal(idGenerator.setMealId(), LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410)
         ));
-        storageMealById = new ConcurrentHashMap<>(initMeals.stream().collect(Collectors.toMap(Meal::getId, Function.identity())));
+        storageById = new ConcurrentHashMap<>(initMeals.stream().collect(Collectors.toMap(Meal::getId, Function.identity())));
         storageIdByDateTime = new ConcurrentHashMap<>(initMeals.stream().collect(Collectors.toMap(Meal::getDateTime, Meal::getId)));
-        LOG.debug("initialized the Meals Memory and Fast Search Memory of the CRUD Memory");
+        log.debug("initialized the Meals Memory and Fast Search Memory of the CRUD Memory");
     }
 
     // Initializes CRUD Memory
     // Инициализирует CRUD память
-    static MealCrudMemory getInstance() {
+    static MealCrud getInstance() {
         return CrudMemoryHolder.HOLDER_INSTANCE;
     }
 
-    Map<Integer, Meal> getMealStorage() {
-        return storageMealById;
+    Map<Integer, Meal> getStorage() {
+        return storageById;
     }
 
     Map<LocalDateTime, Integer> getDateTimeStorage() {

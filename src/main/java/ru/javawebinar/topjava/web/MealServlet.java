@@ -2,8 +2,8 @@ package ru.javawebinar.topjava.web;
 
 import org.slf4j.Logger;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.service.MealCrudMemoryService;
-import ru.javawebinar.topjava.service.MealCrudMemoryServiceImp;
+import ru.javawebinar.topjava.repository.MealCrudAccess;
+import ru.javawebinar.topjava.repository.MealCrudAccessImp;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import javax.servlet.RequestDispatcher;
@@ -22,13 +22,13 @@ public class MealServlet extends HttpServlet {
     private static final int CALORIES_PER_DAY = 2000;
     private static final String MEAL_JSP = "/meal.jsp";
     private static final String MEALS_JSP = "/meals.jsp";
-    private static final String MEAL_SERVLET_URL = "meals";
-    private static final Logger LOG = getLogger(MealServlet.class);
-    private final MealCrudMemoryService crudService = new MealCrudMemoryServiceImp();
+    private static final String SERVLET_URL = "meals";
+    private static final Logger log = getLogger(MealServlet.class);
+    private final MealCrudAccess crudAccess = new MealCrudAccessImp();
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        LOG.debug("redirects to meal");
+        log.debug("redirects to meal");
 
         req.setCharacterEncoding("UTF-8");
         String action = req.getParameter("action");
@@ -37,25 +37,25 @@ public class MealServlet extends HttpServlet {
         }
 
         if (action.equals("save")) {
-            LOG.debug("chooses doPost action branch");
-            int mealId = Integer.parseInt(req.getParameter("id"));
+            log.debug("chooses doPost action branch");
+            int id = Integer.parseInt(req.getParameter("id"));
             LocalDateTime dateTime = LocalDateTime.parse(req.getParameter("date"));
             String description = req.getParameter("description");
             int calories = Integer.parseInt(req.getParameter("calories"));
 
-            switch (getAction(mealId)) {
+            switch (getAction(id)) {
                 case "add":
-                    LOG.debug("switched to doPost add branch");
-                    crudService.addMeal(new Meal(mealId, dateTime, description, calories));
+                    log.debug("switched to doPost add branch");
+                    crudAccess.add(new Meal(id, dateTime, description, calories));
                     break;
 
                 case "update":
-                    LOG.debug("switched to doPost update branch");
-                    crudService.updateMeal(new Meal(mealId, dateTime, description, calories));
+                    log.debug("switched to doPost update branch");
+                    crudAccess.update(new Meal(id, dateTime, description, calories));
                     break;
             }
         } else {
-            LOG.debug("switched to cancel or no action doPost branch");
+            log.debug("switched to cancel or no action doPost branch");
         }
 
         resp.sendRedirect("meals");
@@ -63,7 +63,7 @@ public class MealServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        LOG.debug("redirects to meals");
+        log.debug("redirects to meals");
         String forward = MEALS_JSP;
         String action = req.getParameter("action");
         if (action == null) {
@@ -72,33 +72,32 @@ public class MealServlet extends HttpServlet {
 
         switch (action) {
             case "add":
-                LOG.debug("switched to doGet add branch");
+                log.debug("switched to doGet add branch");
                 forward = MEAL_JSP;
                 req.setAttribute("meal", getDefaultMealTo());
                 break;
 
             case "update":
-                LOG.debug("switched to doGet update branch");
-                String s = req.getParameter("id");
+                log.debug("switched to doGet update branch");
                 int id = Integer.parseInt(req.getParameter("id"));
                 forward = MEAL_JSP;
-                req.setAttribute("meal", crudService.getMeal(id));
+                req.setAttribute("meal", crudAccess.get(id));
                 break;
 
             case "delete":
-                LOG.debug("switched to doGet delete branch");
+                log.debug("switched to doGet delete branch");
                 id = Integer.parseInt(req.getParameter("id"));
                 LocalDateTime dateTime = LocalDateTime.parse(req.getParameter("date"));
                 String description = req.getParameter("description");
                 int calories = Integer.parseInt(req.getParameter("calories"));
-                crudService.deleteMeal(new Meal(id, dateTime, description, calories));
-                resp.sendRedirect(MEAL_SERVLET_URL);
+                crudAccess.delete(new Meal(id, dateTime, description, calories));
+                resp.sendRedirect(SERVLET_URL);
                 return;
 
             default:
-                LOG.debug("switched to doGet default branch");
-                List<Meal> meals = crudService.getAllMeals();
-                req.setAttribute("mealsTo", MealsUtil.filteredByStreams(meals, LocalTime.MIN, LocalTime.MAX, CALORIES_PER_DAY));
+                log.debug("switched to doGet default branch");
+                req.setAttribute("mealsTo", MealsUtil.filteredByStreams(crudAccess.getAll(),
+                        LocalTime.MIN, LocalTime.MAX, CALORIES_PER_DAY));
                 break;
         }
 
@@ -107,11 +106,12 @@ public class MealServlet extends HttpServlet {
     }
 
     private Meal getDefaultMealTo() {
-        return new Meal(0, LocalDateTime.of(LocalDateTime.now().toLocalDate().getYear(), LocalDateTime.now().getMonth(),
-                LocalDateTime.now().getDayOfMonth(), 0, 0), "", 0);
+        return new Meal(0, LocalDateTime.of(LocalDateTime.now().toLocalDate().getYear(),
+                LocalDateTime.now().getMonth(), LocalDateTime.now().getDayOfMonth(),
+                0, 0), "", 0);
     }
 
-    private String getAction(Integer mealId) {
-        return mealId == 0 ? "add" : "update";
+    private String getAction(int id) {
+        return id == 0 ? "add" : "update";
     }
 }
