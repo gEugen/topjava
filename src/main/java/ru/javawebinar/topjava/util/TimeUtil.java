@@ -1,6 +1,5 @@
 package ru.javawebinar.topjava.util;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public class TimeUtil {
@@ -8,7 +7,4 @@ public class TimeUtil {
         return lt.compareTo(startTime) >= 0 && lt.compareTo(endTime) < 0;
     }
 
-    public static LocalDateTime getDateTime(String dateTime) {
-        return LocalDateTime.parse(dateTime);
-    }
 }

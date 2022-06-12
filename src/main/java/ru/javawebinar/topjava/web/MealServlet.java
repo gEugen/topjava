@@ -2,11 +2,9 @@ package ru.javawebinar.topjava.web;
 
 import org.slf4j.Logger;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.model.MealTo;
 import ru.javawebinar.topjava.service.MealCrudMemoryService;
 import ru.javawebinar.topjava.service.MealCrudMemoryServiceImp;
 import ru.javawebinar.topjava.util.MealsUtil;
-import ru.javawebinar.topjava.util.TimeUtil;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -21,8 +19,6 @@ import java.util.List;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class MealServlet extends HttpServlet {
-    static final LocalTime FILTER_LOWER_LIMIT_TIME = LocalTime.MIN;
-    static final LocalTime FILTER_UPPER_LIMIT_TIME = LocalTime.MAX;
     static final int CALORIES_PER_DAY = 2000;
     static final String MEAL_JSP = "/meal.jsp";
     static final String MEALS_JSP = "/meals.jsp";
@@ -43,22 +39,21 @@ public class MealServlet extends HttpServlet {
         if (action.equals("save")) {
             LOG.debug("chooses doPost action branch");
             Integer mealId = Integer.parseInt(req.getParameter("id"));
-            LocalDateTime dateTime = TimeUtil.getDateTime(req.getParameter("date"));
+            LocalDateTime dateTime = LocalDateTime.parse(req.getParameter("date"));
             String description = req.getParameter("description");
             int calories = Integer.parseInt(req.getParameter("calories"));
 
-            switch (getAction(mealId)){
+            switch (getAction(mealId)) {
                 case "add":
                     LOG.debug("switched to doPost add branch");
-                    crudService.addMeal(getFormMeal(mealId, dateTime, description, calories));
+                    crudService.addMeal(new Meal(mealId, dateTime, description, calories));
                     break;
 
                 case "update":
                     LOG.debug("switched to doPost update branch");
-                    crudService.updateMeal(getFormMeal(mealId, dateTime, description, calories));
+                    crudService.updateMeal(new Meal(mealId, dateTime, description, calories));
                     break;
             }
-
         } else {
             LOG.debug("switched to cancel or no action doPost branch");
         }
@@ -69,7 +64,6 @@ public class MealServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         LOG.debug("redirects to meals");
-
         String forward = MEALS_JSP;
         String action = req.getParameter("action");
         if (action == null) {
@@ -87,30 +81,24 @@ public class MealServlet extends HttpServlet {
                 LOG.debug("switched to doGet update branch");
                 String s = req.getParameter("id");
                 int id = Integer.parseInt(req.getParameter("id"));
-                Meal requestedMeal = crudService.getMeal(id);
                 forward = MEAL_JSP;
-                req.setAttribute("meal", requestedMeal);
+                req.setAttribute("meal", crudService.getMeal(id));
                 break;
 
             case "delete":
                 LOG.debug("switched to doGet delete branch");
                 id = Integer.parseInt(req.getParameter("id"));
-                LocalDateTime dateTime = TimeUtil.getDateTime(req.getParameter("date"));
+                LocalDateTime dateTime = LocalDateTime.parse(req.getParameter("date"));
                 String description = req.getParameter("description");
                 int calories = Integer.parseInt(req.getParameter("calories"));
-                Meal deletedMeal = getFormMeal(id, dateTime, description, calories);
-                crudService.deleteMeal(deletedMeal);
+                crudService.deleteMeal(new Meal(id, dateTime, description, calories));
                 resp.sendRedirect(MEAL_SERVLET_URL);
                 return;
 
             default:
                 LOG.debug("switched to doGet default branch");
-                LocalTime startTime = FILTER_LOWER_LIMIT_TIME;
-                LocalTime endTime = FILTER_UPPER_LIMIT_TIME;
-                int caloriesPerDay = CALORIES_PER_DAY;
                 List<Meal> meals = crudService.getAllMeals();
-                List<MealTo> mealsTo = MealsUtil.filteredByStreams(meals, startTime, endTime, caloriesPerDay);
-                req.setAttribute("mealsTo", mealsTo);
+                req.setAttribute("mealsTo", MealsUtil.filteredByStreams(meals, LocalTime.MIN, LocalTime.MAX, CALORIES_PER_DAY));
                 break;
         }
 
@@ -119,13 +107,8 @@ public class MealServlet extends HttpServlet {
     }
 
     private Meal getDefaultMealTo() {
-        return new Meal(0, LocalDateTime.of(LocalDateTime.now().toLocalDate().getYear(),
-                LocalDateTime.now().getMonth(), LocalDateTime.now().getDayOfMonth(),
-                0, 0), "", 0);
-    }
-
-    private Meal getFormMeal(Integer mealId, LocalDateTime dateTime, String description, int calories) {
-        return new Meal(mealId, dateTime, description, calories);
+        return new Meal(0, LocalDateTime.of(LocalDateTime.now().toLocalDate().getYear(), LocalDateTime.now().getMonth(),
+                LocalDateTime.now().getDayOfMonth(), 0, 0), "", 0);
     }
 
     private String getAction(Integer mealId) {
