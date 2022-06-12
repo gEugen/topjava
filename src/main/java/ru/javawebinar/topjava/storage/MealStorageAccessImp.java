@@ -1,4 +1,4 @@
-package ru.javawebinar.topjava.crud;
+package ru.javawebinar.topjava.storage;
 
 import org.slf4j.Logger;
 import ru.javawebinar.topjava.model.Meal;
@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-public class MealCrudAccessImp implements MealCrudAccess {
-    private static final Logger log = getLogger(MealCrudAccessImp.class);
+public class MealStorageAccessImp implements MealStorageAccess {
+    private static final Logger log = getLogger(MealStorageAccessImp.class);
     private static final AtomicInteger crudId = new AtomicInteger(0);
     private static final Map<Integer, Meal> storageById;
     private static final Map<LocalDateTime, Integer> storageIdByDateTime;
@@ -83,14 +83,9 @@ public class MealCrudAccessImp implements MealCrudAccess {
     }
 
     @Override
-    public void delete(Meal meal) {
+    public void delete(int id) {
         log.debug("deletes a meal from the CRUD memory");
-        if (storageById.remove(meal.getId(), meal)) {
-            storageIdByDateTime.remove(meal.getDateTime(), meal.getId());
-            log.debug("deleted a meal from the CRUD memory");
-        } else {
-            log.debug("didn't find such meal for delete from the CRUD memory");
-        }
+        storageById.remove(id);
     }
 
     @Override

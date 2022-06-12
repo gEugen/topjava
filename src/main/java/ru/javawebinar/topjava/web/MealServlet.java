@@ -2,8 +2,8 @@ package ru.javawebinar.topjava.web;
 
 import org.slf4j.Logger;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.crud.MealCrudAccess;
-import ru.javawebinar.topjava.crud.MealCrudAccessImp;
+import ru.javawebinar.topjava.storage.MealStorageAccess;
+import ru.javawebinar.topjava.storage.MealStorageAccessImp;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import javax.servlet.RequestDispatcher;
@@ -23,11 +23,11 @@ public class MealServlet extends HttpServlet {
     private static final String MEALS_JSP = "/meals.jsp";
     private static final String SERVLET_URL = "meals";
     private static final Logger log = getLogger(MealServlet.class);
-    private MealCrudAccess crudAccess;
+    private MealStorageAccess crudAccess;
 
     @Override
     public void init() throws ServletException {
-        crudAccess = new MealCrudAccessImp();
+        crudAccess = new MealStorageAccessImp();
     }
 
     @Override
@@ -82,11 +82,7 @@ public class MealServlet extends HttpServlet {
 
             case "delete":
                 log.debug("switched to doGet delete branch");
-                id = Integer.parseInt(req.getParameter("id"));
-                LocalDateTime dateTime = LocalDateTime.parse(req.getParameter("date"));
-                String description = req.getParameter("description");
-                int calories = Integer.parseInt(req.getParameter("calories"));
-                crudAccess.delete(new Meal(id, dateTime, description, calories));
+                crudAccess.delete(Integer.parseInt(req.getParameter("id")));
                 resp.sendRedirect(SERVLET_URL);
                 return;
 
