@@ -19,10 +19,10 @@ import java.util.List;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class MealServlet extends HttpServlet {
-    static final int CALORIES_PER_DAY = 2000;
-    static final String MEAL_JSP = "/meal.jsp";
-    static final String MEALS_JSP = "/meals.jsp";
-    static final String MEAL_SERVLET_URL = "meals";
+    private static final int CALORIES_PER_DAY = 2000;
+    private static final String MEAL_JSP = "/meal.jsp";
+    private static final String MEALS_JSP = "/meals.jsp";
+    private static final String MEAL_SERVLET_URL = "meals";
     private static final Logger LOG = getLogger(MealServlet.class);
     private final MealCrudMemoryService crudService = new MealCrudMemoryServiceImp();
 
@@ -38,7 +38,7 @@ public class MealServlet extends HttpServlet {
 
         if (action.equals("save")) {
             LOG.debug("chooses doPost action branch");
-            Integer mealId = Integer.parseInt(req.getParameter("id"));
+            int mealId = Integer.parseInt(req.getParameter("id"));
             LocalDateTime dateTime = LocalDateTime.parse(req.getParameter("date"));
             String description = req.getParameter("description");
             int calories = Integer.parseInt(req.getParameter("calories"));
