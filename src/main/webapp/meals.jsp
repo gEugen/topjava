@@ -67,9 +67,7 @@
             <td class="col2" style="text-align: left">${mealTo.description}</td>
             <td class="col3" style="text-align: center">${mealTo.calories}</td>
             <td class="col4" style="text-align: center"><a href="meals?action=update&id=${mealTo.id}">Update</a></td>
-            <td class="col5" style="text-align: center"><a
-                    href="meals?action=delete&id=${mealTo.id}&date=${mealTo.dateTime}&description=${mealTo.description}&calories=${mealTo.calories}">Delete</a>
-            </td>
+            <td class="col5" style="text-align: center"><a href="meals?action=delete&id=${mealTo.id}">Delete</a></td>
         </tr>
     </c:forEach>
     </tbody>
