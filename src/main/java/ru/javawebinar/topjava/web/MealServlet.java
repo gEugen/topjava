@@ -3,7 +3,7 @@ package ru.javawebinar.topjava.web;
 import org.slf4j.Logger;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.crud.MealCrud;
-import ru.javawebinar.topjava.crud.MealCrudInMemory;
+import ru.javawebinar.topjava.crud.InMemoryMealCrud;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import javax.servlet.RequestDispatcher;
@@ -28,7 +28,7 @@ public class MealServlet extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        crud = new MealCrudInMemory();
+        crud = new InMemoryMealCrud();
     }
 
     @Override
