@@ -71,7 +71,6 @@ public class MealServlet extends HttpServlet {
             case "add":
                 log.debug("switched to doGet add branch");
                 forward = MEAL_JSP;
-                req.setAttribute("headName", "Add meal");
                 req.setAttribute("meal", getDefaultMealTo());
                 break;
 
@@ -79,7 +78,6 @@ public class MealServlet extends HttpServlet {
                 log.debug("switched to doGet update branch");
                 int id = Integer.parseInt(req.getParameter("id"));
                 forward = MEAL_JSP;
-                req.setAttribute("headName", "Edit meal");
                 req.setAttribute("meal", crud.get(id));
                 break;
 
