@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.regex.Pattern;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -24,6 +25,7 @@ public class MealServlet extends HttpServlet {
     private static final String MEALS_JSP = "/meals.jsp";
     private static final String SERVLET_URL = "meals";
     private static final Logger log = getLogger(MealServlet.class);
+    private final Pattern idPattern = Pattern.compile("\\d+");
     private MealCrud crud;
 
     @Override
@@ -36,22 +38,17 @@ public class MealServlet extends HttpServlet {
             throws ServletException, IOException {
         log.debug("redirects to meal");
         req.setCharacterEncoding("UTF-8");
-        String action = req.getParameter("action");
+        LocalDateTime dateTime = LocalDateTime.parse(req.getParameter("date"));
+        String description = req.getParameter("description");
+        int calories = Integer.parseInt(req.getParameter("calories"));
 
-        if ("save".equals(action)) {
-            log.debug("chooses doPost action branch");
-            LocalDateTime dateTime = LocalDateTime.parse(req.getParameter("date"));
-            String description = req.getParameter("description");
-            int calories = Integer.parseInt(req.getParameter("calories"));
-
-            try {
-                int id = Integer.parseInt(req.getParameter("id"));
-                log.debug("switched to doPost update branch");
-                crud.update(new Meal(id, dateTime, description, calories));
-            } catch (NumberFormatException e) {
-                log.debug("switched to doPost add branch");
-                crud.add(new Meal(null, dateTime, description, calories));
-            }
+        if (idPattern.matcher(req.getParameter("id")).matches()) {
+            log.debug("switched to doPost update branch");
+            int id = Integer.parseInt(req.getParameter("id"));
+            crud.update(new Meal(id, dateTime, description, calories));
+        } else {
+            log.debug("switched to doPost add branch");
+            crud.add(new Meal(null, dateTime, description, calories));
         }
 
         resp.sendRedirect("meals");

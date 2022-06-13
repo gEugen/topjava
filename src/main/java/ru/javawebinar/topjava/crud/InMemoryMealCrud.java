@@ -20,6 +20,7 @@ public class InMemoryMealCrud implements MealCrud {
     private final Map<Integer, Meal> storage;
 
     public InMemoryMealCrud() {
+        log.debug("initializes the meal storage");
         List<Meal> initMeals = Arrays.asList(
                 new Meal(null, LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500),
                 new Meal(null, LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000),
@@ -34,6 +35,7 @@ public class InMemoryMealCrud implements MealCrud {
         for (Meal meal : initMeals) {
             add(meal);
         }
+        log.debug("initialized the meal storage");
     }
 
     @Override

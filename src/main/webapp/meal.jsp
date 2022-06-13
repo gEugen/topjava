@@ -60,8 +60,8 @@
         </tr>
     </table>
     <p>
-        <input style="padding: 7px" type="submit" name="action" value="save"/>
-        <input style="padding: 7px" type="button" onclick="location.href ='meals'" name="action" value="cancel"/>
+        <input style="padding: 7px" type="submit" value="save"/>
+        <input style="padding: 7px" type="button" onclick="location.href ='meals'" value="cancel"/>
     </p>
 </form>
 </body>
