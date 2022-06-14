@@ -25,7 +25,6 @@ public class MealServlet extends HttpServlet {
     private static final String MEALS_JSP = "/meals.jsp";
     private static final String SERVLET_URL = "meals";
     private static final Logger log = getLogger(MealServlet.class);
-    private final Pattern idPattern = Pattern.compile("\\d+");
     private MealCrud crud;
 
     @Override
@@ -42,13 +41,13 @@ public class MealServlet extends HttpServlet {
         String description = req.getParameter("description");
         int calories = Integer.parseInt(req.getParameter("calories"));
 
-        if (idPattern.matcher(req.getParameter("id")).matches()) {
+        if (req.getParameter("id").equals("")) {
+            log.debug("switched to doPost add branch");
+            crud.add(new Meal(null, dateTime, description, calories));
+        } else {
             log.debug("switched to doPost update branch");
             int id = Integer.parseInt(req.getParameter("id"));
             crud.update(new Meal(id, dateTime, description, calories));
-        } else {
-            log.debug("switched to doPost add branch");
-            crud.add(new Meal(null, dateTime, description, calories));
         }
 
         resp.sendRedirect("meals");

@@ -21,6 +21,8 @@ public class InMemoryMealCrud implements MealCrud {
 
     public InMemoryMealCrud() {
         log.debug("initializes the meal storage");
+        crudId = new AtomicInteger();
+        storage = new ConcurrentHashMap<>();
         List<Meal> initMeals = Arrays.asList(
                 new Meal(null, LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500),
                 new Meal(null, LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000),
@@ -30,11 +32,7 @@ public class InMemoryMealCrud implements MealCrud {
                 new Meal(null, LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500),
                 new Meal(null, LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410)
         );
-        crudId = new AtomicInteger();
-        storage = new ConcurrentHashMap<>();
-        for (Meal meal : initMeals) {
-            add(meal);
-        }
+        initMeals.forEach(this::add);
         log.debug("initialized the meal storage");
     }
 
@@ -44,14 +42,13 @@ public class InMemoryMealCrud implements MealCrud {
         int id = crudId.incrementAndGet();
         Meal newMeal = new Meal(id, meal.getDateTime(), meal.getDescription(), meal.getCalories());
         storage.put(id, newMeal);
-        return newMeal;
+        return get(id);
     }
 
     @Override
     public Meal update(Meal meal) {
         log.debug("updates a meal in the storage");
-        storage.replace(meal.getId(), meal);
-        return meal;
+        return storage.replace(meal.getId(), meal) == null ? null : meal;
     }
 
     @Override
