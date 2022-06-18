@@ -16,7 +16,9 @@ import static ru.javawebinar.topjava.util.UserUtils.users;
 @Repository
 public class InMemoryUserRepository implements UserRepository {
     private static final Logger log = LoggerFactory.getLogger(InMemoryUserRepository.class);
+
     private final Map<Integer, User> repository;
+
     private final AtomicInteger counter = new AtomicInteger();
 
     public InMemoryUserRepository() {
@@ -35,6 +37,7 @@ public class InMemoryUserRepository implements UserRepository {
         log.info("save {}", user);
         if (user.isNew()) {
             user.setId(counter.incrementAndGet());
+            user.setRegistered(new Date());
             repository.put(user.getId(), user);
             return user;
         }

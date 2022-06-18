@@ -14,7 +14,7 @@ public class User extends AbstractNamedEntity {
 
     private boolean enabled = true;
 
-    private Date registered = new Date();
+    private Date registered;
 
     private Set<Role> roles;
 
@@ -41,6 +41,10 @@ public class User extends AbstractNamedEntity {
         this.email = email;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
     public void setPassword(String password) {
         this.password = password;
     }
@@ -51,6 +55,10 @@ public class User extends AbstractNamedEntity {
 
     public void setRegistered(Date registered) {
         this.registered = registered;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 
     public void setEnabled(boolean enabled) {
@@ -65,20 +73,12 @@ public class User extends AbstractNamedEntity {
         this.caloriesPerDay = caloriesPerDay;
     }
 
-    public boolean isEnabled() {
-        return enabled;
-    }
-
     public Set<Role> getRoles() {
         return roles;
     }
 
     public void setRoles(Collection<Role> roles) {
         this.roles = CollectionUtils.isEmpty(roles) ? EnumSet.noneOf(Role.class) : EnumSet.copyOf(roles);
-    }
-
-    public String getPassword() {
-        return password;
     }
 
     @Override
