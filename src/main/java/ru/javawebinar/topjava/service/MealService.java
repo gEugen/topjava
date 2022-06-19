@@ -4,10 +4,10 @@ import org.springframework.stereotype.Service;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 
+import java.time.LocalDate;
 import java.util.Collection;
 
-import static ru.javawebinar.topjava.util.ValidationUtil.checkNotMealValid;
-import static ru.javawebinar.topjava.util.ValidationUtil.checkNotMealValidById;
+import static ru.javawebinar.topjava.util.ValidationUtil.*;
 
 @Service
 public class MealService {
@@ -19,22 +19,24 @@ public class MealService {
     }
 
     public Meal create(Meal meal) {
+        checkNotValidAuthUserId(meal);
         return repository.save(meal);
     }
 
     public void delete(int id, int authUserId) {
-        checkNotMealValidById(repository.delete(id, authUserId), id, authUserId);
+        checkNotValidResultById(repository.delete(id, authUserId), id, authUserId);
     }
 
     public Meal get(int id, int authUserId) {
-        return checkNotMealValidById(repository.get(id, authUserId), id, authUserId);
+        return checkNotValidResultById(repository.get(id, authUserId), id, authUserId);
     }
 
-    public Collection<Meal> getAll(int authUserId) {
-        return repository.getAll(authUserId);
+    public Collection<Meal> getAll(int authUserId, LocalDate startDate, LocalDate endDate) {
+        return repository.getAll(authUserId, startDate, endDate);
     }
 
     public void update(Meal meal) {
-        checkNotMealValid(repository.save(meal), meal);
+        checkNotValidAuthUserId(meal);
+        checkNotValidResult(repository.save(meal), meal);
     }
 }

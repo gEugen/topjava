@@ -7,6 +7,8 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.MealsUtil;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +17,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+
+import static ru.javawebinar.topjava.util.DateTimeUtil.isBetweenHalfOpen;
 
 @Repository
 public class InMemoryMealRepository implements MealRepository {
@@ -39,13 +43,14 @@ public class InMemoryMealRepository implements MealRepository {
         }
 
         // handle case: update, but not present in storage
+        log.info("update meal with id={}", meal.getId());
         Meal updatedMeal = repository.computeIfPresent(
                 meal.getId(), (id, oldMeal) ->
-                        meal.getUserId().equals(oldMeal.getUserId()) ? meal : oldMeal);
+                        oldMeal.getUserId().equals(meal.getUserId()) ? meal : oldMeal);
 
         if (updatedMeal != null) {
             log.info("update meal with id={} by user with id={}", meal.getId(), meal.getUserId());
-            return meal.getUserId().equals(updatedMeal.getUserId()) ? meal : null;
+            return updatedMeal.getUserId().equals(meal.getUserId()) ? meal : null;
         } else {
             return null;
         }
@@ -79,10 +84,14 @@ public class InMemoryMealRepository implements MealRepository {
     }
 
     @Override
-    public List<Meal> getAll(int authUserId) {
+    public List<Meal> getAll(int authUserId, LocalDate startDate, LocalDate endDate) {
         log.info("get meals by user with id={}", authUserId);
+        LocalDateTime startLdt = startDate.atStartOfDay();
+        LocalDateTime endLdt = endDate.plusDays(1).atStartOfDay();
         return repository.values().stream()
-                .filter(meal -> meal.getUserId().equals(authUserId))
+                .filter(meal ->
+                        (meal.getUserId().equals(authUserId) && isBetweenHalfOpen(meal.getDateTime(), startLdt,
+                                endLdt)))
                 .sorted(Comparator.comparing(Meal::getDateTime).reversed())
                 .collect(Collectors.toList());
     }
