@@ -42,19 +42,24 @@ public class ValidationUtil {
         }
     }
 
-    public static <T> T checkNotMealValid(T object, Meal meal) {
-        checkNotMealOwnerOrPresence(object != null, meal.getId(), meal.getUserId());
+    public static <T> void checkNotValidResult(T object, Meal meal) {
+        checkNotOwnerOrPresence(object != null, meal.getId(), meal.getUserId());
+    }
+
+    public static <T> T checkNotValidResultById(T object, int mealId, int authUserId) {
+        checkNotOwnerOrPresence(object != null, mealId, authUserId);
         return object;
     }
 
-    public static <T> T checkNotMealValidById(T object, int mealId, int authUserId) {
-        checkNotMealOwnerOrPresence(object != null, mealId, authUserId);
-        return object;
-    }
-
-    public static void checkNotMealOwnerOrPresence(boolean owner, int mealId, int authUserId) {
-        if (!owner) {
+    public static void checkNotOwnerOrPresence(boolean valid, int mealId, int authUserId) {
+        if (!valid) {
             throw new NotFoundException("Meal with id=" + mealId + " isn't present or not owned by user with id=" + authUserId);
+        }
+    }
+
+    public static void checkNotValidAuthUserId(Meal meal) {
+        if (meal.getUserId() == null) {
+            throw new NotFoundException(meal + "must be with userId != null");
         }
     }
 }
