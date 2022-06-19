@@ -2,6 +2,7 @@ package ru.javawebinar.topjava.repository.inmemory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.MealsUtil;
@@ -15,6 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+@Repository
 public class InMemoryMealRepository implements MealRepository {
     private static final Logger log = LoggerFactory.getLogger(InMemoryMealRepository.class);
 
@@ -30,19 +32,19 @@ public class InMemoryMealRepository implements MealRepository {
     @Override
     public Meal save(Meal meal) {
         if (meal.isNew()) {
-            log.info("add meal with id={} by user with id={}", meal.getId(), meal.getUserId());
             meal.setId(counter.incrementAndGet());
+            log.info("add meal with id={} by user with id={}", meal.getId(), meal.getUserId());
             repository.put(meal.getId(), meal);
             return meal;
         }
 
         // handle case: update, but not present in storage
-        log.info("update meal with id={} by user with id={}", meal.getId(), meal.getUserId());
         Meal updatedMeal = repository.computeIfPresent(
                 meal.getId(), (id, oldMeal) ->
                         meal.getUserId().equals(oldMeal.getUserId()) ? meal : oldMeal);
 
         if (updatedMeal != null) {
+            log.info("update meal with id={} by user with id={}", meal.getId(), meal.getUserId());
             return meal.getUserId().equals(updatedMeal.getUserId()) ? meal : null;
         } else {
             return null;

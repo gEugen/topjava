@@ -1,45 +1,36 @@
 package ru.javawebinar.topjava.web.meal;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.to.MealTo;
-import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.util.List;
 
-import static ru.javawebinar.topjava.util.MealsUtil.getTos;
-import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
+@Controller
+public class MealRestController extends AbstractMealController {
 
-public class MealRestController {
-    protected final Logger log = LoggerFactory.getLogger(getClass());
-
-    private MealService service;
-
+    @Override
     public List<MealTo> getAll(int authUserId) {
-        log.info("getAll");
-        return getTos(service.getAll(authUserId), MealsUtil.DEFAULT_CALORIES_PER_DAY);
+        return super.getAll(authUserId);
     }
 
+    @Override
     public Meal get(int id, int authUserId) {
-        log.info("get {}", id);
-        return service.get(id, authUserId);
+        return super.get(id, authUserId);
     }
 
+    @Override
     public Meal create(Meal meal) {
-        log.info("create {}", meal);
-        checkNew(meal);
-        return service.create(meal);
+        return super.create(meal);
     }
 
+    @Override
     public void delete(int id, int authUserId) {
-        log.info("delete {}", id);
-        service.delete(id, authUserId);
+        super.delete(id, authUserId);
     }
 
+    @Override
     public void update(Meal meal, int authUserId) {
-        log.info("update {}", meal);
-        service.update(meal);
+        super.update(meal, authUserId);
     }
 }

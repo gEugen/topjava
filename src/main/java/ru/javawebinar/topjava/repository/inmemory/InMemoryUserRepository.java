@@ -38,10 +38,12 @@ public class InMemoryUserRepository implements UserRepository {
         if (user.isNew()) {
             user.setId(counter.incrementAndGet());
             user.setRegistered(new Date());
+            log.info("add {}", user);
             repository.put(user.getId(), user);
             return user;
         }
         // handle case: update, but not present in storage
+        log.info("update {}", user);
         return repository.computeIfPresent(user.getId(), (id, oldUser) -> user);
     }
 
