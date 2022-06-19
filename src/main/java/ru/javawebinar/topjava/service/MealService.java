@@ -24,7 +24,7 @@ public class MealService {
     }
 
     public void delete(int id, int authUserId) {
-        checkNotValidResultById(repository.delete(id, authUserId), id, authUserId);
+        checkNotOwnerOrPresence(repository.delete(id, authUserId), id, authUserId);
     }
 
     public Meal get(int id, int authUserId) {
