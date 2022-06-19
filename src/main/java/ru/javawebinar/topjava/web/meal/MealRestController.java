@@ -4,19 +4,25 @@ import org.springframework.stereotype.Controller;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.to.MealTo;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Controller
 public class MealRestController extends AbstractMealController {
 
     @Override
-    public List<MealTo> getAll(int authUserId) {
-        return super.getAll(authUserId);
+    public List<MealTo> getAll() {
+        return super.getAll();
     }
 
     @Override
-    public Meal get(int id, int authUserId) {
-        return super.get(id, authUserId);
+    public List<MealTo> getAll(LocalDate startDate, LocalDate endDate) {
+        return super.getAll(startDate, endDate);
+    }
+
+    @Override
+    public Meal get(int id) {
+        return super.get(id);
     }
 
     @Override
@@ -25,12 +31,12 @@ public class MealRestController extends AbstractMealController {
     }
 
     @Override
-    public void delete(int id, int authUserId) {
-        super.delete(id, authUserId);
+    public void delete(int id) {
+        super.delete(id);
     }
 
     @Override
-    public void update(Meal meal, int authUserId) {
-        super.update(meal, authUserId);
+    public void update(Meal meal, int id) {
+        super.update(meal, id);
     }
 }
