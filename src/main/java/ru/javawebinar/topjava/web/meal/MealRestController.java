@@ -5,6 +5,7 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.to.MealTo;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Controller
@@ -16,8 +17,8 @@ public class MealRestController extends AbstractMealController {
     }
 
     @Override
-    public List<MealTo> getAll(LocalDate startDate, LocalDate endDate) {
-        return super.getAll(startDate, endDate);
+    public List<MealTo> getAll(LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
+        return super.getAll(startDate, endDate, startTime, endTime);
     }
 
     @Override
