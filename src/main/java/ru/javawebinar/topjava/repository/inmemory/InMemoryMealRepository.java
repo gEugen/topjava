@@ -9,6 +9,7 @@ import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -87,7 +88,12 @@ public class InMemoryMealRepository implements MealRepository {
     public List<Meal> getAll(int authUserId, LocalDate startDate, LocalDate endDate) {
         log.info("get meals by user with id={}", authUserId);
         LocalDateTime startLdt = startDate.atStartOfDay();
-        LocalDateTime endLdt = endDate.plusDays(1).atStartOfDay();
+        LocalDateTime endLdt;
+        if (!endDate.isEqual(LocalDate.MAX)) {
+            endLdt = endDate.plusDays(1).atStartOfDay();
+        } else {
+            endLdt = endDate.atTime(LocalTime.MAX);
+        }
         return repository.values().stream()
                 .filter(meal ->
                         (meal.getUserId().equals(authUserId) && isBetweenHalfOpen(meal.getDateTime(), startLdt,
