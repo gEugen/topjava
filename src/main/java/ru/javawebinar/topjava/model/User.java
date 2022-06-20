@@ -14,7 +14,7 @@ public class User extends AbstractNamedEntity {
 
     private boolean enabled = true;
 
-    private Date registered;
+    private Date registered = new Date();
 
     private Set<Role> roles;
 
@@ -51,10 +51,6 @@ public class User extends AbstractNamedEntity {
 
     public Date getRegistered() {
         return registered;
-    }
-
-    public void setRegistered(Date registered) {
-        this.registered = registered;
     }
 
     public boolean isEnabled() {
