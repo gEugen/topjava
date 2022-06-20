@@ -57,8 +57,8 @@ public class ValidationUtil {
         }
     }
 
-    public static void checkNotValidAuthUserId(Meal meal) {
-        if (meal.getUserId() == null) {
+    public static void checkNotValidAuthUserId(Meal meal, Integer authUserId) {
+        if (authUserId == null) {
             throw new NotFoundException(meal + "must be with userId != null");
         }
     }

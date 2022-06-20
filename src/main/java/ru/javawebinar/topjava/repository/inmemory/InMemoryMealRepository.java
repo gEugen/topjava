@@ -31,13 +31,14 @@ public class InMemoryMealRepository implements MealRepository {
 
     public InMemoryMealRepository() {
         this.repository = new ConcurrentHashMap<>();
-        MealsUtil.meals.forEach(this::save);
+        MealsUtil.meals.forEach(meal -> save(meal, meal.getUserId()));
     }
 
     @Override
-    public Meal save(Meal meal) {
+    public Meal save(Meal meal, int authUserId) {
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
+            meal.setUserId(authUserId);
             log.info("add meal {} by user with id={}", meal, meal.getUserId());
             repository.put(meal.getId(), meal);
             return meal;
@@ -46,9 +47,14 @@ public class InMemoryMealRepository implements MealRepository {
         // handle case: update, but not present in storage
         log.info("update meal with id={}", meal.getId());
         Meal updatedMeal = repository.computeIfPresent(
-                meal.getId(), (id, oldMeal) ->
-                        oldMeal.getUserId().equals(meal.getUserId()) ? meal : oldMeal);
-
+                meal.getId(), (id, oldMeal) -> {
+                    if (oldMeal.getUserId().equals(authUserId)) {
+                        meal.setUserId(authUserId);
+                        return meal;
+                    } else {
+                        return oldMeal;
+                    }
+                });
         if (updatedMeal != null) {
             log.info("update meal with id={} by user with id={}", meal.getId(), meal.getUserId());
             return updatedMeal.getUserId().equals(meal.getUserId()) ? meal : null;

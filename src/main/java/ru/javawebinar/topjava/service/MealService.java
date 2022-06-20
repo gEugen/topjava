@@ -18,9 +18,9 @@ public class MealService {
         this.repository = repository;
     }
 
-    public Meal create(Meal meal) {
-        checkNotValidAuthUserId(meal);
-        return repository.save(meal);
+    public Meal create(Meal meal, Integer authUserId) {
+        checkNotValidAuthUserId(meal, authUserId);
+        return repository.save(meal, authUserId);
     }
 
     public void delete(int id, int authUserId) {
@@ -35,8 +35,8 @@ public class MealService {
         return repository.getAll(authUserId, startDate, endDate);
     }
 
-    public void update(Meal meal) {
-        checkNotValidAuthUserId(meal);
-        checkNotValidResult(repository.save(meal), meal);
+    public void update(Meal meal, Integer authUserId) {
+        checkNotValidAuthUserId(meal, authUserId);
+        checkNotValidResult(repository.save(meal, authUserId), meal);
     }
 }
