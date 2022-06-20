@@ -14,6 +14,7 @@ import java.util.List;
 import static ru.javawebinar.topjava.util.MealsUtil.*;
 import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
+import static ru.javawebinar.topjava.web.SecurityUtil.authUserCaloriesPerDay;
 import static ru.javawebinar.topjava.web.SecurityUtil.authUserId;
 
 public abstract class AbstractMealController {
@@ -24,7 +25,7 @@ public abstract class AbstractMealController {
 
     public List<MealTo> getAll() {
         log.info("getAll");
-        return getTos(service.getAll(authUserId(), LocalDate.MIN, LocalDate.MAX), DEFAULT_CALORIES_PER_DAY);
+        return getTos(service.getAll(authUserId(), LocalDate.MIN, LocalDate.MAX), authUserCaloriesPerDay());
     }
 
     public List<MealTo> getAll(LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
@@ -41,7 +42,7 @@ public abstract class AbstractMealController {
         if (endTime == null) {
             endTime = LocalTime.MAX;
         }
-        return getFilteredTos(service.getAll(authUserId(), startDate, endDate), DEFAULT_CALORIES_PER_DAY, startTime, endTime);
+        return getFilteredTos(service.getAll(authUserId(), startDate, endDate), authUserCaloriesPerDay(), startTime, endTime);
     }
 
     public Meal get(int id) {
