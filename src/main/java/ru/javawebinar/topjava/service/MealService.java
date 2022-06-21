@@ -45,6 +45,6 @@ public class MealService {
     }
 
     public List<Meal> getAll(int userId) {
-        return repository.getSomeViaPredicateFilter(userId, meal -> true);
+        return repository.getSomeViaPredicateFilter(userId, meal -> meal.getUserId().equals(userId));
     }
 }
