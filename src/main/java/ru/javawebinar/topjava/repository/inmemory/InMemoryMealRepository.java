@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static ru.javawebinar.topjava.util.DateTimeUtil.isBetweenHalfOpen;
@@ -35,10 +36,10 @@ public class InMemoryMealRepository implements MealRepository {
     }
 
     @Override
-    public Meal save(Meal meal, int authUserId) {
+    public Meal save(Meal meal, int userId) {
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
-            meal.setUserId(authUserId);
+            meal.setUserId(userId);
             log.info("add meal {} by user with id={}", meal, meal.getUserId());
             repository.put(meal.getId(), meal);
             return meal;
@@ -48,8 +49,8 @@ public class InMemoryMealRepository implements MealRepository {
         log.info("update meal with id={}", meal.getId());
         Meal updatedMeal = repository.computeIfPresent(
                 meal.getId(), (id, oldMeal) -> {
-                    if (oldMeal.getUserId().equals(authUserId)) {
-                        meal.setUserId(authUserId);
+                    if (oldMeal.getUserId().equals(userId)) {
+                        meal.setUserId(userId);
                         return meal;
                     } else {
                         return oldMeal;
@@ -64,11 +65,11 @@ public class InMemoryMealRepository implements MealRepository {
     }
 
     @Override
-    public boolean delete(int id, int authUserId) {
-        log.info("delete meal with id={} by user with id={}", id, authUserId);
+    public boolean delete(int id, int userId) {
+        log.info("delete meal with id={} by user with id={}", id, userId);
         AtomicBoolean result = new AtomicBoolean(false);
         repository.computeIfPresent(id, (v, meal) -> {
-            if (repository.get(id).getUserId().equals(authUserId)) {
+            if (repository.get(id).getUserId().equals(userId)) {
                 result.set(true);
                 return repository.remove(id);
             }
@@ -78,11 +79,11 @@ public class InMemoryMealRepository implements MealRepository {
     }
 
     @Override
-    public Meal get(int id, int authUserId) {
-        log.info("get meal with id={} by user with id={}", id, authUserId);
+    public Meal get(int id, int userId) {
+        log.info("get meal with id={} by user with id={}", id, userId);
         AtomicReference<Meal> result = new AtomicReference<>();
         repository.computeIfPresent(id, (key, meal) -> {
-            if (meal.getUserId().equals(authUserId)) {
+            if (meal.getUserId().equals(userId)) {
                 result.set(meal);
             }
             return meal;
@@ -90,20 +91,10 @@ public class InMemoryMealRepository implements MealRepository {
         return result.get();
     }
 
-    @Override
-    public List<Meal> getAll(int authUserId, LocalDate startDate, LocalDate endDate) {
-        log.info("get meals by user with id={}", authUserId);
-        LocalDateTime startLdt = startDate.atStartOfDay();
-        LocalDateTime endLdt;
-        if (!endDate.isEqual(LocalDate.MAX)) {
-            endLdt = endDate.plusDays(1).atStartOfDay();
-        } else {
-            endLdt = endDate.atTime(LocalTime.MAX);
-        }
+    public List<Meal> getSomeViaPredicateFilter(int userId, Predicate<Meal> filter) {
+        log.info("get meals by user with id={} from repository via predicate filter", userId);
         return repository.values().stream()
-                .filter(meal ->
-                        (meal.getUserId().equals(authUserId) && isBetweenHalfOpen(meal.getDateTime(), startLdt,
-                                endLdt)))
+                .filter(filter)
                 .sorted(Comparator.comparing(Meal::getDateTime).reversed())
                 .collect(Collectors.toList());
     }

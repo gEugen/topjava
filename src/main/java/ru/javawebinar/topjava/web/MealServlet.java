@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
@@ -96,17 +95,17 @@ public class MealServlet extends HttpServlet {
                 break;
             case "create":
             case "update":
-                final Meal meal = "create".equals(action) ?
+                final Meal newMeal = "create".equals(action) ?
                         new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000) : springContextEn ?
                         controller.get(getId(request)) : repository.get(getId(request), authUserId());
-                request.setAttribute("meal", meal);
+                request.setAttribute("meal", newMeal);
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
                 break;
             case "all":
             default:
                 log.info("getAll");
                 request.setAttribute("meals", springContextEn ? controller.getAll() :
-                        getTos(repository.getAll(authUserId(), LocalDate.MIN, LocalDate.MAX), DEFAULT_CALORIES_PER_DAY));
+                        getTos(repository.getSomeViaPredicateFilter(authUserId(), meal -> true), DEFAULT_CALORIES_PER_DAY));
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
         }
