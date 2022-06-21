@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static org.slf4j.LoggerFactory.getLogger;
+import static ru.javawebinar.topjava.web.SecurityUtil.setAuthUserId;
 
 public class UserServlet extends HttpServlet {
     private static final Logger log = getLogger(UserServlet.class);
@@ -16,7 +17,13 @@ public class UserServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         log.debug("forward to users");
-//        List<User> users = repository.getAll();
-        request.getRequestDispatcher("/users.jsp").forward(request, response);
+        String select = request.getParameter("select");
+        if ("1".equals(select)) {
+            setAuthUserId(1);
+        } else {
+            setAuthUserId(2);
+        }
+
+        request.getRequestDispatcher("meals").forward(request, response);
     }
 }
