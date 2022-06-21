@@ -21,21 +21,21 @@ public class MealService {
     }
 
     public Meal create(Meal meal, Integer userId) {
-        checkNotValidAuthUserId(meal, userId);
+        checkNotValidUserId(meal, userId);
         return repository.save(meal, userId);
     }
 
     public void update(Meal meal, Integer userId) {
-        checkNotValidAuthUserId(meal, userId);
-        checkNotValidResult(repository.save(meal, userId), meal);
+        checkNotValidUserId(meal, userId);
+        checkNotFoundWithId(repository.save(meal, userId), meal.getId());
     }
 
     public void delete(int id, int userId) {
-        checkNotOwnerOrPresence(repository.delete(id, userId), id, userId);
+        checkNotFoundWithId(repository.delete(id, userId), id);
     }
 
     public Meal get(int id, int userId) {
-        return checkNotValidResultById(repository.get(id, userId), id, userId);
+        return checkNotFoundWithId(repository.get(id, userId), id);
     }
 
     public List<Meal> getFilteredByDateRange(int userId, LocalDate startDate, LocalDate endDate) {
