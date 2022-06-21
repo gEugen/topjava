@@ -7,20 +7,14 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.MealsUtil;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
-import static ru.javawebinar.topjava.util.DateTimeUtil.isBetweenHalfOpen;
 
 @Repository
 public class InMemoryMealRepository implements MealRepository {
@@ -71,7 +65,7 @@ public class InMemoryMealRepository implements MealRepository {
         repository.computeIfPresent(id, (v, meal) -> {
             if (repository.get(id).getUserId().equals(userId)) {
                 result.set(true);
-                return repository.remove(id);
+                return null;
             }
             return meal;
         });
@@ -81,14 +75,12 @@ public class InMemoryMealRepository implements MealRepository {
     @Override
     public Meal get(int id, int userId) {
         log.info("get meal with id={} by user with id={}", id, userId);
-        AtomicReference<Meal> result = new AtomicReference<>();
-        repository.computeIfPresent(id, (key, meal) -> {
-            if (meal.getUserId().equals(userId)) {
-                result.set(meal);
-            }
-            return meal;
-        });
-        return result.get();
+        try {
+            Meal meal = repository.get(id);
+            return meal.getUserId() == userId ? meal : null;
+        } catch (NullPointerException e) {
+            return null;
+        }
     }
 
     public List<Meal> getSomeViaPredicateFilter(int userId, Predicate<Meal> filter) {
