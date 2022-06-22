@@ -20,13 +20,11 @@ public class MealService {
         this.repository = repository;
     }
 
-    public Meal create(Meal meal, Integer userId) {
-        checkNotValidUserId(userId);
+    public Meal create(Meal meal, int userId) {
         return repository.save(meal, userId);
     }
 
-    public void update(Meal meal, Integer userId) {
-        checkNotValidUserId(userId);
+    public void update(Meal meal, int userId) {
         checkNotFoundWithId(repository.save(meal, userId), meal.getId());
     }
 
@@ -44,8 +42,7 @@ public class MealService {
                         endDate.atTime(LocalTime.MAX)) && meal.getUserId().equals(userId));
     }
 
-    public List<Meal> getAll(Integer userId) {
-        checkNotValidUserId(userId);
+    public List<Meal> getAll(int userId) {
         return repository.getSomeViaPredicateFilter(userId, meal -> meal.getUserId().equals(userId));
     }
 }

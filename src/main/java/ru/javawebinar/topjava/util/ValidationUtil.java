@@ -39,10 +39,4 @@ public class ValidationUtil {
             throw new IllegalArgumentException(entity + " must be with id=" + id);
         }
     }
-
-    public static void checkNotValidUserId(Integer userId) {
-        if (userId == null) {
-            throw new NotFoundException("The user working with meal must have a userId != null");
-        }
-    }
 }
