@@ -1,3 +1,4 @@
+<%@ page import="ru.javawebinar.topjava.web.SecurityUtil" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -20,7 +21,7 @@
 <section>
     <h3><a href="index.html">Home</a></h3>
     <hr/>
-    <h2>Meals</h2>
+    <h2>Meals of User <%= SecurityUtil.authUserId() %></h2>
     <table border="1" cellpadding="8" cellspacing="0">
         <thead>
         <tr>
