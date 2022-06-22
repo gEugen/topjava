@@ -21,12 +21,12 @@ public class MealService {
     }
 
     public Meal create(Meal meal, Integer userId) {
-        checkNotValidUserId(meal, userId);
+        checkNotValidUserId(userId);
         return repository.save(meal, userId);
     }
 
     public void update(Meal meal, Integer userId) {
-        checkNotValidUserId(meal, userId);
+        checkNotValidUserId(userId);
         checkNotFoundWithId(repository.save(meal, userId), meal.getId());
     }
 
@@ -41,10 +41,11 @@ public class MealService {
     public List<Meal> getFilteredByDateRange(int userId, LocalDate startDate, LocalDate endDate) {
         return repository.getSomeViaPredicateFilter(userId,
                 meal -> DateTimeUtil.isBetweenHalfOpen(meal.getDateTime(), startDate.atStartOfDay(),
-                        endDate.atTime(LocalTime.MAX)));
+                        endDate.atTime(LocalTime.MAX)) && meal.getUserId().equals(userId));
     }
 
-    public List<Meal> getAll(int userId) {
+    public List<Meal> getAll(Integer userId) {
+        checkNotValidUserId(userId);
         return repository.getSomeViaPredicateFilter(userId, meal -> meal.getUserId().equals(userId));
     }
 }

@@ -1,8 +1,6 @@
 package ru.javawebinar.topjava.util;
 
-
 import ru.javawebinar.topjava.model.AbstractBaseEntity;
-import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 public class ValidationUtil {
@@ -42,9 +40,9 @@ public class ValidationUtil {
         }
     }
 
-    public static void checkNotValidUserId(Meal meal, Integer userId) {
+    public static void checkNotValidUserId(Integer userId) {
         if (userId == null) {
-            throw new NotFoundException("The user working with " + meal + " must have a userId != null");
+            throw new NotFoundException("The user working with meal must have a userId != null");
         }
     }
 }
