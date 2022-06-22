@@ -37,12 +37,10 @@ public class MealService {
     }
 
     public List<Meal> getFilteredByDateRange(int userId, LocalDate startDate, LocalDate endDate) {
-        return repository.getSomeViaPredicateFilter(userId,
-                meal -> DateTimeUtil.isBetweenHalfOpen(meal.getDateTime(), startDate.atStartOfDay(),
-                        endDate.atTime(LocalTime.MAX)) && meal.getUserId().equals(userId));
+        return repository.getList(userId, startDate, endDate);
     }
 
     public List<Meal> getAll(int userId) {
-        return repository.getSomeViaPredicateFilter(userId, meal -> meal.getUserId().equals(userId));
+        return repository.getList(userId, null, null);
     }
 }

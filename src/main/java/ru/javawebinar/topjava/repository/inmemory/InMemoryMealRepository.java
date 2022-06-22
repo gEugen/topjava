@@ -5,15 +5,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
+import ru.javawebinar.topjava.util.DateTimeUtil;
 import ru.javawebinar.topjava.util.MealsUtil;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Repository
@@ -83,10 +85,17 @@ public class InMemoryMealRepository implements MealRepository {
         }
     }
 
-    public List<Meal> getSomeViaPredicateFilter(int userId, Predicate<Meal> filter) {
+    public List<Meal> getList(int userId, LocalDate startDate, LocalDate endDate) {
         log.info("get meals by user with id={} from repository via predicate filter", userId);
         return repository.values().stream()
-                .filter(filter)
+                .filter(meal -> {
+                    if (startDate == null && endDate == null) {
+                        return meal.getUserId().equals(userId);
+                    } else {
+                        return DateTimeUtil.isBetweenHalfOpen(meal.getDateTime(), startDate.atStartOfDay(),
+                                endDate.atTime(LocalTime.MAX).plusNanos(1)) && meal.getUserId().equals(userId);
+                    }
+                })
                 .sorted(Comparator.comparing(Meal::getDateTime).reversed())
                 .collect(Collectors.toList());
     }

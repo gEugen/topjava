@@ -89,7 +89,7 @@ public class MealServlet extends HttpServlet {
         }
 
         if ("submit".equals(submit)) {
-            request.setAttribute("meals", controller.getSome(startDate, endDate, startTime, endTime));
+            request.setAttribute("meals", controller.getFiltered(startDate, endDate, startTime, endTime));
             request.setAttribute("startDate", startDate);
             request.setAttribute("endDate", endDate);
             request.setAttribute("startTime", startTime);
