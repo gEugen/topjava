@@ -30,18 +30,14 @@
             <th>To time (excluding)</th>
         </tr>
         </thead>
-        <jsp:useBean id="startDate" type="java.time.LocalDate" scope="request"/>
-        <jsp:useBean id="endDate" type="java.time.LocalDate" scope="request"/>
-        <jsp:useBean id="startTime" type="java.time.LocalTime" scope="request"/>
-        <jsp:useBean id="endTime" type="java.time.LocalTime" scope="request"/>
         <form method="get" action="meals">
             <tr>
-                <td><input type="date" value="${startDate}" name="startDate"></td>
-                <td><input type="date" value="${endDate}" name="endDate"></td>
-                <td><input type="time" value="${startTime}" name="startTime"></td>
-                <td><input type="time" value="${endTime}" name="endTime"></td>
+                <td><input type="date" value="${param.startDate}" name="startDate"></td>
+                <td><input type="date" value="${param.endDate}" name="endDate"></td>
+                <td><input type="time" value="${param.startTime}" name="startTime"></td>
+                <td><input type="time" value="${param.endTime}" name="endTime"></td>
             </tr>
-            <button type="submit" name="submit" value="submit">Apply filter</button>
+            <button type="submit" name="action" value="submit">Apply filter</button>
         </form>
     </table>
     <br><br>

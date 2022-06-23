@@ -18,6 +18,8 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
+import static org.springframework.util.StringUtils.*;
+
 public class MealServlet extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(MealServlet.class);
     private ConfigurableApplicationContext appCtx;
@@ -58,7 +60,6 @@ public class MealServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
-        String submit = request.getParameter("submit");
         String startDateString = request.getParameter("startDate");
         String endDateString = request.getParameter("endDate");
         String startTimeString = request.getParameter("startTime");
@@ -67,33 +68,34 @@ public class MealServlet extends HttpServlet {
         LocalDate endDate;
         LocalTime startTime;
         LocalTime endTime;
-        if (startDateString == null || "".equals(startDateString)) {
-            startDate = LocalDate.MIN;
-        } else {
+        if (hasText(startDateString)) {
             startDate = LocalDate.parse(startDateString);
-        }
-        if (endDateString == null || "".equals(endDateString)) {
-            endDate = LocalDate.MAX;
         } else {
+            startDate = LocalDate.MIN;
+        }
+        if (hasText(endDateString)) {
             endDate = LocalDate.parse(endDateString);
-        }
-        if (startTimeString == null || "".equals(startTimeString)) {
-            startTime = LocalTime.MIN;
         } else {
+            endDate = LocalDate.MAX;
+        }
+        if (hasText(startTimeString)) {
             startTime = LocalTime.parse(startTimeString);
-        }
-        if (endTimeString == null || "".equals(endTimeString)) {
-            endTime = LocalTime.MAX;
         } else {
+            startTime = LocalTime.MIN;
+        }
+        if (hasText(endTimeString)) {
             endTime = LocalTime.parse(endTimeString);
+        } else {
+            endTime = LocalTime.MAX;
         }
 
-        if ("submit".equals(submit)) {
+
+        if ("submit".equals(action)) {
             request.setAttribute("meals", controller.getFiltered(startDate, endDate, startTime, endTime));
-            request.setAttribute("startDate", startDate);
-            request.setAttribute("endDate", endDate);
-            request.setAttribute("startTime", startTime);
-            request.setAttribute("endTime", endTime);
+//            request.setAttribute("startDate", startDate);
+//            request.setAttribute("endDate", endDate);
+//            request.setAttribute("startTime", startTime);
+//            request.setAttribute("endTime", endTime);
             request.getRequestDispatcher("/meals.jsp").forward(request, response);
         } else {
             switch (action == null ? "all" : action) {

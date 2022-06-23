@@ -64,8 +64,8 @@ public class InMemoryMealRepository implements MealRepository {
     public boolean delete(int id, int userId) {
         log.info("delete meal with id={} by user with id={}", id, userId);
         AtomicBoolean result = new AtomicBoolean(false);
-        repository.computeIfPresent(id, (v, meal) -> {
-            if (repository.get(id).getUserId().equals(userId)) {
+        repository.computeIfPresent(id, (k, meal) -> {
+            if (meal.getUserId().equals(userId)) {
                 result.set(true);
                 return null;
             }
