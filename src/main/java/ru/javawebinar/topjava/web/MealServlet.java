@@ -60,42 +60,34 @@ public class MealServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
-        String startDateString = request.getParameter("startDate");
-        String endDateString = request.getParameter("endDate");
-        String startTimeString = request.getParameter("startTime");
-        String endTimeString = request.getParameter("endTime");
-        LocalDate startDate;
-        LocalDate endDate;
-        LocalTime startTime;
-        LocalTime endTime;
-        if (hasText(startDateString)) {
-            startDate = LocalDate.parse(startDateString);
-        } else {
-            startDate = LocalDate.MIN;
-        }
-        if (hasText(endDateString)) {
-            endDate = LocalDate.parse(endDateString);
-        } else {
-            endDate = LocalDate.MAX;
-        }
-        if (hasText(startTimeString)) {
-            startTime = LocalTime.parse(startTimeString);
-        } else {
-            startTime = LocalTime.MIN;
-        }
-        if (hasText(endTimeString)) {
-            endTime = LocalTime.parse(endTimeString);
-        } else {
-            endTime = LocalTime.MAX;
-        }
-
 
         if ("submit".equals(action)) {
+            String startDateString = request.getParameter("startDate");
+            String endDateString = request.getParameter("endDate");
+            String startTimeString = request.getParameter("startTime");
+            String endTimeString = request.getParameter("endTime");
+            LocalDate startDate = null;
+            LocalDate endDate = null;
+            LocalTime startTime = null;
+            LocalTime endTime = null;
+
+            if (hasText(startDateString)) {
+                startDate = LocalDate.parse(startDateString);
+            }
+
+            if (hasText(endDateString)) {
+                endDate = LocalDate.parse(endDateString);
+            }
+
+            if (hasText(startTimeString)) {
+                startTime = LocalTime.parse(startTimeString);
+            }
+
+            if (hasText(endTimeString)) {
+                endTime = LocalTime.parse(endTimeString);
+            }
+
             request.setAttribute("meals", controller.getFiltered(startDate, endDate, startTime, endTime));
-//            request.setAttribute("startDate", startDate);
-//            request.setAttribute("endDate", endDate);
-//            request.setAttribute("startTime", startTime);
-//            request.setAttribute("endTime", endTime);
             request.getRequestDispatcher("/meals.jsp").forward(request, response);
         } else {
             switch (action == null ? "all" : action) {
@@ -107,18 +99,14 @@ public class MealServlet extends HttpServlet {
                     break;
                 case "create":
                 case "update":
-                    final Meal newMeal = "create".equals(action) ?
+                    final Meal meal = "create".equals(action) ?
                             new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000) : controller.get(getId(request));
-                    request.setAttribute("meal", newMeal);
+                    request.setAttribute("meal", meal);
                     request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
                     break;
                 case "all":
                 default:
                     log.info("getAll");
-                    request.setAttribute("startDate", startDate);
-                    request.setAttribute("endDate", endDate);
-                    request.setAttribute("startTime", startTime);
-                    request.setAttribute("endTime", endTime);
                     request.setAttribute("meals", controller.getAll());
                     request.getRequestDispatcher("/meals.jsp").forward(request, response);
                     break;

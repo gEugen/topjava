@@ -28,12 +28,24 @@ public class MealRestController {
 
     public List<MealTo> getAll() {
         log.info("getAll");
-        return getTos(service.getAll(authUserId()), authUserCaloriesPerDay());
+        return getTos(service.getFiltered(authUserId(), LocalDate.MIN, LocalDate.MAX), authUserCaloriesPerDay());
     }
 
     public List<MealTo> getFiltered(LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
-        log.info("getAll filtered by date period");
-        return getFilteredTos(service.getFilteredByDateRange(authUserId(), startDate, endDate),
+        log.info("get filtered by date period");
+        if (startDate == null) {
+            startDate = LocalDate.MIN;
+        }
+        if (endDate == null) {
+            endDate = LocalDate.MAX;
+        }
+        if (startTime == null) {
+            startTime = LocalTime.MIN;
+        }
+        if (endTime == null) {
+            endTime = LocalTime.MAX;
+        }
+        return getFilteredTos(service.getFiltered(authUserId(), startDate, endDate),
                 authUserCaloriesPerDay(), startTime, endTime);
     }
 
