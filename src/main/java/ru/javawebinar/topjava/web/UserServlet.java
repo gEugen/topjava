@@ -9,21 +9,30 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.springframework.util.StringUtils.hasText;
+import static ru.javawebinar.topjava.web.SecurityUtil.authUserId;
 import static ru.javawebinar.topjava.web.SecurityUtil.setAuthUserId;
 
 public class UserServlet extends HttpServlet {
     private static final Logger log = getLogger(UserServlet.class);
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        log.debug("forward to users");
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String select = request.getParameter("select");
-        if ("1".equals(select)) {
-            setAuthUserId(1);
+        if (hasText(select)) {
+            setAuthUserId(Integer.parseInt(select));
+            log.info("User {} logged in", authUserId());
+            response.sendRedirect("meals");
         } else {
-            setAuthUserId(2);
+            response.sendRedirect("index.html");
         }
+    }
 
-        request.getRequestDispatcher("meals").forward(request, response);
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        log.debug("redirect to users");
+
+//        request.getRequestDispatcher("/users.jsp").forward(request, response);
+        response.sendRedirect("users.jsp");
     }
 }
