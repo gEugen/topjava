@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static org.slf4j.LoggerFactory.getLogger;
-import static org.springframework.util.StringUtils.hasText;
 import static ru.javawebinar.topjava.web.SecurityUtil.authUserId;
 import static ru.javawebinar.topjava.web.SecurityUtil.setAuthUserId;
 
@@ -18,14 +17,9 @@ public class UserServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String select = request.getParameter("select");
-        if (hasText(select)) {
-            setAuthUserId(Integer.parseInt(select));
-            log.info("User {} logged in", authUserId());
-            response.sendRedirect("meals");
-        } else {
-            response.sendRedirect("index.html");
-        }
+        setAuthUserId(Integer.parseInt(request.getParameter("select")));
+        log.info("User {} logged in", authUserId());
+        response.sendRedirect("meals");
     }
 
     @Override
