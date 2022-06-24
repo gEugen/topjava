@@ -65,12 +65,12 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public boolean delete(int id, int userId) {
-        log.info("delete meal with id={} by user with id={}", id, userId);
         UserMeals userMeals = repository.computeIfPresent(userId, (k, meals) -> meals);
         AtomicBoolean result = new AtomicBoolean(false);
         if (userMeals != null) {
             userMeals.map.computeIfPresent(id, (k, meal) -> {
                 if (meal.getUserId().equals(userId)) {
+                    log.info("delete meal with id={} by user with id={}", id, userId);
                     result.set(true);
                     return null;
                 } else {
@@ -83,12 +83,12 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public Meal get(int id, int userId) {
-        log.info("get meal with id={} by user with id={}", id, userId);
         UserMeals userMeals = repository.computeIfPresent(userId, (k, meals) -> meals);
         if (userMeals != null) {
             Meal takenOutMeal = userMeals.map.computeIfPresent(id, (k, meal) -> meal);
             if (takenOutMeal != null) {
                 if (takenOutMeal.getUserId().equals(userId)) {
+                    log.info("get meal with id={} by user with id={}", id, userId);
                     return takenOutMeal;
                 }
             }
