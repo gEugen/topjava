@@ -61,41 +61,39 @@ public class MealServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
 
-        if ("filterByDateAndTime".equals(action)) {
-            String startDateString = request.getParameter("startDate");
-            String endDateString = request.getParameter("endDate");
-            String startTimeString = request.getParameter("startTime");
-            String endTimeString = request.getParameter("endTime");
+        switch (action == null ? "all" : action) {
+            case "filterByDateAndTime":
+                String startDateString = request.getParameter("startDate");
+                String endDateString = request.getParameter("endDate");
+                String startTimeString = request.getParameter("startTime");
+                String endTimeString = request.getParameter("endTime");
 
-            LocalDate startDate = hasText(startDateString) ? LocalDate.parse(startDateString) : null;
-            LocalDate endDate = hasText(endDateString) ? LocalDate.parse(endDateString) : null;
-            LocalTime startTime = hasText(startTimeString) ? LocalTime.parse(startTimeString) : null;
-            LocalTime endTime = hasText(endTimeString) ? LocalTime.parse(endTimeString) : null;
+                LocalDate startDate = hasText(startDateString) ? LocalDate.parse(startDateString) : null;
+                LocalDate endDate = hasText(endDateString) ? LocalDate.parse(endDateString) : null;
+                LocalTime startTime = hasText(startTimeString) ? LocalTime.parse(startTimeString) : null;
+                LocalTime endTime = hasText(endTimeString) ? LocalTime.parse(endTimeString) : null;
 
-            request.setAttribute("meals", controller.getFiltered(startDate, endDate, startTime, endTime));
-            request.getRequestDispatcher("/meals.jsp").forward(request, response);
-        } else {
-            switch (action == null ? "all" : action) {
-                case "delete":
-                    int id = getId(request);
-                    log.info("Delete id={}", id);
-                    controller.delete(id);
-                    response.sendRedirect("meals");
-                    break;
-                case "create":
-                case "update":
-                    final Meal meal = "create".equals(action) ?
-                            new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000) : controller.get(getId(request));
-                    request.setAttribute("meal", meal);
-                    request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
-                    break;
-                case "all":
-                default:
-                    log.info("getAll");
-                    request.setAttribute("meals", controller.getAll());
-                    request.getRequestDispatcher("/meals.jsp").forward(request, response);
-                    break;
-            }
+                request.setAttribute("meals", controller.getFiltered(startDate, endDate, startTime, endTime));
+                request.getRequestDispatcher("/meals.jsp").forward(request, response);
+            case "delete":
+                int id = getId(request);
+                log.info("Delete id={}", id);
+                controller.delete(id);
+                response.sendRedirect("meals");
+                break;
+            case "create":
+            case "update":
+                final Meal meal = "create".equals(action) ?
+                        new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000) : controller.get(getId(request));
+                request.setAttribute("meal", meal);
+                request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
+                break;
+            case "all":
+            default:
+                log.info("getAll");
+                request.setAttribute("meals", controller.getAll());
+                request.getRequestDispatcher("/meals.jsp").forward(request, response);
+                break;
         }
     }
 
