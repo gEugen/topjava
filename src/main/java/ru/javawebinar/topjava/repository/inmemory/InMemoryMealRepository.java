@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public class InMemoryMealRepository implements MealRepository {
     private static final Logger log = LoggerFactory.getLogger(InMemoryMealRepository.class);
 
-    private final Map<Integer, UserMeals> repository;
+    private final Map<Integer, Map<Integer, Meal>> repository;
 
     private final AtomicInteger counter = new AtomicInteger();
 
@@ -35,19 +35,19 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public Meal save(Meal meal, int userId) {
-        UserMeals userMeals = repository.computeIfAbsent(userId, k -> {
+        Map<Integer, Meal> userMeals = repository.computeIfAbsent(userId, k -> {
             log.info("create meal repository for user with id={}", userId);
-            return new UserMeals();
+            return new ConcurrentHashMap<>();
         });
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
             meal.setUserId(userId);
             log.info("add meal {} by user with id={}", meal, meal.getUserId());
-            userMeals.map.put(meal.getId(), meal);
+            userMeals.put(meal.getId(), meal);
             return meal;
         }
 
-        Meal updatedMeal = userMeals.map.computeIfPresent(meal.getId(), (id, oldMeal) -> {
+        Meal updatedMeal = userMeals.computeIfPresent(meal.getId(), (id, oldMeal) -> {
             if (oldMeal.getUserId().equals(userId)) {
                 meal.setUserId(userId);
                 return meal;
@@ -65,10 +65,10 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public boolean delete(int id, int userId) {
-        UserMeals userMeals = repository.computeIfPresent(userId, (k, meals) -> meals);
+        Map<Integer, Meal> userMeals = repository.computeIfPresent(userId, (k, meals) -> meals);
         AtomicBoolean result = new AtomicBoolean(false);
         if (userMeals != null) {
-            userMeals.map.computeIfPresent(id, (k, meal) -> {
+            userMeals.computeIfPresent(id, (k, meal) -> {
                 if (meal.getUserId().equals(userId)) {
                     log.info("delete meal with id={} by user with id={}", id, userId);
                     result.set(true);
@@ -83,9 +83,9 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public Meal get(int id, int userId) {
-        UserMeals userMeals = repository.computeIfPresent(userId, (k, meals) -> meals);
+        Map<Integer, Meal> userMeals = repository.computeIfPresent(userId, (k, meals) -> meals);
         if (userMeals != null) {
-            Meal takenOutMeal = userMeals.map.computeIfPresent(id, (k, meal) -> meal);
+            Meal takenOutMeal = userMeals.computeIfPresent(id, (k, meal) -> meal);
             if (takenOutMeal != null) {
                 if (takenOutMeal.getUserId().equals(userId)) {
                     log.info("get meal with id={} by user with id={}", id, userId);
@@ -98,9 +98,9 @@ public class InMemoryMealRepository implements MealRepository {
 
     public List<Meal> getFiltered(int userId, LocalDate startDate, LocalDate endDate) {
         log.info("get meals by user with id={} from repository", userId);
-        UserMeals userMeals = repository.computeIfPresent(userId, (k, meals) -> meals);
+        Map<Integer, Meal> userMeals = repository.computeIfPresent(userId, (k, meals) -> meals);
         if (userMeals != null) {
-            return userMeals.map.values().stream()
+            return userMeals.values().stream()
                     .filter(meal -> {
                         LocalDateTime endLdt = !endDate.equals(LocalDate.MAX) ?
                                 endDate.atTime(LocalTime.MAX).plusNanos(1) : endDate.atTime(LocalTime.MAX);
@@ -117,22 +117,14 @@ public class InMemoryMealRepository implements MealRepository {
     @Override
     public List<Meal> getAll(int userId) {
         log.info("get all meals by user with id={} from repository", userId);
-        UserMeals userMeals = repository.computeIfPresent(userId, (k, meals) -> meals);
+        Map<Integer, Meal> userMeals = repository.computeIfPresent(userId, (k, meals) -> meals);
         if (userMeals != null) {
-            return userMeals.map.values().stream()
+            return userMeals.values().stream()
                     .filter(meal -> meal.getUserId().equals(userId))
                     .sorted(Comparator.comparing(Meal::getDateTime).reversed())
                     .collect(Collectors.toList());
         }
         return new ArrayList<>();
-    }
-
-    private class UserMeals {
-        private final Map<Integer, Meal> map;
-
-        private UserMeals() {
-            this.map = new ConcurrentHashMap<>();
-        }
     }
 }
 
