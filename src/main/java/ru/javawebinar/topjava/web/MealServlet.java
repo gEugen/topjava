@@ -61,7 +61,7 @@ public class MealServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
 
-        if ("submit".equals(action)) {
+        if ("filterByDateAndTime".equals(action)) {
             String startDateString = request.getParameter("startDate");
             String endDateString = request.getParameter("endDate");
             String startTimeString = request.getParameter("startTime");

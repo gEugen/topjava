@@ -37,7 +37,7 @@
                 <td><input type="time" value="${param.startTime}" name="startTime"></td>
                 <td><input type="time" value="${param.endTime}" name="endTime"></td>
             </tr>
-            <button type="submit" name="action" value="submit">Apply filter</button>
+            <button type="submit" name="action" value="filterByDateAndTime">Apply filter</button>
         </form>
     </table>
     <br><br>
