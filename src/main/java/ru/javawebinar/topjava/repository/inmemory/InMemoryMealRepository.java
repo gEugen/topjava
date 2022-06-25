@@ -27,7 +27,7 @@ public class InMemoryMealRepository implements MealRepository {
 
     public InMemoryMealRepository() {
         this.repository = new ConcurrentHashMap<>();
-        MealsUtil.meals.forEach(meal -> save(meal, meal.getUserId()));
+        MealsUtil.meals.forEach(meal -> save(meal, 1));
     }
 
     @Override
@@ -36,25 +36,18 @@ public class InMemoryMealRepository implements MealRepository {
             log.info("create meal repository for user with id={}", userId);
             return new ConcurrentHashMap<>();
         });
+
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
-            meal.setUserId(userId);
-            log.info("add meal {} by user with id={}", meal, meal.getUserId());
+            log.info("add meal {} by user with id={}", meal, userId);
             userMeals.put(meal.getId(), meal);
             return meal;
         }
 
-        Meal updatedMeal = userMeals.computeIfPresent(meal.getId(), (id, oldMeal) -> {
-            if (oldMeal.getUserId().equals(userId)) {
-                meal.setUserId(userId);
-                return meal;
-            } else {
-                return oldMeal;
-            }
-        });
+        Meal updatedMeal = userMeals.computeIfPresent(meal.getId(), (k, v) -> meal);
         if (updatedMeal != null) {
-            log.info("update meal with id={} by user with id={}", meal.getId(), meal.getUserId());
-            return updatedMeal.getUserId().equals(meal.getUserId()) ? meal : null;
+            log.info("update meal with id={} by user with id={}", meal.getId(), userId);
+            return meal;
         } else {
             return null;
         }
@@ -66,13 +59,9 @@ public class InMemoryMealRepository implements MealRepository {
         AtomicBoolean result = new AtomicBoolean(false);
         if (userMeals != null) {
             userMeals.computeIfPresent(id, (k, meal) -> {
-                if (meal.getUserId().equals(userId)) {
-                    log.info("delete meal with id={} by user with id={}", id, userId);
-                    result.set(true);
-                    return null;
-                } else {
-                    return meal;
-                }
+                log.info("delete meal with id={} by user with id={}", id, userId);
+                result.set(true);
+                return null;
             });
         }
         return result.get();
@@ -84,10 +73,8 @@ public class InMemoryMealRepository implements MealRepository {
         if (userMeals != null) {
             Meal takenOutMeal = userMeals.get(id);
             if (takenOutMeal != null) {
-                if (takenOutMeal.getUserId().equals(userId)) {
-                    log.info("get meal with id={} by user with id={}", id, userId);
-                    return takenOutMeal;
-                }
+                log.info("get meal with id={} by user with id={}", id, userId);
+                return takenOutMeal;
             }
         }
         return null;
@@ -103,7 +90,7 @@ public class InMemoryMealRepository implements MealRepository {
                                 endDate.atTime(LocalTime.MAX).plusNanos(1) : endDate.atTime(LocalTime.MAX);
 
                         return DateTimeUtil.isBetweenHalfOpen(
-                                meal.getDateTime(), startDate.atStartOfDay(), endLdt) && meal.getUserId().equals(userId);
+                                meal.getDateTime(), startDate.atStartOfDay(), endLdt);
                     })
                     .sorted(Comparator.comparing(Meal::getDateTime).reversed())
                     .collect(Collectors.toList());
@@ -117,7 +104,6 @@ public class InMemoryMealRepository implements MealRepository {
         Map<Integer, Meal> userMeals = repository.get(userId);
         if (userMeals != null) {
             return userMeals.values().stream()
-                    .filter(meal -> meal.getUserId().equals(userId))
                     .sorted(Comparator.comparing(Meal::getDateTime).reversed())
                     .collect(Collectors.toList());
         }
