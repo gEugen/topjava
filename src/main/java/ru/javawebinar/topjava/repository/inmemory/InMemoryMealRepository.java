@@ -102,19 +102,25 @@ public class InMemoryMealRepository implements MealRepository {
         if (userMeals != null) {
             return userMeals.map.values().stream()
                     .filter(meal -> {
-                        if (startDate == LocalDate.MIN && endDate == LocalDate.MAX) {
-                            return meal.getUserId().equals(userId);
-                        } else {
-                            LocalDateTime endLdt;
-                            if (!endDate.equals(LocalDate.MAX)) {
-                                endLdt = endDate.atTime(LocalTime.MAX).plusNanos(1);
-                            } else {
-                                endLdt = endDate.atTime(LocalTime.MAX);
-                            }
-                            return DateTimeUtil.isBetweenHalfOpen(
-                                    meal.getDateTime(), startDate.atStartOfDay(), endLdt) && meal.getUserId().equals(userId);
-                        }
+                        LocalDateTime endLdt = !endDate.equals(LocalDate.MAX) ?
+                                endDate.atTime(LocalTime.MAX).plusNanos(1) : endDate.atTime(LocalTime.MAX);
+
+                        return DateTimeUtil.isBetweenHalfOpen(
+                                meal.getDateTime(), startDate.atStartOfDay(), endLdt) && meal.getUserId().equals(userId);
                     })
+                    .sorted(Comparator.comparing(Meal::getDateTime).reversed())
+                    .collect(Collectors.toList());
+        }
+        return new ArrayList<>();
+    }
+
+    @Override
+    public List<Meal> getAll(int userId) {
+        log.info("get all meals by user with id={} from repository", userId);
+        UserMeals userMeals = repository.computeIfPresent(userId, (k, meals) -> meals);
+        if (userMeals != null) {
+            return userMeals.map.values().stream()
+                    .filter(meal -> meal.getUserId().equals(userId))
                     .sorted(Comparator.comparing(Meal::getDateTime).reversed())
                     .collect(Collectors.toList());
         }
