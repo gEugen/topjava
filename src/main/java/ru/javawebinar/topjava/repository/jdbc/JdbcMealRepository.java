@@ -5,6 +5,7 @@ import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
@@ -19,32 +20,36 @@ public class JdbcMealRepository implements MealRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
     private final SimpleJdbcInsert insertMeal;
 
     @Autowired
-    public JdbcMealRepository(JdbcTemplate jdbcTemplate) {
+    public JdbcMealRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.insertMeal = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("meals")
                 .usingGeneratedKeyColumns("id");
 
         this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
     @Override
     public Meal save(Meal meal, int userId) {
+        MapSqlParameterSource map = new MapSqlParameterSource()
+                .addValue("description", meal.getDescription())
+                .addValue("date_time", meal.getDateTime())
+                .addValue("calories", meal.getCalories())
+                .addValue("user_id", userId)
+                .addValue("id", meal.getId());
+
         if (meal.isNew()) {
-            MapSqlParameterSource map = new MapSqlParameterSource()
-                    .addValue("id", meal.getId())
-                    .addValue("description", meal.getDescription())
-                    .addValue("dateTime", meal.getDateTime())
-                    .addValue("calories", meal.getCalories())
-                    .addValue("user_id", userId);
             Number newKey = insertMeal.executeAndReturnKey(map);
             meal.setId(newKey.intValue());
         } else {
-            String sqlQuery = "UPDATE meals SET description=?, date_time=?, calories=? WHERE id=? AND user_id=?";
-            if (jdbcTemplate
-                    .update(sqlQuery, meal.getDescription(), meal.getDateTime(), meal.getCalories(), meal.getId(), userId) == 0) {
+            if (namedParameterJdbcTemplate.update(
+                    "UPDATE meals SET description=:description, date_time=:date_time, calories=:calories WHERE id=:id" +
+                            " AND user_id=:user_id", map) == 0) {
                 return null;
             }
         }
