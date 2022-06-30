@@ -20,36 +20,34 @@ public class JdbcMealRepository implements MealRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-
     private final SimpleJdbcInsert insertMeal;
 
     @Autowired
-    public JdbcMealRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+    public JdbcMealRepository(JdbcTemplate jdbcTemplate) {
         this.insertMeal = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("meals")
                 .usingGeneratedKeyColumns("id");
 
         this.jdbcTemplate = jdbcTemplate;
-        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
     @Override
     public Meal save(Meal meal, int userId) {
-        MapSqlParameterSource map = new MapSqlParameterSource()
-                .addValue("id", meal.getId())
-                .addValue("description", meal.getDescription())
-                .addValue("dateTime", meal.getDateTime())
-                .addValue("calories", meal.getCalories())
-                .addValue("userId", userId);
-
         if (meal.isNew()) {
+            MapSqlParameterSource map = new MapSqlParameterSource()
+                    .addValue("id", meal.getId())
+                    .addValue("description", meal.getDescription())
+                    .addValue("dateTime", meal.getDateTime())
+                    .addValue("calories", meal.getCalories())
+                    .addValue("user_id", userId);
             Number newKey = insertMeal.executeAndReturnKey(map);
             meal.setId(newKey.intValue());
-        } else if (namedParameterJdbcTemplate.update(
-                "UPDATE meals SET description=:description, date_time=:dateTime, " +
-                        "calories=:calories, user_id=:userId WHERE id=:id", map) == 0) {
-            return null;
+        } else {
+            String sqlQuery = "UPDATE meals SET description=?, date_time=?, calories=? WHERE id=? AND user_id=?";
+            if (jdbcTemplate
+                    .update(sqlQuery, meal.getDescription(), meal.getDateTime(), meal.getCalories(), meal.getId(), userId) == 0) {
+                return null;
+            }
         }
         return meal;
     }
