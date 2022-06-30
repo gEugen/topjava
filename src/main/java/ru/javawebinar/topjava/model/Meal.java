@@ -11,7 +11,7 @@ public class Meal extends AbstractBaseEntity {
 
     private int calories;
 
-    public Meal(){
+    public Meal() {
     }
 
     public Meal(Meal m) {

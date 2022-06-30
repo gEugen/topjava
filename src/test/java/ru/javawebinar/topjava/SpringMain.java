@@ -38,7 +38,7 @@ public class SpringMain {
                     sqlScripts) {
                 FileReader fileReader = new FileReader(script);
                 BufferedReader bufferedReader = new BufferedReader(fileReader);
-                log.debug("run script {}", script);
+                log.debug("run script {}", script.replace("//", "/"));
                 stmt.execute(bufferedReader.lines().collect(Collectors.joining()));
             }
 

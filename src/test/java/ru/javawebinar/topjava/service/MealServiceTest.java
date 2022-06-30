@@ -15,6 +15,7 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.List;
 
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -37,9 +38,54 @@ public class MealServiceTest extends TestCase {
     private MealService service;
 
     @Test
+    public void create() {
+        Meal created = service.create(getNew(), getUserId());
+        Integer newId = created.getId();
+        Meal newMeal = getNew();
+        newMeal.setId(newId);
+        assertMatch(created, newMeal);
+        assertMatch(service.get(newId, getUserId()), newMeal);
+    }
+
+    @Test
     public void duplicateDateCreate() {
         assertThrows(DataAccessException.class, () ->
                 service.create(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Duplicate", 500), getUserId()));
+    }
+
+    @Test
+    public void delete() {
+        service.delete(getTestId(), getUserId());
+        assertThrows(NotFoundException.class, () -> service.get(getTestId(), getUserId()));
+    }
+
+    @Test
+    public void deletedNotFound() {
+        assertThrows(NotFoundException.class, () -> service.delete(getNotFoundId(), getUserId()));
+    }
+
+    @Test
+    public void get() {
+        Meal meal = service.get(getTestId(), getUserId());
+        assertMatch(meal, getTestMeal());
+    }
+
+    @Test
+    public void getNotFound() {
+        assertThrows(NotFoundException.class, () -> service.get(getNotFoundId(), getUserId()));
+    }
+
+    @Test
+    public void update() {
+        Meal updated = getUpdated();
+        service.update(updated, getAdminId());
+        assertMatch(service.get(getUpdatedId(), getAdminId()), updated);
+    }
+
+    @Test
+    public void getAll() {
+        List<Meal> all = service.getAll(getUserId());
+        assertMatch(all, meal05, meal04, meal03);
     }
 
     @Test
