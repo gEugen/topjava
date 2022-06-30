@@ -50,7 +50,7 @@ public class SpringMain {
             try (ConfigurableApplicationContext appCtx =
                          new ClassPathXmlApplicationContext(
                                  "spring/spring-app-general.xml",
-                                 "classpath:spring/spring-app-jdbc.xml",
+                                 "spring/spring-app-jdbc.xml",
                                  "spring/spring-db.xml"
                          )) {
                 System.out.println("Bean definition names: " + Arrays.toString(appCtx.getBeanDefinitionNames()));
