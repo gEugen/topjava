@@ -50,7 +50,7 @@ public class MealServiceTest extends TestCase {
 
     @Test
     public void duplicateDateCreate() {
-        assertThrows(DataAccessException.class, () -> service.create(new Meal(USER_MEAL_1.getDateTime(), "Duplicate", 500), USER_ID));
+        assertThrows(DataAccessException.class, () -> service.create(new Meal(userMeal1.getDateTime(), "Duplicate", 500), USER_ID));
     }
 
     @Test
@@ -67,7 +67,7 @@ public class MealServiceTest extends TestCase {
     @Test
     public void get() {
         Meal meal = service.get(USER_MEAL1_ID, USER_ID);
-        assertMatch(meal, USER_MEAL_1);
+        assertMatch(meal, userMeal1);
     }
 
     @Test
@@ -84,13 +84,19 @@ public class MealServiceTest extends TestCase {
     @Test
     public void getAll() {
         List<Meal> all = service.getAll(USER_ID);
-        assertMatch(all, USER_MEAL_3, USER_MEAL_2, USER_MEAL_1);
+        assertMatch(all, userMeal3, userMeal2, userMeal1);
     }
 
     @Test
     public void getBetweenInclusive() {
         List<Meal> filtered = service.getBetweenInclusive(START_DATE, END_DATE, ADMIN_ID);
-        assertMatch(filtered, ADMIN_MEAL_7);
+        assertMatch(filtered, adminMeal7, adminMeal5, adminMeal10);
+    }
+
+    @Test
+    public void getBetweenInclusiveWithNullLimits() {
+        List<Meal> filtered = service.getBetweenInclusive(null, null, ADMIN_ID);
+        assertMatch(filtered, adminMeal6, adminMeal4, adminMeal7, adminMeal5, adminMeal10, adminMeal9, adminMeal8);
     }
 
     @Test
