@@ -1,19 +1,56 @@
 package ru.javawebinar.topjava.model;
 
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
+import org.hibernate.validator.constraints.Range;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+@NamedQueries({
+        @NamedQuery(name = Meal.UPDATE, query = "UPDATE Meal u SET u.dateTime=:date_time, u.description=:description," +
+                " u.calories=:calories WHERE u.id=:id AND u.user.id=:user_id"),
+        @NamedQuery(name = Meal.GET_ONE, query = "SELECT u FROM Meal u WHERE u.id=:id AND u.user.id=:user_id"),
+        @NamedQuery(name = Meal.DELETE, query = "DELETE FROM Meal u WHERE u.id=:id AND u.user.id=:user_id"),
+        @NamedQuery(name = Meal.ALL_SORTED, query = "SELECT u FROM Meal u WHERE u.user.id=:user_id ORDER BY u.dateTime DESC"),
+        @NamedQuery(name = Meal.BETWEEN_SORTED, query = "SELECT u FROM Meal u WHERE u.user.id=:user_id AND u" +
+                ".dateTime>=:start_date AND u.dateTime<:end_date ORDER BY u.dateTime DESC"),
+})
+@Entity
+@Table(
+        name = "meals",
+        uniqueConstraints =
+                {@UniqueConstraint(columnNames = {"id", "date_time"}, name = "meals_unique_user_datetime_idx"),
+                        @UniqueConstraint(columnNames = {"id", "user_id"}, name =
+                                "meals_unique_userid_idx")
+                }
+)
 public class Meal extends AbstractBaseEntity {
+
+    public static final String ALL_SORTED = "Meal.getAllSorted";
+    public static final String BETWEEN_SORTED = "Meal.getFiltered";
+    public static final String DELETE = "Meal.delete";
+    public static final String GET_ONE = "Meal.get";
+    public static final String UPDATE = "Meal.update";
+
+    @Column(name = "date_time", nullable = false)
+    @NotNull
     private LocalDateTime dateTime;
 
+    @Column(name = "description", nullable = false)
+    @NotBlank
+    @Size(min = 3, max = 72)
     private String description;
 
+    @Column(name = "calories", nullable = false)
+    @Range(min = 10, max = 10000)
     private int calories;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", updatable = false)
     private User user;
 
     public Meal() {
