@@ -20,14 +20,11 @@ import java.time.LocalTime;
                 ".dateTime>=:start_date AND u.dateTime<:end_date ORDER BY u.dateTime DESC"),
 })
 @Entity
-@Table(
-        name = "meals",
-        uniqueConstraints =
-                {@UniqueConstraint(columnNames = {"id", "date_time"}, name = "meals_unique_user_datetime_idx"),
-                        @UniqueConstraint(columnNames = {"id", "user_id"}, name =
-                                "meals_unique_userid_idx")
-                }
-)
+@Table(name = "meals",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"id", "date_time"}, name = "meals_unique_user_datetime_idx"),
+                @UniqueConstraint(columnNames = {"id", "user_id"}, name = "meals_unique_userid_idx")
+        })
 public class Meal extends AbstractBaseEntity {
 
     public static final String ALL_SORTED = "Meal.getAllSorted";
@@ -42,11 +39,11 @@ public class Meal extends AbstractBaseEntity {
 
     @Column(name = "description", nullable = false)
     @NotBlank
-    @Size(min = 3, max = 72)
+    @Size(min = 2, max = 120)
     private String description;
 
     @Column(name = "calories", nullable = false)
-    @Range(min = 10, max = 10000)
+    @Range(min = 10, max = 5000)
     private int calories;
 
     @ManyToOne(fetch = FetchType.LAZY)
