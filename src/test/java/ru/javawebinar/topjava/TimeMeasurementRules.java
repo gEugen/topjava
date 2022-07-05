@@ -18,8 +18,7 @@ public class TimeMeasurementRules {
     public static final Stopwatch STOPWATCH = new Stopwatch() {
         @Override
         protected void finished(long nanos, Description description) {
-            String result = String.format("%-95s %7d", description.getDisplayName(),
-                    TimeUnit.NANOSECONDS.toMillis(nanos));
+            String result = String.format("%-95s %7d", description.getDisplayName(), TimeUnit.NANOSECONDS.toMillis(nanos));
             results.append(result).append('\n');
             log.info(result + " ms\n");
         }
