@@ -22,8 +22,7 @@ import java.time.LocalTime;
 @Entity
 @Table(name = "meals",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"id", "date_time"}, name = "meals_unique_user_datetime_idx"),
-                @UniqueConstraint(columnNames = {"id", "user_id"}, name = "meals_unique_userid_idx")
+                @UniqueConstraint(columnNames = {"user_id", "date_time"}, name = "meals_unique_user_datetime_idx")
         })
 public class Meal extends AbstractBaseEntity {
 
