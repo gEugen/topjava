@@ -11,9 +11,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @NamedQueries({
-        @NamedQuery(name = Meal.UPDATE, query = "UPDATE Meal u SET u.dateTime=:date_time, u.description=:description," +
-                " u.calories=:calories WHERE u.id=:id AND u.user.id=:user_id"),
-        @NamedQuery(name = Meal.GET_ONE, query = "SELECT u FROM Meal u WHERE u.id=:id AND u.user.id=:user_id"),
         @NamedQuery(name = Meal.DELETE, query = "DELETE FROM Meal u WHERE u.id=:id AND u.user.id=:user_id"),
         @NamedQuery(name = Meal.ALL_SORTED, query = "SELECT u FROM Meal u WHERE u.user.id=:user_id ORDER BY u.dateTime DESC"),
         @NamedQuery(name = Meal.BETWEEN_SORTED, query = "SELECT u FROM Meal u WHERE u.user.id=:user_id AND u" +
@@ -27,10 +24,10 @@ import java.time.LocalTime;
 public class Meal extends AbstractBaseEntity {
 
     public static final String ALL_SORTED = "Meal.getAllSorted";
+
     public static final String BETWEEN_SORTED = "Meal.getFiltered";
+
     public static final String DELETE = "Meal.delete";
-    public static final String GET_ONE = "Meal.get";
-    public static final String UPDATE = "Meal.update";
 
     @Column(name = "date_time", nullable = false)
     @NotNull
@@ -46,6 +43,7 @@ public class Meal extends AbstractBaseEntity {
     private int calories;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @NotNull
     @JoinColumn(name = "user_id", updatable = false)
     private User user;
 
