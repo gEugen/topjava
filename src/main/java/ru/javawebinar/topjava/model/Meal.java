@@ -11,10 +11,11 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @NamedQueries({
-        @NamedQuery(name = Meal.DELETE, query = "DELETE FROM Meal u WHERE u.id=:id AND u.user.id=:user_id"),
-        @NamedQuery(name = Meal.ALL_SORTED, query = "SELECT u FROM Meal u WHERE u.user.id=:user_id ORDER BY u.dateTime DESC"),
-        @NamedQuery(name = Meal.BETWEEN_SORTED, query = "SELECT u FROM Meal u WHERE u.user.id=:user_id AND u" +
-                ".dateTime>=:start_date AND u.dateTime<:end_date ORDER BY u.dateTime DESC"),
+        @NamedQuery(name = Meal.DELETE, query = "DELETE FROM Meal m WHERE m.id=:id AND m.user.id=:user_id"),
+        @NamedQuery(name = Meal.ALL_SORTED, query = "SELECT m FROM Meal m WHERE m.user.id=:user_id " +
+                "ORDER BY m.dateTime DESC"),
+        @NamedQuery(name = Meal.BETWEEN_SORTED, query = "SELECT m FROM Meal m WHERE m.user.id=:user_id " +
+                "AND m.dateTime>=:start_date AND m.dateTime<:end_date ORDER BY m.dateTime DESC"),
 })
 @Entity
 @Table(name = "meals",
@@ -44,7 +45,7 @@ public class Meal extends AbstractBaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @NotNull
-    @JoinColumn(name = "user_id", updatable = false)
+    @JoinColumn(name = "user_id", updatable = false, nullable = false)
     private User user;
 
     public Meal() {
