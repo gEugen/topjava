@@ -1,13 +1,12 @@
 package ru.javawebinar.topjava;
 
+import org.junit.AssumptionViolatedException;
 import org.junit.rules.Stopwatch;
 import org.junit.runner.Description;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class TimeMeasurementRule extends Stopwatch {
@@ -18,59 +17,79 @@ public class TimeMeasurementRule extends Stopwatch {
 
     private static final String SPACES = String.join("", Collections.nCopies(87, " "));
 
-    private static final Map<String, Row> results = new LinkedHashMap<>();
+    private static final StringBuilder results = new StringBuilder();
 
-    public static final String ANSI_RESET = "\u001B[0m";
+    private static final String ANSI_RESET = "\u001B[0m";
 
-    public static final String ANSI_RED = "\u001B[31m";
+    private static final String RED = "\u001B[38;5;1m";
 
-    public static final String ANSI_CYAN = "\u001B[36m";
+    private static final String CYAN = "\u001B[36m";
 
-    public static final String ANSI_WHITE = "\u001B[37m";
+    private static final String WHITE = "\u001B[38;5;255m";
+
+    private static final String GREY = "\u001B[38;5;247m";
 
     private static long totalTime;
 
+    static {
+        results.setLength(0);
+        results.append("\n" + CYAN)
+                .append(DELIMITERS)
+                .append("\n")
+                .append("Test")
+                .append(SPACES)
+                .append("Duration, ms\n")
+                .append(DELIMITERS)
+                .append(ANSI_RESET)
+                .append("\n");
+    }
+
     @Override
     protected void succeeded(long nanos, Description description) {
-        if (!"ru.javawebinar.topjava.service.MealServiceTest".equals(description.getDisplayName())) {
-            long time = TimeUnit.NANOSECONDS.toMillis(nanos);
-            totalTime = totalTime + time;
-            String result = String.format("%-95s %7d", description.getDisplayName(), time);
-            results.put(description.getDisplayName(), new Row(result, ANSI_WHITE));
-            log.info(result + " ms\n");
+        if (description.isTest()) {
+            results.append(WHITE)
+                    .append(getAndLogResult(nanos, description))
+                    .append("\n");
+        }
+    }
+
+    @Override
+    protected void failed(long nanos, Throwable e, Description description) {
+        if (description.isTest()) {
+            results.append(RED)
+                    .append(getAndLogResult(nanos, description))
+                    .append("\n");
+        }
+    }
+
+    @Override
+    protected void skipped(long nanos, AssumptionViolatedException e, Description description) {
+        if (description.isTest()) {
+            results.append(GREY)
+                    .append(getAndLogResult(nanos, description))
+                    .append("\n");
         }
     }
 
     @Override
     protected void finished(long nanos, Description description) {
-        if (!"ru.javawebinar.topjava.service.MealServiceTest".equals(description.getDisplayName())) {
-            if (!results.containsKey(description.getDisplayName())) {
-                long time = TimeUnit.NANOSECONDS.toMillis(nanos);
-                totalTime = totalTime + time;
-                String result = String.format("%-95s %7d", description.getDisplayName(), time);
-                results.put(description.getDisplayName(), new Row(result, ANSI_RED));
-                log.info(result + " ms\n");
-            }
-        } else {
-            System.out.println(ANSI_CYAN + DELIMITERS + ANSI_RESET);
-            System.out.println(ANSI_CYAN + "Test" + SPACES + "Duration, ms" + ANSI_RESET);
-            System.out.println(ANSI_CYAN + DELIMITERS + ANSI_RESET);
-            results.values().stream().map(row -> row.color + row.text + ANSI_RESET).forEach(System.out::println);
-            System.out.println(ANSI_CYAN + DELIMITERS + ANSI_RESET);
-            String result = String.format("%-92s %7d", "Total time", totalTime);
-            System.out.println(ANSI_CYAN + result + " ms" + ANSI_RESET);
-            System.out.println(ANSI_CYAN + DELIMITERS + ANSI_RESET);
-            System.out.println();
+        if (description.isSuite()) {
+            String result = String.format("%-95s %7d", "Total time", totalTime);
+            results.append(CYAN)
+                    .append(DELIMITERS)
+                    .append("\n")
+                    .append(result).append("\n")
+                    .append(DELIMITERS)
+                    .append(ANSI_RESET);
+            log.info(results + "");
         }
     }
 
-    private static class Row {
-        String text;
-        String color;
-
-        private Row(String text, String color) {
-            this.text = text;
-            this.color = color;
-        }
+    private String getAndLogResult(long nanos, Description description) {
+        long time = TimeUnit.NANOSECONDS.toMillis(nanos);
+        totalTime = totalTime + time;
+        String result = String.format("%-95s %7d", description.getDisplayName(), time);
+        log.info(result + " ms");
+        return result;
     }
 }
