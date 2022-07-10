@@ -46,29 +46,17 @@ public class TimeMeasurementRule extends Stopwatch {
 
     @Override
     protected void succeeded(long nanos, Description description) {
-        if (description.isTest()) {
-            results.append(WHITE)
-                    .append(getAndLogResult(nanos, description))
-                    .append("\n");
-        }
+        getAndLogResult(nanos, description, WHITE);
     }
 
     @Override
     protected void failed(long nanos, Throwable e, Description description) {
-        if (description.isTest()) {
-            results.append(RED)
-                    .append(getAndLogResult(nanos, description))
-                    .append("\n");
-        }
+        getAndLogResult(nanos, description, RED);
     }
 
     @Override
     protected void skipped(long nanos, AssumptionViolatedException e, Description description) {
-        if (description.isTest()) {
-            results.append(GREY)
-                    .append(getAndLogResult(nanos, description))
-                    .append("\n");
-        }
+        getAndLogResult(nanos, description, GREY);
     }
 
     @Override
@@ -81,15 +69,19 @@ public class TimeMeasurementRule extends Stopwatch {
                     .append(result).append("\n")
                     .append(DELIMITERS)
                     .append(ANSI_RESET);
-            log.info(results + "");
+            log.info(results.toString());
         }
     }
 
-    private String getAndLogResult(long nanos, Description description) {
-        long time = TimeUnit.NANOSECONDS.toMillis(nanos);
-        totalTime = totalTime + time;
-        String result = String.format("%-95s %7d", description.getDisplayName(), time);
-        log.info(result + " ms");
-        return result;
+    private void getAndLogResult(long nanos, Description description, String color) {
+        if (description.isTest()) {
+            long time = TimeUnit.NANOSECONDS.toMillis(nanos);
+            totalTime = totalTime + time;
+            String result = String.format("%-95s %7d", description.getDisplayName(), time);
+            log.info(result + " ms"); // выводит в дефаултном цвете
+            results.append(color)
+                    .append(result)
+                    .append("\n");
+        }
     }
 }
