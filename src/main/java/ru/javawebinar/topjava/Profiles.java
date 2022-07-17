@@ -24,4 +24,8 @@ public class Profiles {
             throw new IllegalStateException("Could not find DB driver");
         }
     }
+
+    public static String getActiveRepositoryProfile() {
+        return DATAJPA;
+    }
 }
