@@ -96,11 +96,11 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.data</groupId>-->
-<!--            <artifactId>spring-data-jpa</artifactId>-->
-<!--            <version>${spring-data-jpa.version}</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-jpa</artifactId>
+            <version>${spring-data-jpa.version}</version>
+        </dependency>
 
         <!--- ORM -->
         <dependency>
@@ -221,20 +221,9 @@
                     <scope>runtime</scope>
                 </dependency>
             </dependencies>
-<!--            <activation>-->
-<!--                <activeByDefault>true</activeByDefault>-->
-<!--            </activation>-->
-        </profile>
-
-        <profile>
-            <id>dataJpa</id>
-            <dependencies>
-                <dependency>
-                    <groupId>org.springframework.data</groupId>
-                    <artifactId>spring-data-jpa</artifactId>
-                    <version>${spring-data-jpa.version}</version>
-                </dependency>
-            </dependencies>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
         </profile>
     </profiles>
 
