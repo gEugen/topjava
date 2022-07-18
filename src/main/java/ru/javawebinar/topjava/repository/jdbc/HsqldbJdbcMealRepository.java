@@ -11,11 +11,11 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Repository
-@Profile("hsqldb")
+//@Repository
+//@Profile("hsqldb")
 public class HsqldbJdbcMealRepository extends AbstractJdbcMealRepository {
 
-    @Autowired
+//    @Autowired
     public HsqldbJdbcMealRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         super(jdbcTemplate, namedParameterJdbcTemplate);
     }

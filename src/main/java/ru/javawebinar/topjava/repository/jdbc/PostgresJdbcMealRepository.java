@@ -10,11 +10,11 @@ import ru.javawebinar.topjava.model.Meal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Repository
-@Profile("postgres")
+//@Repository
+//@Profile("postgres")
 public class PostgresJdbcMealRepository extends AbstractJdbcMealRepository {
 
-    @Autowired
+//    @Autowired
     public PostgresJdbcMealRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         super(jdbcTemplate, namedParameterJdbcTemplate);
     }
