@@ -21,4 +21,9 @@ public class DataJpaUserServiceTest extends AbstractUserServiceTest {
         User user = service.getWithMeals(USER_ID);
         USER_MATCHER_WITH_MEALS.assertMatch(user, userWithMeals);
     }
+
+    @Test
+    public void getWithNoMeals() {
+        USER_MATCHER_WITH_MEALS.assertMatch(service.getWithMeals(GUEST_ID), guest);
+    }
 }
