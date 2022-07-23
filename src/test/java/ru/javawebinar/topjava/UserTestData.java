@@ -26,8 +26,11 @@ public class UserTestData {
 
     public static final User userWithMeals = new User(USER_ID, "User", "user@yandex.ru", "password", Role.USER);
 
+    public static final User userWithEmptyMeals = new User(GUEST_ID, "Guest", "guest@gmail.com", "guest");
+
     static {
         userWithMeals.setMeals(meals);
+        userWithEmptyMeals.setMeals(Collections.emptyList());
     }
 
     public static User getNew() {
