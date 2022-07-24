@@ -12,15 +12,14 @@ import static ru.javawebinar.topjava.Profiles.HSQL_DB;
 
 @Repository
 @Profile(HSQL_DB)
-public class HsqldbJdbcMealRepository extends AbstractJdbcMealRepository {
+public class HsqldbJdbcMealRepository extends AbstractJdbcMealRepository<Timestamp> {
 
     public HsqldbJdbcMealRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         super(jdbcTemplate, namedParameterJdbcTemplate);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    <T> T getForDB(LocalDateTime dateTime) {
-        return (T) Timestamp.valueOf(dateTime);
+    Timestamp getForDB(LocalDateTime dateTime) {
+        return Timestamp.valueOf(dateTime);
     }
 }
