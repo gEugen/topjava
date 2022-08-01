@@ -5,6 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
 
@@ -20,6 +21,7 @@ import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalDate;
 import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTime;
 
 @Controller
+@RequestMapping(value = "/meals")
 public class JspMealController extends AbstractMealController {
 
     public JspMealController(MealService service) {
@@ -39,10 +41,10 @@ public class JspMealController extends AbstractMealController {
         } else {
             super.create(meal);
         }
-        return "redirect:meals";
+        return "redirect:/meals";
     }
 
-    @GetMapping("/meals")
+    @GetMapping
     public String getAll(Model model) {
         model.addAttribute("meals", super.getAll());
         return "meals";
@@ -73,7 +75,7 @@ public class JspMealController extends AbstractMealController {
     @GetMapping("/delete")
     public String delete(HttpServletRequest request) {
         super.delete(getId(request));
-        return "redirect:meals";
+        return "redirect:/meals";
     }
 
     private int getId(HttpServletRequest request) {
