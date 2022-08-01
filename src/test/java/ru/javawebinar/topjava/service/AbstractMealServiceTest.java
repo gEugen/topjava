@@ -1,7 +1,6 @@
 package ru.javawebinar.topjava.service;
 
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -12,12 +11,10 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 import javax.validation.ConstraintViolationException;
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.Arrays;
 
 import static java.time.LocalDateTime.of;
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
-import static ru.javawebinar.topjava.Profiles.JDBC;
 import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
 
@@ -111,14 +108,9 @@ public abstract class AbstractMealServiceTest extends AbstractServiceTest {
 
     @Test
     public void createWithException() throws Exception {
-        Assume.assumeTrue(isNotJdbc());
         validateRootCause(ConstraintViolationException.class, () -> service.create(new Meal(null, of(2015, Month.JUNE, 1, 18, 0), "  ", 300), USER_ID));
         validateRootCause(ConstraintViolationException.class, () -> service.create(new Meal(null, null, "Description", 300), USER_ID));
         validateRootCause(ConstraintViolationException.class, () -> service.create(new Meal(null, of(2015, Month.JUNE, 1, 18, 0), "Description", 9), USER_ID));
         validateRootCause(ConstraintViolationException.class, () -> service.create(new Meal(null, of(2015, Month.JUNE, 1, 18, 0), "Description", 5001), USER_ID));
-    }
-
-    private boolean isNotJdbc() {
-        return !Arrays.asList(env.getActiveProfiles()).contains(JDBC);
     }
 }

@@ -15,6 +15,8 @@ import ru.javawebinar.topjava.repository.MealRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static ru.javawebinar.topjava.util.ValidationUtil.beanValidate;
+
 @Repository
 @Transactional(readOnly = true)
 public class JdbcMealRepository implements MealRepository {
@@ -27,8 +29,6 @@ public class JdbcMealRepository implements MealRepository {
 
     private final SimpleJdbcInsert insertMeal;
 
-    private final BeanValidator validator;
-
     public JdbcMealRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.insertMeal = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("meals")
@@ -36,15 +36,12 @@ public class JdbcMealRepository implements MealRepository {
 
         this.jdbcTemplate = jdbcTemplate;
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-        this.validator = new BeanValidator();
     }
 
     @Override
     @Transactional
     public Meal save(Meal meal, int userId) {
-        if (validator.validate(meal) != 0) {
-            return null;
-        }
+        beanValidate(meal);
         MapSqlParameterSource map = new MapSqlParameterSource()
                 .addValue("id", meal.getId())
                 .addValue("description", meal.getDescription())

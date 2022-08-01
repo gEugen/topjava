@@ -21,6 +21,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
+import static ru.javawebinar.topjava.util.ValidationUtil.beanValidate;
+
 @Repository
 @Transactional(readOnly = true)
 public class JdbcUserRepository implements UserRepository {
@@ -33,8 +35,6 @@ public class JdbcUserRepository implements UserRepository {
 
     private final SimpleJdbcInsert insertUser;
 
-    private final BeanValidator validator;
-
     @Autowired
     public JdbcUserRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.insertUser = new SimpleJdbcInsert(jdbcTemplate)
@@ -43,15 +43,12 @@ public class JdbcUserRepository implements UserRepository {
 
         this.jdbcTemplate = jdbcTemplate;
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-        this.validator = new BeanValidator();
     }
 
     @Override
     @Transactional
     public User save(User user) {
-        if (validator.validate(user) != 0) {
-            return null;
-        }
+        beanValidate(user);
         BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(user);
         if (user.isNew()) {
             Number newKey = insertUser.executeAndReturnKey(parameterSource);
