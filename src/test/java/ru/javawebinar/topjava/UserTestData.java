@@ -32,7 +32,7 @@ public class UserTestData {
         updated.setCaloriesPerDay(330);
         updated.setPassword("newPass");
         updated.setEnabled(false);
-        updated.setRoles(List.of(new Role[]{Role.ADMIN, Role.USER}));
+        updated.setRoles(List.of(Role.ADMIN, Role.USER));
         return updated;
     }
 }

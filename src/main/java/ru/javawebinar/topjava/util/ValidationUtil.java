@@ -10,8 +10,6 @@ import java.util.Set;
 
 public class ValidationUtil {
 
-    private static Validator validator;
-
     private ValidationUtil() {
     }
 
@@ -58,8 +56,8 @@ public class ValidationUtil {
     }
 
     public static <T> void beanValidate(T t) {
-        try(ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
-            factory.getValidator();
+        try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+            Validator validator = factory.getValidator();
             Set<ConstraintViolation<T>> violations = validator.validate(t);
             if (violations.size() != 0) {
                 throw new ConstraintViolationException(violations);
