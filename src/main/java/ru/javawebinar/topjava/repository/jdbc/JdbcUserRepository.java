@@ -19,7 +19,10 @@ import ru.javawebinar.topjava.repository.UserRepository;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.beanValidate;
 
@@ -50,7 +53,8 @@ public class JdbcUserRepository implements UserRepository {
     public User save(User user) {
         beanValidate(user);
         BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(user);
-        if (user.isNew()) {
+        boolean isNew = user.isNew();
+        if (isNew) {
             Number newKey = insertUser.executeAndReturnKey(parameterSource);
             user.setId(newKey.intValue());
         } else if (namedParameterJdbcTemplate.update("""
@@ -59,7 +63,9 @@ public class JdbcUserRepository implements UserRepository {
                 """, parameterSource) == 0) {
             return null;
         }
-        batchInsert(user);
+        if (user.getRoles().size() > 0) {
+            batchInsert(user, isNew);
+        }
         return user;
     }
 
@@ -116,11 +122,12 @@ public class JdbcUserRepository implements UserRepository {
         user.setRoles(jdbcTemplate.queryForList("SELECT role FROM user_roles WHERE user_id=?", Role.class, user.getId()));
     }
 
-    private void batchInsert(User user) {
-        if (!user.isNew()) {
-            jdbcTemplate.update("DELETE FROM user_roles WHERE user_id=?", user.getId());
+    private void batchInsert(User user, boolean isNew) {
+        if (!isNew) {
+            if (get(user.getId()).getRoles().size() > 0) {
+                jdbcTemplate.update("DELETE FROM user_roles WHERE user_id=?", user.getId());
+            }
         }
-
         List<Role> roles = new ArrayList<>(user.getRoles());
         jdbcTemplate.batchUpdate(
                 "INSERT INTO user_roles (user_id, role) VALUES(?,?)", new BatchPreparedStatementSetter() {
