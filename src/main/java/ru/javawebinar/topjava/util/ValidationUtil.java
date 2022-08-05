@@ -5,10 +5,15 @@ import org.springframework.lang.NonNull;
 import ru.javawebinar.topjava.model.AbstractBaseEntity;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
-import javax.validation.*;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validation;
+import javax.validation.Validator;
 import java.util.Set;
 
 public class ValidationUtil {
+
+    static final Validator JDBC_ENTITY_FIELDS_VALIDATOR = Validation.buildDefaultValidatorFactory().getValidator();
 
     private ValidationUtil() {
     }
@@ -56,12 +61,9 @@ public class ValidationUtil {
     }
 
     public static <T> void beanValidate(T t) {
-        try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
-            Validator validator = factory.getValidator();
-            Set<ConstraintViolation<T>> violations = validator.validate(t);
-            if (violations.size() != 0) {
-                throw new ConstraintViolationException(violations);
-            }
+        Set<ConstraintViolation<T>> violations = JDBC_ENTITY_FIELDS_VALIDATOR.validate(t);
+        if (violations.size() != 0) {
+            throw new ConstraintViolationException(violations);
         }
     }
 }

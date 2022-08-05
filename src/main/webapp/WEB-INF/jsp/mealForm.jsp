@@ -1,10 +1,7 @@
-<%@ page import = "java.io.*,java.util.Locale" %>
-<%@ page import = "javax.servlet.*,javax.servlet.http.* "%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<fmt:setBundle basename="messages.app"/>
 
 <html>
 <jsp:include page="fragments/headTag.jsp"/>
@@ -14,17 +11,14 @@
 <section>
     <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.Meal" scope="request"/>
     <h2>
-        <%
-            if (meal.isNew()) {%>
-                <p><spring:message code="meal.create"/></p><%
-            } else {%>
-                <p><spring:message code="meal.edit"/></p><%
-            }
-        %>
+        <c:choose>
+            <c:when test="${meal.id == null}"><p><spring:message code="meal.create"/></p></c:when>
+            <c:otherwise><p><spring:message code="meal.edit"/></c:otherwise>
+        </c:choose>
     </h2>
     <hr/>
 
-    <form method="post" action="save">
+    <form method="post" action="meals">
         <input type="hidden" name="id" value="${meal.id}">
         <dl>
             <dt><spring:message code="meal.dateTime"/>:</dt>

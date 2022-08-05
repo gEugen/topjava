@@ -33,13 +33,24 @@ public class UserTestData {
     }
 
     public static User getUpdated() {
+        User updated = getUser();
+        updated.setRoles(List.of(Role.ADMIN, Role.USER));
+        return updated;
+    }
+
+    public static User getUpdatedUserWithoutRoles() {
+        User updated = getUser();
+        updated.setRoles(List.of());
+        return updated;
+    }
+
+    private static User getUser() {
         User updated = new User(user);
         updated.setEmail("update@gmail.com");
         updated.setName("UpdatedName");
         updated.setCaloriesPerDay(330);
         updated.setPassword("newPass");
         updated.setEnabled(false);
-        updated.setRoles(List.of(Role.ADMIN, Role.USER));
         return updated;
     }
 }

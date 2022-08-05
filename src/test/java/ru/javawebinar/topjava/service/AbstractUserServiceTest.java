@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
@@ -23,6 +24,11 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
 
     @Autowired
     protected UserService service;
+
+    @Before
+    public void setupCache() {
+        cacheManager.getCache("users").clear();
+    }
 
     @Test
     public void create() {
@@ -113,5 +119,12 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
     @Test
     public void getByNonExistentEmail() {
         assertThrows(NotFoundException.class, () -> service.getByEmail(NOT_EXIST_EMAIL));
+    }
+
+    @Test
+    public void updateWithDeleteRoles() {
+        User updated = getUpdatedUserWithoutRoles();
+        service.update(updated);
+        USER_MATCHER.assertMatch(service.get(USER_ID), getUpdatedUserWithoutRoles());
     }
 }

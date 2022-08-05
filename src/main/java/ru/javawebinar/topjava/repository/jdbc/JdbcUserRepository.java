@@ -63,9 +63,7 @@ public class JdbcUserRepository implements UserRepository {
                 """, parameterSource) == 0) {
             return null;
         }
-        if (user.getRoles().size() > 0) {
-            batchInsert(user, isNew);
-        }
+        batchInsert(user, isNew);
         return user;
     }
 
@@ -124,9 +122,7 @@ public class JdbcUserRepository implements UserRepository {
 
     private void batchInsert(User user, boolean isNew) {
         if (!isNew) {
-            if (get(user.getId()).getRoles().size() > 0) {
-                jdbcTemplate.update("DELETE FROM user_roles WHERE user_id=?", user.getId());
-            }
+            jdbcTemplate.update("DELETE FROM user_roles WHERE user_id=?", user.getId());
         }
         List<Role> roles = new ArrayList<>(user.getRoles());
         jdbcTemplate.batchUpdate(
