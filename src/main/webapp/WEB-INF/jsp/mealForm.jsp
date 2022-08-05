@@ -11,10 +11,7 @@
 <section>
     <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.Meal" scope="request"/>
     <h2>
-        <c:choose>
-            <c:when test="${meal.id == null}"><p><spring:message code="meal.create"/></p></c:when>
-            <c:otherwise><p><spring:message code="meal.edit"/></c:otherwise>
-        </c:choose>
+        <spring:message code="${meal.id == null ? 'meal.create' : 'meal.edit'}"/>
     </h2>
     <hr/>
 
