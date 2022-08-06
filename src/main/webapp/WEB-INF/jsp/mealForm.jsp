@@ -1,6 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <html>
@@ -11,7 +10,7 @@
 <section>
     <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.Meal" scope="request"/>
     <h2>
-        <spring:message code="${meal.id == null ? 'meal.create' : 'meal.edit'}"/>
+        <spring:message code="${meal.isNew() == null ? 'meal.create' : 'meal.edit'}"/>
     </h2>
     <hr/>
 

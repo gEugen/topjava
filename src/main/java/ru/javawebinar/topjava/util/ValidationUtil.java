@@ -13,7 +13,7 @@ import java.util.Set;
 
 public class ValidationUtil {
 
-    static final Validator JDBC_ENTITY_FIELDS_VALIDATOR = Validation.buildDefaultValidatorFactory().getValidator();
+    static final Validator VALIDATOR = Validation.buildDefaultValidatorFactory().getValidator();
 
     private ValidationUtil() {
     }
@@ -61,8 +61,8 @@ public class ValidationUtil {
     }
 
     public static <T> void beanValidate(T t) {
-        Set<ConstraintViolation<T>> violations = JDBC_ENTITY_FIELDS_VALIDATOR.validate(t);
-        if (violations.size() != 0) {
+        Set<ConstraintViolation<T>> violations = VALIDATOR.validate(t);
+        if (!violations.isEmpty()) {
             throw new ConstraintViolationException(violations);
         }
     }
