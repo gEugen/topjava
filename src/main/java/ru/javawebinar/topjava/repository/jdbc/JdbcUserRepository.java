@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
@@ -118,7 +119,7 @@ public class JdbcUserRepository implements UserRepository {
         if (!isNew) {
             jdbcTemplate.update("DELETE FROM user_roles WHERE user_id=?", user.getId());
         }
-        if (user.getRoles() != null && !user.getRoles().isEmpty()) {
+        if (!CollectionUtils.isEmpty(user.getRoles())) {
             List<Role> roles = new ArrayList<>(user.getRoles());
             jdbcTemplate.batchUpdate(
                     "INSERT INTO user_roles (user_id, role) VALUES(?,?)", new BatchPreparedStatementSetter() {
