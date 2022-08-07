@@ -118,7 +118,7 @@ public class JdbcUserRepository implements UserRepository {
         if (!isNew) {
             jdbcTemplate.update("DELETE FROM user_roles WHERE user_id=?", user.getId());
         }
-        if (!user.getRoles().isEmpty()) {
+        if (user.getRoles() != null && !user.getRoles().isEmpty()) {
             List<Role> roles = new ArrayList<>(user.getRoles());
             jdbcTemplate.batchUpdate(
                     "INSERT INTO user_roles (user_id, role) VALUES(?,?)", new BatchPreparedStatementSetter() {
