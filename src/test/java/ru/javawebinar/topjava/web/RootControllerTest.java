@@ -37,6 +37,7 @@ class RootControllerTest extends AbstractControllerTest {
 
     @Test
     void getMeals() throws Exception {
+        SecurityUtil.setAuthUserId(USER_ID);
         perform(get("/meals"))
                 .andDo(print())
                 .andExpect(status().isOk())
