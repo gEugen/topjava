@@ -1,8 +1,12 @@
 package ru.javawebinar.topjava.web.user;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.javawebinar.topjava.UserTestData;
@@ -16,6 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.javawebinar.topjava.MealTestData.MEAL_MATCHER;
+import static ru.javawebinar.topjava.MealTestData.adminMeals;
 import static ru.javawebinar.topjava.UserTestData.*;
 
 class AdminRestControllerTest extends AbstractControllerTest {
@@ -83,5 +89,20 @@ class AdminRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(USER_MATCHER.contentJson(admin, guest, user));
+    }
+
+    @Test
+    void getWithMeals() throws Exception {
+        MvcResult mvcResult = perform(MockMvcRequestBuilders.get(REST_URL + "with-meals?id=" + ADMIN_ID))
+                .andExpect(status().isOk())
+                .andDo(print())
+                // https://jira.spring.io/browse/SPR-14472
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andReturn();
+        // https://stackoverflow.com/questions/69811740/how-do-i-enable-the-jsr310-support-for-localdate-using-jackson
+        ObjectMapper mapper = JsonMapper.builder().addModule(new JavaTimeModule()).build();
+        User user = mapper.readerFor(User.class).readValue(mvcResult.getResponse().getContentAsString());
+        USER_MATCHER.assertMatch(user, admin);
+        MEAL_MATCHER.assertMatch(user.getMeals(), adminMeals);
     }
 }

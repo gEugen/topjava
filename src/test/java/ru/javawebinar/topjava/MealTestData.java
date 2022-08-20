@@ -42,6 +42,8 @@ public class MealTestData {
 
     public static final List<MealTo> betweenMealTos = List.of(mealTo3, mealTo2, mealTo1);
 
+    public static final List<Meal> adminMeals = List.of(adminMeal2, adminMeal1);
+
     public static Meal getNew() {
         return new Meal(null, of(2020, Month.FEBRUARY, 1, 18, 0), "Созданный ужин", 300);
     }
