@@ -95,8 +95,8 @@ public class MealRestControllerTest extends AbstractControllerTest {
         SecurityUtil.setAuthUserId(USER_ID);
         perform(
                 MockMvcRequestBuilders.get(
-                        REST_URL + "between?startDate=" + LocalDate.of(2020, Month.JANUARY, 30) + "&startTime=" + LocalTime.MIN +
-                                "&endDate=" + LocalDate.of(2020, Month.JANUARY, 30) + "&endTime=" + LocalTime.MAX))
+                        REST_URL + "between?startDate=" + LocalDate.of(2020, Month.JANUARY, 30) + "&startTime="
+                                + LocalTime.MIN + "&endDate=" + LocalDate.of(2020, Month.JANUARY, 30) + "&endTime="))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(MEAL_TO_MATCHER.contentJson(betweenMealTos));

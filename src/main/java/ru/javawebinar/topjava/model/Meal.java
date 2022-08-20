@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.validator.constraints.Range;
@@ -74,10 +75,12 @@ public class Meal extends AbstractBaseEntity {
         return calories;
     }
 
+    @JsonIgnore
     public LocalDate getDate() {
         return dateTime.toLocalDate();
     }
 
+    @JsonIgnore
     public LocalTime getTime() {
         return dateTime.toLocalTime();
     }
