@@ -1,13 +1,14 @@
-package ru.javawebinar.topjava.web.json;
+package ru.javawebinar.topjava.web.formatters;
 
 import org.springframework.format.Formatter;
+import ru.javawebinar.topjava.util.DateTimeUtil;
 
 import java.text.ParseException;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-public class CustomLocalTimeFormatter implements Formatter<LocalTime> {
+public class LocalTimeFormatter implements Formatter<LocalTime> {
 
     @Override
     public String print(LocalTime localTime, Locale locale) {
@@ -16,6 +17,6 @@ public class CustomLocalTimeFormatter implements Formatter<LocalTime> {
 
     @Override
     public LocalTime parse(String localTimeText, Locale locale) throws ParseException {
-        return LocalTime.parse(localTimeText, DateTimeFormatter.ISO_LOCAL_TIME);
+        return DateTimeUtil.parseLocalTime(localTimeText);
     }
 }
