@@ -12,6 +12,7 @@ import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.service.UserService;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
+import ru.javawebinar.topjava.web.SecurityUtil;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -55,7 +56,8 @@ class ProfileRestControllerTest extends AbstractControllerTest {
 
     @Test
     void getWithMeals() throws Exception {
-        MvcResult mvcResult = perform(MockMvcRequestBuilders.get(REST_URL + "/with-meals?id=" + USER_ID))
+        MvcResult mvcResult = perform(MockMvcRequestBuilders.get(REST_URL + "/" + SecurityUtil.authUserId() + "/with" +
+                "-meals"))
                 .andExpect(status().isOk())
                 .andDo(print())
                 // https://jira.spring.io/browse/SPR-14472

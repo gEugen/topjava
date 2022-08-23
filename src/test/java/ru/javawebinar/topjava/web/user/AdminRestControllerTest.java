@@ -93,7 +93,7 @@ class AdminRestControllerTest extends AbstractControllerTest {
 
     @Test
     void getWithMeals() throws Exception {
-        MvcResult mvcResult = perform(MockMvcRequestBuilders.get(REST_URL + "with-meals?id=" + ADMIN_ID))
+        MvcResult mvcResult = perform(MockMvcRequestBuilders.get(REST_URL + ADMIN_ID + "/with-meals"))
                 .andExpect(status().isOk())
                 .andDo(print())
                 // https://jira.spring.io/browse/SPR-14472
