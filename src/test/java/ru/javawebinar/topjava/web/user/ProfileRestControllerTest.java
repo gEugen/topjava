@@ -1,12 +1,9 @@
 package ru.javawebinar.topjava.web.user;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.User;
@@ -56,16 +53,13 @@ class ProfileRestControllerTest extends AbstractControllerTest {
 
     @Test
     void getWithMeals() throws Exception {
-        MvcResult mvcResult = perform(MockMvcRequestBuilders.get(REST_URL + "/" + SecurityUtil.authUserId() + "/with" +
+        ResultActions action = perform(MockMvcRequestBuilders.get(REST_URL + "/" + SecurityUtil.authUserId() + "/with" +
                 "-meals"))
                 .andExpect(status().isOk())
                 .andDo(print())
                 // https://jira.spring.io/browse/SPR-14472
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andReturn();
-        // https://stackoverflow.com/questions/69811740/how-do-i-enable-the-jsr310-support-for-localdate-using-jackson
-        ObjectMapper mapper = JsonMapper.builder().addModule(new JavaTimeModule()).build();
-        User user = mapper.readerFor(User.class).readValue(mvcResult.getResponse().getContentAsString());
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+        User user = USER_MATCHER.readFromJson(action);
         USER_MATCHER.assertMatch(user, UserTestData.user);
         MEAL_MATCHER.assertMatch(user.getMeals(), meals);
     }
