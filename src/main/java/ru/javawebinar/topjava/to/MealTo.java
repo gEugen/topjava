@@ -60,4 +60,20 @@ public class MealTo {
                 ", excess=" + excess +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        MealTo that = (MealTo) o;
+        return (id != null && id.equals(that.id))
+                && (dateTime != null && dateTime.equals(that.dateTime))
+                && (description != null && description.equals(that.description))
+                && (calories == that.calories)
+                && (excess == that.excess);
+    }
 }
