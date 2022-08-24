@@ -34,7 +34,7 @@ public class MealTestData {
 
     public static final List<MealTo> mealTos = MealsUtil.getTos(meals, SecurityUtil.authUserCaloriesPerDay());
 
-    public static final List<MealTo> betweenMealTos = MealsUtil.getTos(List.of(meal3, meal2, meal1), SecurityUtil.authUserCaloriesPerDay());
+    public static final List<MealTo> betweenMealTos = List.of(createTo(meal5, true), createTo(meal1, false));
 
     public static final List<Meal> adminMeals = List.of(adminMeal2, adminMeal1);
 
@@ -44,5 +44,9 @@ public class MealTestData {
 
     public static Meal getUpdated() {
         return new Meal(MEAL1_ID, meal1.getDateTime().plus(2, ChronoUnit.MINUTES), "Обновленный завтрак", 200);
+    }
+
+    private static MealTo createTo(Meal meal, boolean excess) {
+        return new MealTo(meal.getId(), meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
     }
 }

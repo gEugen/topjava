@@ -13,10 +13,6 @@ import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.SecurityUtil;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.Month;
-
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -35,7 +31,7 @@ public class MealRestControllerTest extends AbstractControllerTest {
     @Test
     void get() throws Exception {
         SecurityUtil.setAuthUserId(ADMIN_ID);
-        perform(MockMvcRequestBuilders.get(REST_URL + adminMeal1.getId()))
+        perform(MockMvcRequestBuilders.get(REST_URL + ADMIN_MEAL_ID))
                 .andExpect(status().isOk())
                 .andDo(print())
                 // https://jira.spring.io/browse/SPR-14472
@@ -46,10 +42,10 @@ public class MealRestControllerTest extends AbstractControllerTest {
     @Test
     void delete() throws Exception {
         SecurityUtil.setAuthUserId(ADMIN_ID);
-        perform(MockMvcRequestBuilders.delete(REST_URL + adminMeal1.getId()))
+        perform(MockMvcRequestBuilders.delete(REST_URL + ADMIN_MEAL_ID))
                 .andDo(print())
                 .andExpect(status().isNoContent());
-        assertThrows(NotFoundException.class, () -> mealService.get(adminMeal1.getId(), ADMIN_ID));
+        assertThrows(NotFoundException.class, () -> mealService.get(ADMIN_MEAL_ID, ADMIN_ID));
     }
 
     @Test
@@ -94,11 +90,23 @@ public class MealRestControllerTest extends AbstractControllerTest {
     void getBetween() throws Exception {
         SecurityUtil.setAuthUserId(USER_ID);
         perform(
-                MockMvcRequestBuilders.get(
-                        REST_URL + "between?startDate=" + LocalDate.of(2020, Month.JANUARY, 30) + "&startTime="
-                                + LocalTime.MIN + "&endDate=" + LocalDate.of(2020, Month.JANUARY, 30) + "&endTime="))
+                MockMvcRequestBuilders.get(REST_URL + "between")
+                        .param("startDate", "2020-01-30")
+                        .param("startTime", "10:00")
+                        .param("endDate", "2020-01-31")
+                        .param("endTime", "13:00"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(MEAL_TO_MATCHER.contentJson(betweenMealTos));
+    }
+
+    @Test
+    void getBetweenWithEmptyAndNullParams() throws Exception {
+        SecurityUtil.setAuthUserId(USER_ID);
+        perform(
+                MockMvcRequestBuilders.get(REST_URL + "between?startDate="))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(MEAL_TO_MATCHER.contentJson(mealTos));
     }
 }
