@@ -1,6 +1,5 @@
 package ru.javawebinar.topjava.web;
 
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
@@ -13,7 +12,6 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import ru.javawebinar.topjava.ActiveDbProfileResolver;
 import ru.javawebinar.topjava.Profiles;
-import ru.javawebinar.topjava.TimingExtension;
 
 import javax.annotation.PostConstruct;
 
@@ -26,7 +24,6 @@ import javax.annotation.PostConstruct;
 //@ExtendWith(SpringExtension.class)
 @Transactional
 @ActiveProfiles(resolver = ActiveDbProfileResolver.class, profiles = Profiles.REPOSITORY_IMPLEMENTATION)
-@ExtendWith(TimingExtension.class)
 public abstract class AbstractControllerTest {
 
     private static final CharacterEncodingFilter CHARACTER_ENCODING_FILTER = new CharacterEncodingFilter();
