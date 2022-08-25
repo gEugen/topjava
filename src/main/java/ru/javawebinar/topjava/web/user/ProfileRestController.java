@@ -37,6 +37,6 @@ public class ProfileRestController extends AbstractUserController {
     @Override
     @GetMapping("/{id}/with-meals")
     public User getWithMeals(@PathVariable int id) {
-        return super.getWithMeals(id);
+        return super.getWithMeals(authUserId());
     }
 }
