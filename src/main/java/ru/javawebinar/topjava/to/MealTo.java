@@ -64,22 +64,18 @@ public class MealTo {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        MealTo that = (MealTo) o;
-        return (excess == that.excess)
-                && (calories == that.calories)
-                && ((id == null && that.id == null) || (id != null && id.equals(that.id)))
-                && ((dateTime == null && that.dateTime == null) || (dateTime != null && dateTime.equals(that.dateTime)))
-                && ((description == null && that.description == null) || (description != null && description.equals(that.description)));
+        if (this == o) return true;
+        if (!(o instanceof MealTo mealTo)) return false;
+        return getCalories() == mealTo.getCalories()
+                && isExcess() == mealTo.isExcess()
+                && Objects.equals(getId(), mealTo.getId())
+                && Objects.equals(getDateTime(), mealTo.getDateTime())
+                && Objects.equals(getDescription(), mealTo.getDescription());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getDateTime(), getDescription(), getCalories(), isExcess());
+        return Objects.hash(id, dateTime, description, calories, excess);
     }
+
 }

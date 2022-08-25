@@ -54,7 +54,7 @@ class ProfileRestControllerTest extends AbstractControllerTest {
     @Test
     void getWithMeals() throws Exception {
         Assumptions.assumeTrue(isDataJpaBased());
-        ResultActions action = perform(MockMvcRequestBuilders.get(REST_URL + "/" + USER_ID + "/with-meals"))
+        ResultActions action = perform(MockMvcRequestBuilders.get(REST_URL + "/with-meals"))
                 .andExpect(status().isOk())
                 .andDo(print())
                 // https://jira.spring.io/browse/SPR-14472
