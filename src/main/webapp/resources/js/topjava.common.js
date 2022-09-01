@@ -27,7 +27,11 @@ function deleteRow(id) {
         url: ctx.ajaxUrl + id,
         type: "DELETE"
     }).done(function () {
-        updateTable();
+        if (ctx.ajaxUrl === "profile/meals/") {
+            dataFilter();
+        } else {
+            updateTable();
+        }
         successNoty("Deleted");
     });
 }
@@ -45,7 +49,12 @@ function save() {
         data: form.serialize()
     }).done(function () {
         $("#editRow").modal("hide");
-        updateTable();
+        if (ctx.ajaxUrl === "profile/meals/") {
+            dataFilter();
+        } else {
+            updateTable();
+        }
+
         successNoty("Saved");
     });
 }
