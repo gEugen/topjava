@@ -27,18 +27,8 @@ function deleteRow(id) {
         url: ctx.ajaxUrl + id,
         type: "DELETE"
     }).done(function () {
-        if (ctx.ajaxUrl === "profile/meals/") {
-            dataFilter();
-        } else {
-            updateTable();
-        }
+        getAllOrFiltered();
         successNoty("Deleted");
-    });
-}
-
-function updateTable() {
-    $.get(ctx.ajaxUrl, function (data) {
-        ctx.datatableApi.clear().rows.add(data).draw();
     });
 }
 
@@ -49,14 +39,27 @@ function save() {
         data: form.serialize()
     }).done(function () {
         $("#editRow").modal("hide");
-        if (ctx.ajaxUrl === "profile/meals/") {
-            dataFilter();
-        } else {
-            updateTable();
-        }
-
+        getAllOrFiltered();
         successNoty("Saved");
     });
+}
+
+function getAllOrFiltered() {
+    if (ctx.ajaxUrl === "profile/meals/") {
+        getFiltered();
+    } else {
+        getAll();
+    }
+}
+
+function getAll() {
+    $.get(ctx.ajaxUrl, function () {
+        updateTable();
+    });
+}
+
+function updateTable(data) {
+    ctx.datatableApi.clear().rows.add(data).draw();
 }
 
 let failedNote;

@@ -5,27 +5,23 @@ const ctx = {
     ajaxUrl: mealsAjaxUrl
 };
 
-function dataFilter() {
+function getFiltered() {
     $.ajax({
         type: "GET",
         url: mealsAjaxUrl + "filter",
         data: $("#filter").serialize()
-    }).done(updateTableByFilter);
-}
-function updateTableByFilter(data) {
-    $("#datatable").dataTable().api().clear().rows.add(data).draw();
+    }).done(updateTable);
 }
 
 function filterReset() {
     $("#filter")[0].reset();
-    $.get(mealsAjaxUrl, dataFilter);
+    getFiltered();
 }
 
 // $(document).ready(function () {
 $(function () {
-    makeEditable({
-        ajaxUrl: mealsAjaxUrl,
-        datatableApi: $("#datatable").DataTable({
+    makeEditable(
+        $("#datatable").DataTable({
             "paging": false,
             "info": true,
             "columns": [
@@ -50,9 +46,9 @@ $(function () {
             "order": [
                 [
                     0,
-                    "dec"
+                    "desc"
                 ]
             ]
         }),
-    });
+    );
 });
