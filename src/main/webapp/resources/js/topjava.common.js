@@ -44,20 +44,6 @@ function save() {
     });
 }
 
-function getAllOrFiltered() {
-    if (ctx.ajaxUrl === "profile/meals/") {
-        getFiltered();
-    } else {
-        getAll();
-    }
-}
-
-function getAll() {
-    $.get(ctx.ajaxUrl, function () {
-        updateTable();
-    });
-}
-
 function updateTable(data) {
     ctx.datatableApi.clear().rows.add(data).draw();
 }

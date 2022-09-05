@@ -45,7 +45,7 @@
                     <span class="fa fa-remove"></span>
                     <spring:message code="common.cancel"/>
                 </button>
-                <button class="btn btn-primary" onclick="getFiltered()">
+                <button class="btn btn-primary" onclick="getAllOrFiltered()">
                     <span class="fa fa-filter"></span>
                     <spring:message code="meal.filter"/>
                 </button>

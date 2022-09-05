@@ -5,7 +5,7 @@ const ctx = {
     ajaxUrl: mealsAjaxUrl
 };
 
-function getFiltered() {
+function getAllOrFiltered() {
     $.ajax({
         type: "GET",
         url: mealsAjaxUrl + "filter",
@@ -15,7 +15,7 @@ function getFiltered() {
 
 function filterReset() {
     $("#filter")[0].reset();
-    getFiltered();
+    getAllOrFiltered();
 }
 
 // $(document).ready(function () {

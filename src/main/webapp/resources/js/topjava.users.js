@@ -5,6 +5,13 @@ const ctx = {
     ajaxUrl: userAjaxUrl
 };
 
+function getAllOrFiltered() {
+    $.ajax({
+        type: "GET",
+        url: userAjaxUrl
+    }).done(updateTable);
+}
+
 function enable(checkbox, id) {
     const enabled = checkbox.is(":checked");
     $.ajax({
