@@ -5,11 +5,11 @@ const ctx = {
     ajaxUrl: userAjaxUrl
 };
 
-function getAllOrFiltered() {
+function updateTable() {
     $.ajax({
         type: "GET",
         url: userAjaxUrl
-    }).done(updateTable);
+    }).done(refreshTableView);
 }
 
 function enable(checkbox, id) {

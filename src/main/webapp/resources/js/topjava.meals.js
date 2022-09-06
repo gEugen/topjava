@@ -5,17 +5,17 @@ const ctx = {
     ajaxUrl: mealsAjaxUrl
 };
 
-function getAllOrFiltered() {
+function updateTable() {
     $.ajax({
         type: "GET",
         url: mealsAjaxUrl + "filter",
         data: $("#filter").serialize()
-    }).done(updateTable);
+    }).done(refreshTableView);
 }
 
 function filterReset() {
     $("#filter")[0].reset();
-    getAllOrFiltered();
+    updateTable();
 }
 
 // $(document).ready(function () {
