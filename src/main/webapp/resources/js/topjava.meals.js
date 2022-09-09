@@ -69,3 +69,37 @@ $(function () {
         })
     );
 });
+
+$(function(){
+    $("#dateTime").datetimepicker({
+        format:'Y-m-d H:i'
+    });
+});
+
+$(function(){
+    $("#startDate").datetimepicker({
+        timepicker:false,
+        format:'Y-m-d'
+    });
+});
+
+$(function(){
+    $("#endDate").datetimepicker({
+        timepicker:false,
+        format:'Y-m-d'
+    });
+});
+
+$(function(){
+    $("#startTime").datetimepicker({
+        datepicker:false,
+        format:'H:i'
+    });
+});
+
+$(function(){
+    $("#endTime").datetimepicker({
+        datepicker:false,
+        format:'H:i'
+    });
+});
