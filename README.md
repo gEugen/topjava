@@ -1,4 +1,5 @@
 [//]: # ([![Codacy Badge]&#40;https://app.codacy.com/project/badge/Grade/bee16f3145654047a0505c62aeefd8a2&#41;]&#40;https://www.codacy.com/gh/JavaWebinar/topjava/dashboard&#41;)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/260ad73493644fff87854906bfdd4c45)](https://app.codacy.com/gh/gEugen/topjava?utm_source=github.com&utm_medium=referral&utm_content=gEugen/topjava&utm_campaign=Badge_Grade_Settings)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/1a2f64efada64792ba2c32547e792231)](https://www.codacy.com/gh/gEugen/topjava/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=gEugen/topjava&amp;utm_campaign=Badge_Grade)
 
 Java Enterprise Online Project
