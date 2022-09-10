@@ -71,6 +71,7 @@ $(function () {
 });
 
 $(function(){
+    $.datetimepicker.setLocale(navigator.language.substring(0, 2));
     $("#dateTime").datetimepicker({
         format:'Y-m-d H:i'
     });
