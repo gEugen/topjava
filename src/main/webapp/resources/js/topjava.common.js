@@ -52,7 +52,7 @@ function save() {
     $.ajax({
         type: "POST",
         url: ctx.ajaxUrl,
-        data: form.serialize().replace("%20", "T")
+        data: form.serialize()
     }).done(function () {
         $("#editRow").modal("hide");
         ctx.updateTable();

@@ -31,7 +31,7 @@ $(function () {
                     "data": "dateTime",
                     "render": function (data, type, row) {
                         if (type === "display") {
-                            return data.replace("T", " ");
+                            return data.replace("T", " ").substring(0, 16);
                         }
                         return data;
                     }
@@ -60,11 +60,7 @@ $(function () {
                 ]
             ],
             "createdRow": function (row, data, dataIndex) {
-                if (data.excess) {
-                    $(row).attr("data-meal-excess", true);
-                } else {
-                    $(row).attr("data-meal-excess", false);
-                }
+                $(row).attr("data-meal-excess", data.excess);
             }
         })
     );
@@ -73,34 +69,48 @@ $(function () {
 $(function(){
     $.datetimepicker.setLocale(navigator.language.substring(0, 2));
     $("#dateTime").datetimepicker({
-        format:'Y-m-d H:i'
+        format:"Y-m-d H:i"
     });
 });
 
 $(function(){
     $("#startDate").datetimepicker({
-        timepicker:false,
-        format:'Y-m-d'
+        format:"Y-m-d",
+        onShow:function(ct){
+            this.setOptions({
+                maxDate:$("#endDate").val()?$("#endDate").val():false
+            })
+        },
+        timepicker:false
     });
-});
-
-$(function(){
     $("#endDate").datetimepicker({
-        timepicker:false,
-        format:'Y-m-d'
+        format:"Y-m-d",
+        onShow:function(ct){
+            this.setOptions({
+                minDate:$("#startDate").val()?$("#startDate").val():false
+            })
+        },
+        timepicker:false
     });
 });
 
 $(function(){
     $("#startTime").datetimepicker({
-        datepicker:false,
-        format:'H:i'
+        format:"H:i",
+        onShow:function(ct){
+            this.setOptions({
+                maxTime:$("#endTime").val()?$("#endTime").val():false
+            })
+        },
+        datepicker:false
     });
-});
-
-$(function(){
     $("#endTime").datetimepicker({
-        datepicker:false,
-        format:'H:i'
+        format:"H:i",
+        onShow:function(ct){
+            this.setOptions({
+                minTime:$("#startTime").val()?$("#startTime").val():false
+            })
+        },
+        datepicker:false
     });
 });
