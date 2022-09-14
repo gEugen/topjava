@@ -31,7 +31,7 @@ $(function () {
                     "data": "dateTime",
                     "render": function (data, type, row) {
                         if (type === "display") {
-                            return data.replace("T", " ").substring(0, 16);
+                            return formatDateTime(data);
                         }
                         return data;
                     }
@@ -66,51 +66,55 @@ $(function () {
     );
 });
 
-$(function(){
+function formatDateTime(dateTime) {
+    return dateTime.replace("T", " ").substring(0, 16);
+}
+
+$(function () {
     $.datetimepicker.setLocale(navigator.language.substring(0, 2));
     $("#dateTime").datetimepicker({
-        format:"Y-m-d H:i"
+        format: "Y-m-d H:i"
     });
 });
 
-$(function(){
+$(function () {
     $("#startDate").datetimepicker({
-        format:"Y-m-d",
-        onShow:function(ct){
+        format: "Y-m-d",
+        onShow: function (ct) {
             this.setOptions({
-                maxDate:$("#endDate").val()?$("#endDate").val():false
+                maxDate: $("#endDate").val() ? $("#endDate").val() : false
             })
         },
-        timepicker:false
+        timepicker: false
     });
     $("#endDate").datetimepicker({
-        format:"Y-m-d",
-        onShow:function(ct){
+        format: "Y-m-d",
+        onShow: function (ct) {
             this.setOptions({
-                minDate:$("#startDate").val()?$("#startDate").val():false
+                minDate: $("#startDate").val() ? $("#startDate").val() : false
             })
         },
-        timepicker:false
+        timepicker: false
     });
 });
 
-$(function(){
+$(function () {
     $("#startTime").datetimepicker({
-        format:"H:i",
-        onShow:function(ct){
+        format: "H:i",
+        onShow: function (ct) {
             this.setOptions({
-                maxTime:$("#endTime").val()?$("#endTime").val():false
+                maxTime: $("#endTime").val() ? $("#endTime").val() : false
             })
         },
-        datepicker:false
+        datepicker: false
     });
     $("#endTime").datetimepicker({
-        format:"H:i",
-        onShow:function(ct){
+        format: "H:i",
+        onShow: function (ct) {
             this.setOptions({
-                minTime:$("#startTime").val()?$("#startTime").val():false
+                minTime: $("#startTime").val() ? $("#startTime").val() : false
             })
         },
-        datepicker:false
+        datepicker: false
     });
 });

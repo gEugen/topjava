@@ -24,7 +24,7 @@ function updateRow(id) {
     $.get(ctx.ajaxUrl + id, function (data) {
         $.each(data, function (key, value) {
             if (key === "dateTime") {
-                value = value.replace("T", " ").substring(0, 16)
+                value = formatDateTime(value);
             }
             form.find("input[name='" + key + "']").val(value);
         });
