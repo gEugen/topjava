@@ -79,7 +79,6 @@
 <jsp:include page="fragments/footer.jsp"/>
 </body>
 <jsp:include page="fragments/i18nFill.jsp">
-    <jsp:param name="addTitle" value="user.add"/>
-    <jsp:param name="editTitle" value="user.edit"/>
+    <jsp:param name="obj" value="user"/>
 </jsp:include>
 </html>
