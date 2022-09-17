@@ -47,7 +47,7 @@ public class ExceptionInfoHandler {
     @ExceptionHandler(
             {IllegalRequestDataException.class, MethodArgumentTypeMismatchException.class,
                     HttpMessageNotReadableException.class, BindException.class})
-    public ErrorInfo illegalRequestDataOrValidationError(HttpServletRequest req, Exception e) {
+    public ErrorInfo illegalRequestDataError(HttpServletRequest req, Exception e) {
         return logAndGetErrorInfo(req, e, false, VALIDATION_ERROR);
     }
 
@@ -60,13 +60,26 @@ public class ExceptionInfoHandler {
     //    https://stackoverflow.com/questions/538870/should-private-helper-methods-be-static-if-they-can-be-static
     private static ErrorInfo logAndGetErrorInfo(HttpServletRequest req, Exception e, boolean logException, ErrorType errorType) {
         Throwable rootCause = ValidationUtil.getRootCause(e);
-        String[] details;
+
+        String[] details = new String[0];
+        String rootCauseMsg = rootCause.getMessage();
         if (e instanceof BindException) {
             List<FieldError> fieldErrors = ((BindException) e).getFieldErrors();
             details = fieldErrors.stream().map(fieldError -> String.format("[%s] %s", fieldError.getField(), fieldError.getDefaultMessage())).toArray(String[]::new);
-        } else {
+        }
+
+        if (e instanceof DataIntegrityViolationException) {
+            if (rootCauseMsg.toLowerCase().contains("users_unique_email_idx")) {
+                details = new String[1];
+                details[0] = "users_unique_email_idx";
+                errorType = VALIDATION_ERROR;
+                logException = false;
+            }
+        }
+
+        if (details.length == 0) {
             details = new String[1];
-            details[0] = rootCause.toString();
+            details[0] = rootCause.getMessage();
         }
 
         if (logException) {

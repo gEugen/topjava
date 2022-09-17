@@ -109,9 +109,16 @@ function failNoty(jqXHR) {
     closeNoty();
     var errorInfo = jqXHR.responseJSON;
     var errorInfoFields = "";
-    errorInfo.details.forEach(element => errorInfoFields = errorInfoFields + "<br>" + element);
+    var errorInfoType = i18n["common." + errorInfo.type.toLowerCase()];
+    errorInfo.details.forEach(element => {
+        if (element === "users_unique_email_idx") {
+            errorInfoFields = errorInfoFields + "<br>" + i18n["common.users_unique_email_idx"];
+        } else {
+            errorInfoFields = errorInfoFields + "<br>" + element;
+        }
+    });
     failedNote = new Noty({
-        text: "<span class='fa fa-lg fa-exclamation-circle'></span> &nbsp;" + errorInfo.type + errorInfoFields,
+        text: "<span class='fa fa-lg fa-exclamation-circle'></span> &nbsp;" + errorInfoType + errorInfoFields,
         type: "error",
         layout: "bottomRight"
     });
