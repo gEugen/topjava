@@ -5,12 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.service.UserService;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasLength;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -97,6 +98,22 @@ class AdminRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void updateWithNonValidData() throws Exception {
+        perform(MockMvcRequestBuilders.put(REST_URL + USER_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(admin))
+                .content(jsonWithPassword(getUpdatedWithNonValidData(), user.getPassword())))
+                .andExpect(status().is(422))
+                .andExpect(content().string(hasLength(143)))
+                .andExpect(content().string(containsString("http://localhost/rest/admin/users/100000")))
+                .andExpect(content().string(containsString("VALIDATION_ERROR")))
+                .andExpect(content().string(containsString("[name] must not be blank")))
+                .andExpect(content().string(containsString("[email] must not be blank")));
+
+        USER_MATCHER.assertMatch(userService.get(USER_ID), user);
+    }
+
+    @Test
     void createWithLocation() throws Exception {
         User newUser = getNew();
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
@@ -110,6 +127,26 @@ class AdminRestControllerTest extends AbstractControllerTest {
         newUser.setId(newId);
         USER_MATCHER.assertMatch(created, newUser);
         USER_MATCHER.assertMatch(userService.get(newId), newUser);
+    }
+
+    @Test
+    void createWithNonValidData() throws Exception {
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(admin))
+                .content(jsonWithPassword(getNewWithNonValidData(), user.getPassword())))
+                .andExpect(status().is(422))
+                .andExpect(content().string(hasLength(168)))
+                .andExpect(content().string(containsString("http://localhost/rest/admin/users/")))
+                .andExpect(content().string(containsString("VALIDATION_ERROR")))
+                .andExpect(content().string(containsString("[name] size must be between 2 and 128")))
+                .andExpect(content().string(containsString("[email] must be a well-formed email address")));
+
+        perform(MockMvcRequestBuilders.get(REST_URL)
+                .with(userHttpBasic(admin)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(USER_MATCHER.contentJson(admin, guest, user));
     }
 
     @Test

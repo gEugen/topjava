@@ -40,6 +40,14 @@ public class UserTestData {
         return new User(null, "New", "new@gmail.com", "newPass", 1555, false, new Date(), Collections.singleton(Role.USER));
     }
 
+    public static User getNewWithNonValidData() {
+        User newUserWithNonValidData = new User(getNew());
+        newUserWithNonValidData.setName("A");
+        newUserWithNonValidData.setEmail("aaaa aaa.aa");
+        newUserWithNonValidData.setPassword("1");
+        return newUserWithNonValidData;
+    }
+
     public static User getUpdated() {
         User updated = new User(user);
         updated.setEmail("update@gmail.com");
@@ -49,6 +57,14 @@ public class UserTestData {
         updated.setEnabled(false);
         updated.setRoles(Collections.singletonList(Role.ADMIN));
         return updated;
+    }
+
+    public static User getUpdatedWithNonValidData() {
+        User userWithNonValidData = new User(user);
+        userWithNonValidData.setPassword(null);
+        userWithNonValidData.setEmail(null);
+        userWithNonValidData.setName(null);
+        return userWithNonValidData;
     }
 
     public static String jsonWithPassword(User user, String passw) {

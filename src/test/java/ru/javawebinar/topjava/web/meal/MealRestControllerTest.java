@@ -12,6 +12,8 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasLength;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -81,6 +83,22 @@ class MealRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void updateWithNonValidData() throws Exception {
+        perform(MockMvcRequestBuilders.put(REST_URL + MEAL1_ID).contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(user))
+                .content(JsonUtil.writeValue(getUpdatedWithNonValidData())))
+                .andExpect(status().is(422))
+                .andExpect(content().string(hasLength(195)))
+                .andExpect(content().string(containsString("http://localhost/rest/profile/meals/100003")))
+                .andExpect(content().string(containsString("VALIDATION_ERROR")))
+                .andExpect(content().string(containsString("[calories] must be between 10 and 5000")))
+                .andExpect(content().string(containsString("[dateTime] must not be null")))
+                .andExpect(content().string(containsString("[description] must not be blank")));
+
+        MEAL_MATCHER.assertMatch(mealService.get(MEAL1_ID, USER_ID), meal1);
+    }
+
+    @Test
     void createWithLocation() throws Exception {
         Meal newMeal = getNew();
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
@@ -94,6 +112,28 @@ class MealRestControllerTest extends AbstractControllerTest {
         newMeal.setId(newId);
         MEAL_MATCHER.assertMatch(created, newMeal);
         MEAL_MATCHER.assertMatch(mealService.get(newId, USER_ID), newMeal);
+    }
+
+    @Test
+    void createWithNonValidData() throws Exception {
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(user))
+                .content(JsonUtil.writeValue(getNewWithNonValidData())))
+                .andExpect(status().is(422))
+                .andExpect(content().string(hasLength(189)))
+                .andExpect(content().string(containsString("http://localhost/rest/profile/meals/")))
+                .andExpect(content().string(containsString("VALIDATION_ERROR")))
+                .andExpect(content().string(containsString("[calories] must be between 10 and 5000")))
+                .andExpect(content().string(containsString("[dateTime] must not be null")))
+                .andExpect(content().string(containsString("[description] must not be blank")));
+
+        perform(MockMvcRequestBuilders.get(REST_URL)
+                .with(userHttpBasic(user)))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(TO_MATCHER.contentJson(getTos(meals, user.getCaloriesPerDay())));
     }
 
     @Test
