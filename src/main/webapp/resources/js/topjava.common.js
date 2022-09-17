@@ -113,6 +113,8 @@ function failNoty(jqXHR) {
     errorInfo.details.forEach(element => {
         if (element === "users_unique_email_idx") {
             errorInfoFields = errorInfoFields + "<br>" + i18n["common.users_unique_email_idx"];
+        } else if (element === "meals_unique_user_datetime_idx") {
+            errorInfoFields = errorInfoFields + "<br>" + i18n["common.meals_unique_user_datetime_idx"];
         } else {
             errorInfoFields = errorInfoFields + "<br>" + element;
         }

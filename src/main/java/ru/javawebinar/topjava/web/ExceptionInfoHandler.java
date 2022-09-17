@@ -69,11 +69,16 @@ public class ExceptionInfoHandler {
         }
 
         if (e instanceof DataIntegrityViolationException) {
-            if (rootCauseMsg.toLowerCase().contains("users_unique_email_idx")) {
+            String str = rootCauseMsg.toLowerCase();
+            if (str.contains("users_unique_email_idx") || str.contains("meals_unique_user_datetime_idx")) {
                 details = new String[1];
-                details[0] = "users_unique_email_idx";
                 errorType = VALIDATION_ERROR;
                 logException = false;
+                if (rootCauseMsg.toLowerCase().contains("users_unique_email_idx")) {
+                    details[0] = "users_unique_email_idx";
+                } else {
+                    details[0] = "meals_unique_user_datetime_idx";
+                }
             }
         }
 
