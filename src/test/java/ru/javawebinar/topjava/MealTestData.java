@@ -38,6 +38,10 @@ public class MealTestData {
         return new Meal(null, null, null, 0);
     }
 
+    public static Meal getNewWithExistingDateTime() {
+        return new Meal(null, of(2020, Month.JANUARY, 30, 20, 0), "Созданный ужин", 300);
+    }
+
     public static Meal getUpdated() {
         return new Meal(MEAL1_ID, meal1.getDateTime().plus(2, ChronoUnit.MINUTES), "Обновленный завтрак", 200);
     }

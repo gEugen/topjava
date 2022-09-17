@@ -127,13 +127,19 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .andExpect(content().string(containsString("[calories] must be between 10 and 5000")))
                 .andExpect(content().string(containsString("[dateTime] must not be null")))
                 .andExpect(content().string(containsString("[description] must not be blank")));
+    }
 
-        perform(MockMvcRequestBuilders.get(REST_URL)
-                .with(userHttpBasic(user)))
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(TO_MATCHER.contentJson(getTos(meals, user.getCaloriesPerDay())));
+    @Test
+    void createWithExistingDateTime() throws Exception {
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(user))
+                .content(JsonUtil.writeValue(getNewWithExistingDateTime())))
+                .andExpect(status().is(409))
+                .andExpect(content().string(hasLength(117)))
+                .andExpect(content().string(containsString("http://localhost/rest/profile/meals/")))
+                .andExpect(content().string(containsString("VALIDATION_ERROR")))
+                .andExpect(content().string(containsString("meals_unique_user_datetime_idx")));
     }
 
     @Test

@@ -141,12 +141,19 @@ class AdminRestControllerTest extends AbstractControllerTest {
                 .andExpect(content().string(containsString("VALIDATION_ERROR")))
                 .andExpect(content().string(containsString("[name] size must be between 2 and 128")))
                 .andExpect(content().string(containsString("[email] must be a well-formed email address")));
+    }
 
-        perform(MockMvcRequestBuilders.get(REST_URL)
-                .with(userHttpBasic(admin)))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(USER_MATCHER.contentJson(admin, guest, user));
+    @Test
+    void createWithExistingEmail() throws Exception {
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(admin))
+                .content(jsonWithPassword(getNewWithExistingEmail(), user.getPassword())))
+                .andExpect(status().is(409))
+                .andExpect(content().string(hasLength(107)))
+                .andExpect(content().string(containsString("http://localhost/rest/admin/users/")))
+                .andExpect(content().string(containsString("VALIDATION_ERROR")))
+                .andExpect(content().string(containsString("users_unique_email_idx")));
     }
 
     @Test

@@ -26,7 +26,7 @@ public class DataJpaMealRepository implements MealRepository {
             return null;
         }
         meal.setUser(crudUserRepository.getReferenceById(userId));
-        return crudMealRepository.save(meal);
+        return crudMealRepository.saveAndFlush(meal);
     }
 
     @Override

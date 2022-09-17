@@ -82,12 +82,20 @@ class ProfileRestControllerTest extends AbstractControllerTest {
                 .andExpect(content().string(containsString("[caloriesPerDay] must be between 10 and 10000")))
                 .andExpect(content().string(containsString("[name] size must be between 2 and 100")))
                 .andExpect(content().string(containsString("[name] must not be blank")));
+    }
 
-        perform(MockMvcRequestBuilders.get(AdminRestController.REST_URL + '/')
-                .with(userHttpBasic(admin)))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(USER_MATCHER.contentJson(admin, guest, user));
+    @Test
+    void registerWithExistingEmail() throws Exception {
+        UserTo newTo = new UserTo(null, "NEW USER", "user@yandex.ru", "123456", 2500);
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(newTo)))
+                .andDo(print())
+                .andExpect(status().is(409))
+                .andExpect(content().string(hasLength(102)))
+                .andExpect(content().string(containsString("http://localhost/rest/profile")))
+                .andExpect(content().string(containsString("VALIDATION_ERROR")))
+                .andExpect(content().string(containsString("users_unique_email_idx")));
     }
 
     @Test
@@ -117,12 +125,6 @@ class ProfileRestControllerTest extends AbstractControllerTest {
                 .andExpect(content().string(containsString("[email] must not be blank")))
                 .andExpect(content().string(containsString("[name] size must be between 2 and 100")))
                 .andExpect(content().string(containsString("[password] must not be blank")));
-
-        perform(MockMvcRequestBuilders.get(AdminRestController.REST_URL + '/')
-                .with(userHttpBasic(admin)))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(USER_MATCHER.contentJson(admin, guest, user));
     }
 
     @Test

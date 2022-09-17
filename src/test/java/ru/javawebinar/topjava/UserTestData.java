@@ -48,6 +48,14 @@ public class UserTestData {
         return newUserWithNonValidData;
     }
 
+    public static User getNewWithExistingEmail() {
+        User newUserWithNonValidData = new User(getNew());
+        newUserWithNonValidData.setName("SAME");
+        newUserWithNonValidData.setEmail("user@yandex.ru");
+        newUserWithNonValidData.setPassword("123456");
+        return newUserWithNonValidData;
+    }
+
     public static User getUpdated() {
         User updated = new User(user);
         updated.setEmail("update@gmail.com");
