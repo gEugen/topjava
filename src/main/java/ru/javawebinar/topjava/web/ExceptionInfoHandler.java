@@ -7,6 +7,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,13 +21,14 @@ import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 import static ru.javawebinar.topjava.util.exception.ErrorType.*;
 
 @RestControllerAdvice(annotations = RestController.class)
 @Order(Ordered.HIGHEST_PRECEDENCE + 5)
 public class ExceptionInfoHandler {
-    private static Logger log = LoggerFactory.getLogger(ExceptionInfoHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(ExceptionInfoHandler.class);
 
     //  http://stackoverflow.com/a/22358422/548473
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
@@ -41,8 +44,10 @@ public class ExceptionInfoHandler {
     }
 
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)  // 422
-    @ExceptionHandler({IllegalRequestDataException.class, MethodArgumentTypeMismatchException.class, HttpMessageNotReadableException.class})
-    public ErrorInfo illegalRequestDataError(HttpServletRequest req, Exception e) {
+    @ExceptionHandler(
+            {IllegalRequestDataException.class, MethodArgumentTypeMismatchException.class,
+                    HttpMessageNotReadableException.class, BindException.class})
+    public ErrorInfo illegalRequestDataOrValidationError(HttpServletRequest req, Exception e) {
         return logAndGetErrorInfo(req, e, false, VALIDATION_ERROR);
     }
 
@@ -55,11 +60,21 @@ public class ExceptionInfoHandler {
     //    https://stackoverflow.com/questions/538870/should-private-helper-methods-be-static-if-they-can-be-static
     private static ErrorInfo logAndGetErrorInfo(HttpServletRequest req, Exception e, boolean logException, ErrorType errorType) {
         Throwable rootCause = ValidationUtil.getRootCause(e);
+        String[] details;
+        if (e instanceof BindException) {
+            List<FieldError> fieldErrors = ((BindException) e).getFieldErrors();
+            details = fieldErrors.stream().map(fieldError -> String.format("[%s] %s", fieldError.getField(), fieldError.getDefaultMessage())).toArray(String[]::new);
+        } else {
+            details = new String[1];
+            details[0] = rootCause.toString();
+        }
+
         if (logException) {
             log.error(errorType + " at request " + req.getRequestURL(), rootCause);
         } else {
             log.warn("{} at request  {}: {}", errorType, req.getRequestURL(), rootCause.toString());
         }
-        return new ErrorInfo(req.getRequestURL(), errorType, rootCause.toString());
+
+        return new ErrorInfo(req.getRequestURL(), errorType, details);
     }
 }
