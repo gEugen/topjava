@@ -3,10 +3,20 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
+<script type="text/javascript" src="resources/js/topjava.common.js" defer></script>
+
 <html>
 <jsp:include page="fragments/headTag.jsp"/>
 <body>
 <jsp:include page="fragments/bodyHeader.jsp"/>
+
+<div class="dropdown">
+    <button onclick="showDropdownMenu()" class="dropbtn">${pageContext.response.locale}</button>
+    <div id="myDropdown" class="dropdown-content">
+        <a href="${requestScope['javax.servlet.forward.request_uri']}?languageVar=en">EN</a>
+        <a href="${requestScope['javax.servlet.forward.request_uri']}?languageVar=ru">RU</a>
+    </div>
+</div>
 
 <div class="jumbotron py-0">
     <div class="container">
