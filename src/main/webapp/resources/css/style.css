@@ -49,7 +49,7 @@ body {
     background-color: #f5f5f5;
 }
 
-/* Кнопка выпадающего списка */
+/* Dropdown button */
 .dropbtn {
     background-color: #3498DB;
     color: white;
@@ -57,30 +57,33 @@ body {
     font-size: 16px;
     border: none;
     cursor: pointer;
+    height: 55px;
+    width: 55px;
 }
 
-/* Кнопка выпадающего меню при наведении и фокусировке */
+/* Dropdown button on hover and focus */
 .dropbtn:hover, .dropbtn:focus {
     background-color: #2980B9;
 }
 
-/* Контейнер <div> - необходим для размещения выпадающего содержимого */
+/* Container <div> - required to contain the dropdown content */
 .dropdown {
     position: relative;
     display: inline-block;
+    top: -55px;
 }
 
-/* Выпадающее содержимое (скрыто по умолчанию) */
+/* Dropdown content (hidden by default) */
 .dropdown-content {
     display: none;
     position: absolute;
     background-color: #f1f1f1;
-    min-width: 160px;
+    min-width: 55px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
 }
 
-/* Ссылки внутри выпадающего списка */
+/* Links inside the dropdown list */
 .dropdown-content a {
     color: black;
     padding: 12px 16px;
@@ -88,8 +91,8 @@ body {
     display: block;
 }
 
-/* Изменение цвета выпадающих ссылок при наведении курсора */
+/* Change color of dropdown links on hover */
 .dropdown-content a:hover {background-color: #ddd}
 
-/* Показать выпадающее меню (используйте JS, чтобы добавить этот класс .dropdown-content содержимого, когда пользователь нажимает на кнопку выпадающего списка) */
+/* Show dropdown menu (use JS to add this .dropdown-content content class when user clicks on dropdown button) */
 .show {display:block;}
