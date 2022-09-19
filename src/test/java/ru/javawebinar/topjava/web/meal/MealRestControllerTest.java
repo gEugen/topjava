@@ -88,12 +88,11 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(user))
                 .content(JsonUtil.writeValue(getUpdatedWithNonValidData())))
                 .andExpect(status().is(422))
-                .andExpect(content().string(hasLength(195)))
                 .andExpect(content().string(containsString("http://localhost/rest/profile/meals/100003")))
                 .andExpect(content().string(containsString("VALIDATION_ERROR")))
-                .andExpect(content().string(containsString("[calories] must be between 10 and 5000")))
-                .andExpect(content().string(containsString("[dateTime] must not be null")))
-                .andExpect(content().string(containsString("[description] must not be blank")));
+                .andExpect(content().string(containsString("[calories] должно находиться в диапазоне от 10 до 5000")))
+                .andExpect(content().string(containsString("[dateTime] не должно равняться null")))
+                .andExpect(content().string(containsString("[description] не должно быть пустым")));
 
         MEAL_MATCHER.assertMatch(mealService.get(MEAL1_ID, USER_ID), meal1);
     }
@@ -121,12 +120,11 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(user))
                 .content(JsonUtil.writeValue(getNewWithNonValidData())))
                 .andExpect(status().is(422))
-                .andExpect(content().string(hasLength(189)))
                 .andExpect(content().string(containsString("http://localhost/rest/profile/meals/")))
                 .andExpect(content().string(containsString("VALIDATION_ERROR")))
-                .andExpect(content().string(containsString("[calories] must be between 10 and 5000")))
-                .andExpect(content().string(containsString("[dateTime] must not be null")))
-                .andExpect(content().string(containsString("[description] must not be blank")));
+                .andExpect(content().string(containsString("[calories] должно находиться в диапазоне от 10 до 5000")))
+                .andExpect(content().string(containsString("[dateTime] не должно равняться null")))
+                .andExpect(content().string(containsString("[description] не должно быть пустым")));
     }
 
     @Test

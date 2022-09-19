@@ -104,11 +104,10 @@ class AdminRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(admin))
                 .content(jsonWithPassword(getUpdatedWithNonValidData(), user.getPassword())))
                 .andExpect(status().is(422))
-                .andExpect(content().string(hasLength(143)))
                 .andExpect(content().string(containsString("http://localhost/rest/admin/users/100000")))
                 .andExpect(content().string(containsString("VALIDATION_ERROR")))
-                .andExpect(content().string(containsString("[name] must not be blank")))
-                .andExpect(content().string(containsString("[email] must not be blank")));
+                .andExpect(content().string(containsString("[name] не должно быть пустым")))
+                .andExpect(content().string(containsString("[email] не должно быть пустым")));
 
         USER_MATCHER.assertMatch(userService.get(USER_ID), user);
     }
@@ -136,11 +135,10 @@ class AdminRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(admin))
                 .content(jsonWithPassword(getNewWithNonValidData(), user.getPassword())))
                 .andExpect(status().is(422))
-                .andExpect(content().string(hasLength(168)))
                 .andExpect(content().string(containsString("http://localhost/rest/admin/users/")))
                 .andExpect(content().string(containsString("VALIDATION_ERROR")))
-                .andExpect(content().string(containsString("[name] size must be between 2 and 128")))
-                .andExpect(content().string(containsString("[email] must be a well-formed email address")));
+                .andExpect(content().string(containsString("[name] размер должен находиться в диапазоне от 2 до 128")))
+                .andExpect(content().string(containsString("[email] должно иметь формат адреса электронной почты")));
     }
 
     @Test

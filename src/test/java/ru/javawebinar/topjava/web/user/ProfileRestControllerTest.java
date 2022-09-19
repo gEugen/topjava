@@ -74,14 +74,13 @@ class ProfileRestControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(newTo)))
                 .andDo(print())
                 .andExpect(status().is(422))
-                .andExpect(content().string(hasLength(294)))
                 .andExpect(content().string(containsString("http://localhost/rest/profile")))
                 .andExpect(content().string(containsString("VALIDATION_ERROR")))
                 .andExpect(content().string(containsString("[password] length must be between 5 and 32 characters")))
-                .andExpect(content().string(containsString("[email] must be a well-formed email address")))
-                .andExpect(content().string(containsString("[caloriesPerDay] must be between 10 and 10000")))
-                .andExpect(content().string(containsString("[name] size must be between 2 and 100")))
-                .andExpect(content().string(containsString("[name] must not be blank")));
+                .andExpect(content().string(containsString("[email] должно иметь формат адреса электронной почты")))
+                .andExpect(content().string(containsString("[caloriesPerDay] должно находиться в диапазоне от 10 до 10000")))
+                .andExpect(content().string(containsString("[name] размер должен находиться в диапазоне от 2 до 100")))
+                .andExpect(content().string(containsString("[name] не должно быть пустым")));
     }
 
     @Test
@@ -118,13 +117,12 @@ class ProfileRestControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(updatedTo)))
                 .andDo(print())
                 .andExpect(status().is(422))
-                .andExpect(content().string(hasLength(232)))
                 .andExpect(content().string(containsString("http://localhost/rest/profile")))
                 .andExpect(content().string(containsString("VALIDATION_ERROR")))
                 .andExpect(content().string(containsString("[password] length must be between 5 and 32 characters")))
-                .andExpect(content().string(containsString("[email] must not be blank")))
-                .andExpect(content().string(containsString("[name] size must be between 2 and 100")))
-                .andExpect(content().string(containsString("[password] must not be blank")));
+                .andExpect(content().string(containsString("[email] не должно быть пустым")))
+                .andExpect(content().string(containsString("[name] размер должен находиться в диапазоне от 2 до 100")))
+                .andExpect(content().string(containsString("[password] не должно быть пустым")));
     }
 
     @Test
