@@ -3,6 +3,8 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
+<script type="text/javascript" src="resources/js/topjava.common.js" defer></script>
+
 <nav class="navbar navbar-dark bg-dark py-0">
     <div class="container">
         <a href="meals" class="navbar-brand"><img src="resources/images/icon-meal.png"> <spring:message code="app.title"/></a>
@@ -26,5 +28,12 @@
                 </button>
             </form:form>
         </sec:authorize>
+        <div class="dropdown">
+            <button onclick="showDropdownMenu()" class="dropbtn">${pageContext.response.locale}</button>
+            <div id="myDropdown" class="dropdown-content">
+                <a href="${requestScope['javax.servlet.forward.request_uri']}?languageVar=en">EN</a>
+                <a href="${requestScope['javax.servlet.forward.request_uri']}?languageVar=ru">RU</a>
+            </div>
+        </div>
     </div>
 </nav>

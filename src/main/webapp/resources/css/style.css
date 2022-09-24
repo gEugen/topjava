@@ -70,7 +70,7 @@ body {
 .dropdown {
     position: relative;
     display: inline-block;
-    top: -55px;
+    top: 0px;
 }
 
 /* Dropdown content (hidden by default) */
