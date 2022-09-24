@@ -28,11 +28,11 @@
                 </button>
             </form:form>
         </sec:authorize>
-        <div class="dropdown">
-            <button onclick="showDropdownMenu()" class="dropbtn">${pageContext.response.locale}</button>
-            <div id="myDropdown" class="dropdown-content">
-                <a href="${requestScope['javax.servlet.forward.request_uri']}?languageVar=en">EN</a>
-                <a href="${requestScope['javax.servlet.forward.request_uri']}?languageVar=ru">RU</a>
+        <div class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" id="navbardrop" data-toggle="dropdown">${pageContext.response.locale}</a>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" href="${requestScope['javax.servlet.forward.request_uri']}?languageVar=en">EN</a>
+                <a class="dropdown-item" href="${requestScope['javax.servlet.forward.request_uri']}?languageVar=ru">RU</a>
             </div>
         </div>
     </div>
