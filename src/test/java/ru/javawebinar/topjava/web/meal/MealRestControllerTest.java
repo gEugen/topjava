@@ -3,9 +3,12 @@ package ru.javawebinar.topjava.web.meal;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
@@ -13,7 +16,6 @@ import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasLength;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -24,6 +26,8 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 import static ru.javawebinar.topjava.UserTestData.user;
 import static ru.javawebinar.topjava.util.MealsUtil.createTo;
 import static ru.javawebinar.topjava.util.MealsUtil.getTos;
+import static ru.javawebinar.topjava.util.ValidationUtil.LOCALE_RU;
+import static ru.javawebinar.topjava.util.ValidationUtil.getDefaultMessage;
 
 class MealRestControllerTest extends AbstractControllerTest {
 
@@ -31,6 +35,9 @@ class MealRestControllerTest extends AbstractControllerTest {
 
     @Autowired
     private MealService mealService;
+
+    @Autowired
+    private MessageSource messageSource;
 
     @Test
     void get() throws Exception {
@@ -88,11 +95,11 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(user))
                 .content(JsonUtil.writeValue(getUpdatedWithNonValidData())))
                 .andExpect(status().is(422))
-                .andExpect(content().string(containsString("http://localhost/rest/profile/meals/100003")))
+                .andExpect(content().string(containsString("http://localhost/rest/profile/meals/" + MEAL1_ID)))
                 .andExpect(content().string(containsString("VALIDATION_ERROR")))
-                .andExpect(content().string(containsString("[calories] должно находиться в диапазоне от 10 до 5000")))
-                .andExpect(content().string(containsString("[dateTime] не должно равняться null")))
-                .andExpect(content().string(containsString("[description] не должно быть пустым")));
+                .andExpect(content().string(containsString("[dateTime] " + getDefaultMessage(LOCALE_RU, "javax.validation.constraints.NotNull.message"))))
+                .andExpect(content().string(containsString("[description] " + getDefaultMessage(LOCALE_RU, "javax.validation.constraints.NotBlank.message"))))
+                .andExpect(content().string(containsString("[calories] " + getDefaultMessage(LOCALE_RU, "org.hibernate.validator.constraints.Range.message").replace("{min}", "10").replace("{max}", "5000"))));
 
         MEAL_MATCHER.assertMatch(mealService.get(MEAL1_ID, USER_ID), meal1);
     }
@@ -122,22 +129,22 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().is(422))
                 .andExpect(content().string(containsString("http://localhost/rest/profile/meals/")))
                 .andExpect(content().string(containsString("VALIDATION_ERROR")))
-                .andExpect(content().string(containsString("[calories] должно находиться в диапазоне от 10 до 5000")))
-                .andExpect(content().string(containsString("[dateTime] не должно равняться null")))
-                .andExpect(content().string(containsString("[description] не должно быть пустым")));
+                .andExpect(content().string(containsString("[dateTime] " + getDefaultMessage(LOCALE_RU, "javax.validation.constraints.NotNull.message"))))
+                .andExpect(content().string(containsString("[description] " + getDefaultMessage(LOCALE_RU, "javax.validation.constraints.NotBlank.message"))))
+                .andExpect(content().string(containsString("[calories] " + getDefaultMessage(LOCALE_RU, "org.hibernate.validator.constraints.Range.message").replace("{min}", "10").replace("{max}", "5000"))));
     }
 
     @Test
+    @Transactional(propagation = Propagation.NEVER)
     void createWithExistingDateTime() throws Exception {
         perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(user))
                 .content(JsonUtil.writeValue(getNewWithExistingDateTime())))
                 .andExpect(status().is(409))
-                .andExpect(content().string(hasLength(117)))
                 .andExpect(content().string(containsString("http://localhost/rest/profile/meals/")))
                 .andExpect(content().string(containsString("VALIDATION_ERROR")))
-                .andExpect(content().string(containsString("meals_unique_user_datetime_idx")));
+                .andExpect(content().string(containsString("[dateTime] " + messageSource.getMessage("common.meals_unique_user_datetime_idx", null, LOCALE_RU))));
     }
 
     @Test

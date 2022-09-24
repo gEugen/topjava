@@ -39,7 +39,7 @@ public class MealTestData {
     }
 
     public static Meal getNewWithExistingDateTime() {
-        return new Meal(null, of(2020, Month.JANUARY, 30, 20, 0), "Созданный ужин", 300);
+        return new Meal(null, meal3.getDateTime(), "Созданный ужин", 300);
     }
 
     public static Meal getUpdated() {

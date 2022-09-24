@@ -2,16 +2,18 @@ package ru.javawebinar.topjava.web.user;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.service.UserService;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasLength;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -19,6 +21,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.javawebinar.topjava.TestUtil.userHttpBasic;
 import static ru.javawebinar.topjava.UserTestData.*;
+import static ru.javawebinar.topjava.util.ValidationUtil.LOCALE_RU;
+import static ru.javawebinar.topjava.util.ValidationUtil.getDefaultMessage;
 
 class AdminRestControllerTest extends AbstractControllerTest {
 
@@ -26,6 +30,9 @@ class AdminRestControllerTest extends AbstractControllerTest {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private MessageSource messageSource;
 
     @Test
     void get() throws Exception {
@@ -104,10 +111,10 @@ class AdminRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(admin))
                 .content(jsonWithPassword(getUpdatedWithNonValidData(), user.getPassword())))
                 .andExpect(status().is(422))
-                .andExpect(content().string(containsString("http://localhost/rest/admin/users/100000")))
+                .andExpect(content().string(containsString("http://localhost/rest/admin/users/" + USER_ID)))
                 .andExpect(content().string(containsString("VALIDATION_ERROR")))
-                .andExpect(content().string(containsString("[name] не должно быть пустым")))
-                .andExpect(content().string(containsString("[email] не должно быть пустым")));
+                .andExpect(content().string(containsString("[name] " + getDefaultMessage(LOCALE_RU, "javax.validation.constraints.NotBlank.message"))))
+                .andExpect(content().string(containsString("[email] " + getDefaultMessage(LOCALE_RU, "javax.validation.constraints.NotBlank.message"))));
 
         USER_MATCHER.assertMatch(userService.get(USER_ID), user);
     }
@@ -137,21 +144,21 @@ class AdminRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().is(422))
                 .andExpect(content().string(containsString("http://localhost/rest/admin/users/")))
                 .andExpect(content().string(containsString("VALIDATION_ERROR")))
-                .andExpect(content().string(containsString("[name] размер должен находиться в диапазоне от 2 до 128")))
-                .andExpect(content().string(containsString("[email] должно иметь формат адреса электронной почты")));
+                .andExpect(content().string(containsString("[name] " + getDefaultMessage(LOCALE_RU, "javax.validation.constraints.Size.message").replace("{min}", "2").replace("{max}", "128"))))
+                .andExpect(content().string(containsString("[email] " + getDefaultMessage(LOCALE_RU, "javax.validation.constraints.Email.message"))));
     }
 
     @Test
+    @Transactional(propagation = Propagation.NEVER)
     void createWithExistingEmail() throws Exception {
         perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(admin))
                 .content(jsonWithPassword(getNewWithExistingEmail(), user.getPassword())))
                 .andExpect(status().is(409))
-                .andExpect(content().string(hasLength(107)))
                 .andExpect(content().string(containsString("http://localhost/rest/admin/users/")))
                 .andExpect(content().string(containsString("VALIDATION_ERROR")))
-                .andExpect(content().string(containsString("users_unique_email_idx")));
+                .andExpect(content().string(containsString("[email] " + messageSource.getMessage("common.users_unique_email_idx", null, LOCALE_RU))));
     }
 
     @Test

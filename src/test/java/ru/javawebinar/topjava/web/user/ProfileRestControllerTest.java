@@ -2,9 +2,12 @@ package ru.javawebinar.topjava.web.user;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.service.UserService;
 import ru.javawebinar.topjava.to.UserTo;
@@ -13,18 +16,22 @@ import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasLength;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.javawebinar.topjava.TestUtil.userHttpBasic;
 import static ru.javawebinar.topjava.UserTestData.*;
+import static ru.javawebinar.topjava.util.ValidationUtil.LOCALE_RU;
+import static ru.javawebinar.topjava.util.ValidationUtil.getDefaultMessage;
 import static ru.javawebinar.topjava.web.user.ProfileRestController.REST_URL;
 
 class ProfileRestControllerTest extends AbstractControllerTest {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private MessageSource messageSource;
 
     @Test
     void get() throws Exception {
@@ -76,25 +83,25 @@ class ProfileRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().is(422))
                 .andExpect(content().string(containsString("http://localhost/rest/profile")))
                 .andExpect(content().string(containsString("VALIDATION_ERROR")))
-                .andExpect(content().string(containsString("[password] length must be between 5 and 32 characters")))
-                .andExpect(content().string(containsString("[email] должно иметь формат адреса электронной почты")))
-                .andExpect(content().string(containsString("[caloriesPerDay] должно находиться в диапазоне от 10 до 10000")))
-                .andExpect(content().string(containsString("[name] размер должен находиться в диапазоне от 2 до 100")))
-                .andExpect(content().string(containsString("[name] не должно быть пустым")));
+                .andExpect(content().string(containsString("[name] " + getDefaultMessage(LOCALE_RU, "javax.validation.constraints.NotBlank.message"))))
+                .andExpect(content().string(containsString("[name] " + getDefaultMessage(LOCALE_RU, "javax.validation.constraints.Size.message").replace("{min}", "2").replace("{max}", "128"))))
+                .andExpect(content().string(containsString("[email] " + getDefaultMessage(LOCALE_RU, "javax.validation.constraints.Email.message"))))
+                .andExpect(content().string(containsString("[password] " + getDefaultMessage(LOCALE_RU, "javax.validation.constraints.Size.message").replace("{min}", "5").replace("{max}", "32"))))
+                .andExpect(content().string(containsString("[caloriesPerDay] " + getDefaultMessage(LOCALE_RU, "org.hibernate.validator.constraints.Range.message").replace("{min}", "10").replace("{max}", "10000"))));
     }
 
     @Test
+    @Transactional(propagation = Propagation.NEVER)
     void registerWithExistingEmail() throws Exception {
-        UserTo newTo = new UserTo(null, "NEW USER", "user@yandex.ru", "123456", 2500);
+        UserTo newTo = new UserTo(null, "NEW USER", user.getEmail(), "123456", 2500);
         perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(newTo)))
                 .andDo(print())
                 .andExpect(status().is(409))
-                .andExpect(content().string(hasLength(102)))
                 .andExpect(content().string(containsString("http://localhost/rest/profile")))
                 .andExpect(content().string(containsString("VALIDATION_ERROR")))
-                .andExpect(content().string(containsString("users_unique_email_idx")));
+                .andExpect(content().string(containsString("[email] " + messageSource.getMessage("common.users_unique_email_idx", null, LOCALE_RU))));
     }
 
     @Test
@@ -119,10 +126,10 @@ class ProfileRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().is(422))
                 .andExpect(content().string(containsString("http://localhost/rest/profile")))
                 .andExpect(content().string(containsString("VALIDATION_ERROR")))
-                .andExpect(content().string(containsString("[password] length must be between 5 and 32 characters")))
-                .andExpect(content().string(containsString("[email] не должно быть пустым")))
-                .andExpect(content().string(containsString("[name] размер должен находиться в диапазоне от 2 до 100")))
-                .andExpect(content().string(containsString("[password] не должно быть пустым")));
+                .andExpect(content().string(containsString("[name] " + getDefaultMessage(LOCALE_RU, "javax.validation.constraints.Size.message").replace("{min}", "2").replace("{max}", "128"))))
+                .andExpect(content().string(containsString("[email] " + getDefaultMessage(LOCALE_RU, "javax.validation.constraints.NotBlank.message"))))
+                .andExpect(content().string(containsString("[password] " + getDefaultMessage(LOCALE_RU, "javax.validation.constraints.Size.message").replace("{min}", "5").replace("{max}", "32"))))
+                .andExpect(content().string(containsString("[password] " + getDefaultMessage(LOCALE_RU, "javax.validation.constraints.NotBlank.message"))));
     }
 
     @Test

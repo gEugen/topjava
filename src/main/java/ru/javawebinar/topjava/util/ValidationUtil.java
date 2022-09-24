@@ -1,6 +1,7 @@
 package ru.javawebinar.topjava.util;
 
 
+import org.hibernate.validator.resourceloading.PlatformResourceBundleLocator;
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.lang.NonNull;
 import ru.javawebinar.topjava.HasId;
@@ -8,10 +9,14 @@ import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.validation.*;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 public class ValidationUtil {
 
+    public static final Locale LOCALE_RU = new Locale("ru", "RU");
     private static final Validator validator;
 
     static {
@@ -72,5 +77,15 @@ public class ValidationUtil {
     public static Throwable getRootCause(@NonNull Throwable t) {
         Throwable rootCause = NestedExceptionUtils.getRootCause(t);
         return rootCause != null ? rootCause : t;
+    }
+
+    public static String getDefaultMessage(final Locale locale, final String key) {
+        PlatformResourceBundleLocator bundleLocator = new PlatformResourceBundleLocator("org.hibernate.validator.ValidationMessages");
+        ResourceBundle resourceBundle = bundleLocator.getResourceBundle(locale);
+        try {
+            return resourceBundle.getString(key);
+        } catch (MissingResourceException e) {
+            return key;
+        }
     }
 }
