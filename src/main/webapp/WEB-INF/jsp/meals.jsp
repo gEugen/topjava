@@ -114,7 +114,4 @@
 <jsp:include page="fragments/i18n.jsp">
     <jsp:param name="page" value="meal"/>
 </jsp:include>
-<script type="text/javascript">
-    const localeCode = "${pageContext.response.locale}";
-</script>
 </html>
