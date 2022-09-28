@@ -47,16 +47,16 @@ public class ExceptionInfoHandler {
     @ResponseStatus(HttpStatus.CONFLICT)  // 409
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ErrorInfo conflict(HttpServletRequest req, DataIntegrityViolationException e) {
-        String details = null;
+        String[] details = new String[0];
         boolean logException = false;
         ErrorType errorType = VALIDATION_ERROR;
         String rootCauseMessage = ValidationUtil.getRootCause(e).getMessage().toLowerCase();
         if (rootCauseMessage.contains(EMAIL_DUPLICATION)) {
-            details = getMessageDetails(accessor, EMAIL_DUPLICATION);
+            details = new String[]{getMessageDetails(accessor, EMAIL_DUPLICATION)};
         } else if (rootCauseMessage.contains(DATE_TIME_DUPLICATION)) {
-            details = getMessageDetails(accessor, DATE_TIME_DUPLICATION);
+            details = new String[]{getMessageDetails(accessor, DATE_TIME_DUPLICATION)};
         }
-        if (details == null) {
+        if (details.length == 0) {
             logException = true;
             errorType = DATA_ERROR;
         }
@@ -94,7 +94,7 @@ public class ExceptionInfoHandler {
         } else {
             log.warn("{} at request  {}: {}", errorType, requestURL, rootCause.toString());
         }
-        if (details == null) {
+        if (details.length == 0) {
             details = new String[]{rootCause.getMessage()};
         }
         return new ErrorInfo(requestURL, errorType, details);
