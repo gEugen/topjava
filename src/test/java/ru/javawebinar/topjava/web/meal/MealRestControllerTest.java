@@ -3,7 +3,6 @@ package ru.javawebinar.topjava.web.meal;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
@@ -37,7 +36,7 @@ class MealRestControllerTest extends AbstractControllerTest {
     private MealService mealService;
 
     @Autowired
-    private MessageSource source;
+    private MessageSourceAccessor accessor;
 
     @Test
     void get() throws Exception {
@@ -144,7 +143,7 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().is(409))
                 .andExpect(content().string(containsString("http://localhost/rest/profile/meals/")))
                 .andExpect(content().string(containsString("VALIDATION_ERROR")))
-                .andExpect(content().string(containsString(new MessageSourceAccessor(source).getMessage("common.duplication", RU_FULL_DATE_TIME_DUPLICATIONS_ARGS, LOCALE_RU))));
+                .andExpect(content().string(containsString(accessor.getMessage("common.duplication", RU_FULL_DATE_TIME_DUPLICATIONS_ARGS, LOCALE_RU))));
     }
 
     @Test

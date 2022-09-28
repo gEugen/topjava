@@ -2,7 +2,6 @@ package ru.javawebinar.topjava.util;
 
 
 import org.hibernate.validator.resourceloading.PlatformResourceBundleLocator;
-import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.NestedExceptionUtils;
@@ -111,11 +110,8 @@ public class ValidationUtil {
         }
     }
 
-    public static String[] getMessageDetails(MessageSource source, String duplicationIdentifier) {
-        String[] details = new String[1];
-        Object[] args = getArgs(duplicationIdentifier, true);
-        details[0] = new MessageSourceAccessor(source).getMessage(DUPLICATION_MESSAGE, args, LocaleContextHolder.getLocale());
-        return details;
+    public static String getMessageDetails(MessageSourceAccessor accessor, String duplicationIdentifier) {
+        return accessor.getMessage(DUPLICATION_MESSAGE, getArgs(duplicationIdentifier, true), LocaleContextHolder.getLocale());
     }
 
     public static Object[] getArgs(String duplicationIdentifier, boolean fullArgs) {
