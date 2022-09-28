@@ -4,6 +4,7 @@ package ru.javawebinar.topjava.web.meal;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -26,8 +27,7 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 import static ru.javawebinar.topjava.UserTestData.user;
 import static ru.javawebinar.topjava.util.MealsUtil.createTo;
 import static ru.javawebinar.topjava.util.MealsUtil.getTos;
-import static ru.javawebinar.topjava.util.ValidationUtil.LOCALE_RU;
-import static ru.javawebinar.topjava.util.ValidationUtil.getDefaultMessage;
+import static ru.javawebinar.topjava.util.ValidationUtil.*;
 
 class MealRestControllerTest extends AbstractControllerTest {
 
@@ -37,7 +37,7 @@ class MealRestControllerTest extends AbstractControllerTest {
     private MealService mealService;
 
     @Autowired
-    private MessageSource messageSource;
+    private MessageSource source;
 
     @Test
     void get() throws Exception {
@@ -144,7 +144,7 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().is(409))
                 .andExpect(content().string(containsString("http://localhost/rest/profile/meals/")))
                 .andExpect(content().string(containsString("VALIDATION_ERROR")))
-                .andExpect(content().string(containsString("[dateTime] " + messageSource.getMessage("common.meals_unique_user_datetime_idx", null, LOCALE_RU))));
+                .andExpect(content().string(containsString(new MessageSourceAccessor(source).getMessage("common.duplication", RU_FULL_DATE_TIME_DUPLICATIONS_ARGS, LOCALE_RU))));
     }
 
     @Test

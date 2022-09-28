@@ -13,6 +13,9 @@ import ru.javawebinar.topjava.web.SecurityUtil;
 
 import javax.validation.Valid;
 
+import static ru.javawebinar.topjava.util.ValidationUtil.EMAIL_DUPLICATION;
+import static ru.javawebinar.topjava.util.ValidationUtil.getArgs;
+
 @Controller
 @RequestMapping("/profile")
 public class ProfileUIController extends AbstractUserController {
@@ -31,7 +34,7 @@ public class ProfileUIController extends AbstractUserController {
                 status.setComplete();
                 return "redirect:/meals";
             } catch (DataIntegrityViolationException e) {
-                result.rejectValue("email", "common.users_unique_email_idx");
+                result.rejectValue("email", "common.duplication", getArgs(EMAIL_DUPLICATION, false), null);
             }
         }
         return "profile";
@@ -52,7 +55,7 @@ public class ProfileUIController extends AbstractUserController {
                 status.setComplete();
                 return "redirect:/login?message=app.registered&username=" + userTo.getEmail();
             } catch (DataIntegrityViolationException e) {
-                result.rejectValue("email", "common.users_unique_email_idx");
+                result.rejectValue("email", "common.duplication", getArgs(EMAIL_DUPLICATION, false), null);
             }
         }
         model.addAttribute("register", true);

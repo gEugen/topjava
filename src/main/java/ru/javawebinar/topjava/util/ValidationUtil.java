@@ -2,6 +2,9 @@ package ru.javawebinar.topjava.util;
 
 
 import org.hibernate.validator.resourceloading.PlatformResourceBundleLocator;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.lang.NonNull;
 import ru.javawebinar.topjava.HasId;
@@ -17,6 +20,25 @@ import java.util.Set;
 public class ValidationUtil {
 
     public static final Locale LOCALE_RU = new Locale("ru", "RU");
+
+    public static final String EMAIL_DUPLICATION = "users_unique_email_idx";
+
+    public static final String DATE_TIME_DUPLICATION = "meals_unique_user_datetime_idx";
+
+    public static final String DUPLICATION_MESSAGE = "common.duplication";
+
+    public static final Object[] EN_FULL_MAIL_DUPLICATION_ARGS = new Object[]{"[email] ", "User", "email"};
+
+    public static final Object[] EN_MAIL_DUPLICATION_ARGS = new Object[]{"", "User", "email"};
+
+    public static final Object[] RU_FULL_MAIL_DUPLICATION_ARGS = new Object[]{"[email] ", "Пользователь", "адресом"};
+
+    public static final Object[] RU_MAIL_DUPLICATION_ARGS = new Object[]{"", "Пользователь", "адресом"};
+
+    public static final Object[] EN_FULL_DATE_TIME_DUPLICATIONS_ARGS = new Object[]{"[dateTime] ", "Meal", "date/time"};
+
+    public static final Object[] RU_FULL_DATE_TIME_DUPLICATIONS_ARGS = new Object[]{"[dateTime] ", "Еда", "датой/временем"};
+
     private static final Validator validator;
 
     static {
@@ -87,5 +109,30 @@ public class ValidationUtil {
         } catch (MissingResourceException e) {
             return key;
         }
+    }
+
+    public static String[] getMessageDetails(MessageSource source, String duplicationIdentifier) {
+        String[] details = new String[1];
+        Object[] args = getArgs(duplicationIdentifier, true);
+        details[0] = new MessageSourceAccessor(source).getMessage(DUPLICATION_MESSAGE, args, LocaleContextHolder.getLocale());
+        return details;
+    }
+
+    public static Object[] getArgs(String duplicationIdentifier, boolean fullArgs) {
+        Object[] args = null;
+        if ("ru".equals(LocaleContextHolder.getLocale().toString())) {
+            if (EMAIL_DUPLICATION.equals(duplicationIdentifier)) {
+                args = fullArgs ? RU_FULL_MAIL_DUPLICATION_ARGS : RU_MAIL_DUPLICATION_ARGS;
+            } else if (DATE_TIME_DUPLICATION.equals(duplicationIdentifier)) {
+                args = RU_FULL_DATE_TIME_DUPLICATIONS_ARGS;
+            }
+        } else if ("en".equals(LocaleContextHolder.getLocale().toString())) {
+            if (EMAIL_DUPLICATION.equals(duplicationIdentifier)) {
+                args = fullArgs ? EN_FULL_MAIL_DUPLICATION_ARGS : EN_MAIL_DUPLICATION_ARGS;
+            } else if (DATE_TIME_DUPLICATION.equals(duplicationIdentifier)) {
+                args = EN_FULL_DATE_TIME_DUPLICATIONS_ARGS;
+            }
+        }
+        return args;
     }
 }

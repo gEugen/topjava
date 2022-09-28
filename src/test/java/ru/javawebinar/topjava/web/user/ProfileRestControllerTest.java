@@ -3,6 +3,7 @@ package ru.javawebinar.topjava.web.user;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -21,8 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.javawebinar.topjava.TestUtil.userHttpBasic;
 import static ru.javawebinar.topjava.UserTestData.*;
-import static ru.javawebinar.topjava.util.ValidationUtil.LOCALE_RU;
-import static ru.javawebinar.topjava.util.ValidationUtil.getDefaultMessage;
+import static ru.javawebinar.topjava.util.ValidationUtil.*;
 import static ru.javawebinar.topjava.web.user.ProfileRestController.REST_URL;
 
 class ProfileRestControllerTest extends AbstractControllerTest {
@@ -31,7 +31,7 @@ class ProfileRestControllerTest extends AbstractControllerTest {
     private UserService userService;
 
     @Autowired
-    private MessageSource messageSource;
+    private MessageSource source;
 
     @Test
     void get() throws Exception {
@@ -101,7 +101,7 @@ class ProfileRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().is(409))
                 .andExpect(content().string(containsString("http://localhost/rest/profile")))
                 .andExpect(content().string(containsString("VALIDATION_ERROR")))
-                .andExpect(content().string(containsString("[email] " + messageSource.getMessage("common.users_unique_email_idx", null, LOCALE_RU))));
+                .andExpect(content().string(containsString(new MessageSourceAccessor(source).getMessage("common.duplication", RU_FULL_MAIL_DUPLICATION_ARGS, LOCALE_RU))));
     }
 
     @Test

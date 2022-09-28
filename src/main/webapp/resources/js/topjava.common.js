@@ -111,13 +111,7 @@ function failNoty(jqXHR) {
     var errorInfoFields = "";
     var errorInfoType = i18n["common." + errorInfo.type.toLowerCase()];
     errorInfo.details.forEach(element => {
-        if (element === "users_unique_email_idx") {
-            errorInfoFields = errorInfoFields + "<br>" + i18n["common.users_unique_email_idx"];
-        } else if (element === "meals_unique_user_datetime_idx") {
-            errorInfoFields = errorInfoFields + "<br>" + i18n["common.meals_unique_user_datetime_idx"];
-        } else {
-            errorInfoFields = errorInfoFields + "<br>" + element;
-        }
+        errorInfoFields = errorInfoFields + "<br>" + element;
     });
     failedNote = new Noty({
         text: "<span class='fa fa-lg fa-exclamation-circle'></span> &nbsp;" + errorInfoType + errorInfoFields,
