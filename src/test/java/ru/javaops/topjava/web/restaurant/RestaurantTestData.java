@@ -1,16 +1,13 @@
 package ru.javaops.topjava.web.restaurant;
 
-import ru.javaops.topjava.model.Dish;
 import ru.javaops.topjava.model.Restaurant;
-import ru.javaops.topjava.model.Role;
-import ru.javaops.topjava.model.User;
 import ru.javaops.topjava.to.DishTo;
 import ru.javaops.topjava.web.MatcherFactory;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static ru.javaops.topjava.web.meal.MealTestData.*;
+import static ru.javaops.topjava.web.dish.DishTestData.*;
 import static ru.javaops.topjava.web.user.UserTestData.admin;
 import static ru.javaops.topjava.web.user.UserTestData.user;
 

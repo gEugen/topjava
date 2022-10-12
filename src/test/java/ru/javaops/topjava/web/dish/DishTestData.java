@@ -1,13 +1,11 @@
-package ru.javaops.topjava.web.meal;
+package ru.javaops.topjava.web.dish;
 
 import ru.javaops.topjava.model.Dish;
 import ru.javaops.topjava.to.DishTo;
 import ru.javaops.topjava.web.MatcherFactory;
 
-import static java.time.LocalDateTime.of;
-
-public class MealTestData {
-    public static final MatcherFactory.Matcher<Dish> MEAL_MATCHER = MatcherFactory.usingIgnoringFieldsComparator(Dish.class, "user");
+public class DishTestData {
+    public static final MatcherFactory.Matcher<Dish> DISH_MATCHER = MatcherFactory.usingIgnoringFieldsComparator(Dish.class, "restaurant");
     public static MatcherFactory.Matcher<DishTo> MEAL_TO_MATCHER = MatcherFactory.usingEqualsComparator(DishTo.class);
 
     public static final int DISH1_ID = 4;
@@ -30,11 +28,11 @@ public class MealTestData {
 //
 //    public static final List<Meal> meals = List.of(meal7, meal6, meal5, meal4, meal3, meal2, meal1);
 //
-//    public static Meal getNew() {
-//        return new Meal(null, of(2020, Month.FEBRUARY, 1, 18, 0), "Созданный ужин", 300);
-//    }
-//
-//    public static Meal getUpdated() {
-//        return new Meal(MEAL1_ID, meal1.getDateTime().plus(2, ChronoUnit.MINUTES), "Обновленный завтрак", 200);
-//    }
+    public static Dish getNew() {
+        return new Dish(null, "Watson soup", 4.09);
+    }
+
+    public static Dish getUpdated() {
+        return new Dish(DISH1_ID, "Holmes oatmeal", 5.5);
+    }
 }
