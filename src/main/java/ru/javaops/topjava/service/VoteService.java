@@ -1,17 +1,15 @@
 package ru.javaops.topjava.service;
 
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.javaops.topjava.model.Restaurant;
 import ru.javaops.topjava.model.User;
 import ru.javaops.topjava.repository.RestaurantRepository;
 import ru.javaops.topjava.repository.UserRepository;
 
 @Service
 @AllArgsConstructor
-public class RestaurantService {
+public class VoteService {
 
     private final  UserRepository userRepository;
 

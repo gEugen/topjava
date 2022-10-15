@@ -110,7 +110,7 @@ public class AdminRestaurantControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @Transactional(propagation = Propagation.NEVER)
+//    @Transactional(propagation = Propagation.NEVER)
     @WithUserDetails(value = ADMIN_MAIL)
     void createDuplicate() {
         Restaurant invalid = new Restaurant(null, "YACITORIA", RESTAURANT1_MAIL);

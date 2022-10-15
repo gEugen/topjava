@@ -4,6 +4,7 @@ import ru.javaops.topjava.model.Restaurant;
 import ru.javaops.topjava.to.RestaurantTo;
 import ru.javaops.topjava.web.MatcherFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,6 +44,18 @@ public class RestaurantTestData {
                         throw new UnsupportedOperationException();
                     });
 
+    public static MatcherFactory.Matcher<Restaurant> RESTAURANT_GET_VOTES_MATCHER =
+            MatcherFactory.usingAssertions(Restaurant.class,
+                    //     No need use ignoringAllOverriddenEquals, see https://assertj.github.io/doc/#breaking-changes
+                    (a, e) -> assertThat(a).usingRecursiveComparison()
+                            .ignoringFields("users").isEqualTo(e),
+                    (a, e) -> {
+                        throw new UnsupportedOperationException();
+                    });
+
+    public static final MatcherFactory.Matcher<Restaurant> RESTAURANT_MATCHER11 =
+            MatcherFactory.usingIgnoringFieldsComparator(Restaurant.class, "users.registered");
+
     public static final boolean VOTED = true;
     public static final boolean NOT_VOTED = false;
 
@@ -50,29 +63,39 @@ public class RestaurantTestData {
     public static final int RESTAURANT2_ID = 2;
     public static final int RESTAURANT3_ID = 3;
     public static final int RESTAURANT4_ID = 4;
+    public static final int RESTAURANT5_ID = 5;
     public static final int NOT_FOUND = 200;
 
     public static final String RESTAURANT1_MAIL = "astoria@yandex.ru";
     public static final String RESTAURANT2_MAIL = "continental@yandex.ru";
     public static final String RESTAURANT3_MAIL = "prague@gmail.com";
     public static final String RESTAURANT4_MAIL = "sushibar@gmail.com";
+    public static final String RESTAURANT5_MAIL = "niam-niam@gmail.com";
 
     public static final Restaurant restaurant1 = new Restaurant(RESTAURANT1_ID, "ASTORIA", RESTAURANT1_MAIL);
     public static final Restaurant restaurant2 = new Restaurant(RESTAURANT2_ID, "CONTINENTAL", RESTAURANT2_MAIL);
     public static final Restaurant restaurant3 = new Restaurant(RESTAURANT3_ID, "PRAGUE", RESTAURANT3_MAIL);
     public static final Restaurant restaurant4 = new Restaurant(RESTAURANT4_ID, "SUSHI BAR", RESTAURANT4_MAIL);
+    public static final Restaurant restaurant5 = new Restaurant(RESTAURANT5_ID, "NIAM-NIAM", RESTAURANT5_MAIL);
 
-    public static final List<Restaurant> restaurants =
-            List.of(new Restaurant(restaurant1), new Restaurant(restaurant2), new Restaurant(restaurant3), new Restaurant(restaurant4));
+    public static final List<Restaurant> restaurants;
+    public static final List<Restaurant> restaurantsWithUserVotes;
 
     static {
+        restaurants = getListOfRestaurants();
+
         restaurant1.setUsers(List.of(user1, admin));
-        restaurant1.setDishes(List.of(dish1, dish2, dish3));
-
-        restaurant2.setDishes(List.of(dish4, dish5, dish6));
-
+        restaurant2.setUsers(new ArrayList<>());
         restaurant3.setUsers(List.of(user2, user3));
+        restaurant4.setUsers(new ArrayList<>());
+        restaurant5.setUsers(List.of(user4, user5));
+
+        restaurantsWithUserVotes = getListOfRestaurants();
+
+        restaurant1.setDishes(List.of(dish1, dish2, dish3));
+        restaurant2.setDishes(List.of(dish4, dish5, dish6));
         restaurant3.setDishes(List.of(dish7, dish8, dish9));
+        restaurant5.setDishes(List.of(dish10));
     }
 
     public static Restaurant createVoted() {
@@ -100,5 +123,14 @@ public class RestaurantTestData {
 
     public static Restaurant getNew() {
         return new Restaurant(null, "NEW_RESTAURANT", "new_restaurant@mail.ru");
+    }
+
+    public static List<Restaurant> getListOfRestaurants() {
+        return List.of(
+                new Restaurant(restaurant1),
+                new Restaurant(restaurant2),
+                new Restaurant(restaurant3),
+                new Restaurant(restaurant4),
+                new Restaurant(restaurant5));
     }
 }

@@ -50,12 +50,6 @@ public class AdminRestaurantController extends AbstractRestaurantController {
         return ResponseEntity.of(restaurantRepository.findByEmailIgnoreCase(email));
     }
 
-    @GetMapping("/{id}/with-votes")
-    public Restaurant getWithUsersVotes(@PathVariable int id) {
-        log.info("getAllWithUsersVotes");
-        return restaurantRepository.getWithVotes(id).get();
-    }
-
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable int id) {

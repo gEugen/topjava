@@ -1,30 +1,27 @@
-package ru.javaops.topjava.web.restaurant;
+package ru.javaops.topjava.web.vote;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import ru.javaops.topjava.model.Dish;
 import ru.javaops.topjava.model.Restaurant;
 import ru.javaops.topjava.repository.RestaurantRepository;
 import ru.javaops.topjava.repository.UserRepository;
-import ru.javaops.topjava.to.RestaurantTo;
-import ru.javaops.topjava.util.JsonUtil;
 import ru.javaops.topjava.web.AbstractControllerTest;
+import ru.javaops.topjava.web.restaurant.RestaurantTestData;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.javaops.topjava.util.RestaurantsUtil.*;
 import static ru.javaops.topjava.util.Util.initializeAndUnproxy;
-import static ru.javaops.topjava.web.dish.DishTestData.DISH4_ID;
 import static ru.javaops.topjava.web.restaurant.RestaurantTestData.*;
 import static ru.javaops.topjava.web.user.UserTestData.*;
 
-public class ProfileRestaurantControllerTest extends AbstractControllerTest {
+public class ProfileVoteControllerTest extends AbstractControllerTest {
 
-    private static final String REST_URL = ProfileRestaurantController.REST_URL + '/';
+    private static final String REST_URL = ProfileVoteController.REST_URL + '/';
 
     @Autowired
     private RestaurantRepository restaurantRepository;
@@ -63,7 +60,8 @@ public class ProfileRestaurantControllerTest extends AbstractControllerTest {
                         RESTAURANT_TO_MATCHER.contentJson(
                                 createTos(
                                         createTo(restaurant1, NOT_VOTED), createTo(restaurant2, NOT_VOTED),
-                                        createTo(restaurant3, VOTED), createTo(restaurant4, NOT_VOTED))));
+                                        createTo(restaurant3, VOTED), createTo(restaurant4, NOT_VOTED),
+                                        createTo(restaurant5, NOT_VOTED))));
     }
 
     @Test

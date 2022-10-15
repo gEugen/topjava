@@ -6,17 +6,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import ru.javaops.topjava.model.Restaurant;
-import ru.javaops.topjava.model.User;
 import ru.javaops.topjava.repository.DishRepository;
 import ru.javaops.topjava.repository.RestaurantRepository;
 import ru.javaops.topjava.repository.UserRepository;
-import ru.javaops.topjava.service.RestaurantService;
-import ru.javaops.topjava.to.RestaurantTo;
+import ru.javaops.topjava.service.VoteService;
 import ru.javaops.topjava.web.user.UniqueMailValidator;
 
 import java.util.List;
-
-import static ru.javaops.topjava.util.RestaurantsUtil.createTo;
 
 @Slf4j
 public abstract class AbstractRestaurantController {
@@ -28,7 +24,7 @@ public abstract class AbstractRestaurantController {
     protected UserRepository userRepository;
 
     @Autowired
-    protected RestaurantService restaurantService;
+    protected VoteService voteService;
 
     @Autowired
     protected DishRepository dishRepository;
@@ -56,10 +52,6 @@ public abstract class AbstractRestaurantController {
 
     public ResponseEntity<Restaurant> get(int id) {
         return ResponseEntity.of(restaurantRepository.findById(id));
-    }
-
-    public Restaurant getVotedRestaurant(int id) {
-        return userRepository.findById(id).get().getRestaurant();
     }
 
     public List<Restaurant> getAll() {

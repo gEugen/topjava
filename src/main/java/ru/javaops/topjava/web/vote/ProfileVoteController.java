@@ -1,4 +1,4 @@
-package ru.javaops.topjava.web.restaurant;
+package ru.javaops.topjava.web.vote;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -6,9 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import ru.javaops.topjava.model.Dish;
 import ru.javaops.topjava.model.Restaurant;
-import ru.javaops.topjava.service.RestaurantService;
 import ru.javaops.topjava.to.RestaurantTo;
 import ru.javaops.topjava.web.AuthUser;
 
@@ -18,12 +16,12 @@ import java.util.List;
 import static ru.javaops.topjava.util.RestaurantsUtil.createTo;
 
 @RestController
-@RequestMapping(value = ProfileRestaurantController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = ProfileVoteController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 @AllArgsConstructor
-public class ProfileRestaurantController extends AbstractRestaurantController {
+public class ProfileVoteController extends AbstractVoteController {
 
-    static final String REST_URL = "/api/restaurant";
+    static final String REST_URL = "/api/profile/vote/restaurant";
 
 //    @GetMapping("/{id}/with-votes")
 //    public ResponseEntity<Restaurant> getWithVotes(@PathVariable int id) {
@@ -73,6 +71,6 @@ public class ProfileRestaurantController extends AbstractRestaurantController {
     public void vote(@AuthenticationPrincipal AuthUser authUser, @PathVariable int id) {
         int authUserId = authUser.id();
         log.info("vote {} by user {}", id, authUserId);
-        restaurantService.saveWithVote(authUserId, id);
+        voteService.saveWithVote(authUserId, id);
     }
 }

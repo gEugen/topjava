@@ -14,7 +14,7 @@ public interface RestaurantRepository extends BaseRepository<Restaurant> {
 
     //    https://stackoverflow.com/a/46013654/548473
     @EntityGraph(attributePaths = {"dishes"}, type = EntityGraph.EntityGraphType.LOAD)
-    @Query("SELECT r FROM Restaurant r")
+    @Query("SELECT r FROM Restaurant r ORDER BY r.name ASC, r.email ASC")
     List<Restaurant> getAllWithDishes();
 
     //    https://stackoverflow.com/a/46013654/548473
@@ -39,4 +39,9 @@ public interface RestaurantRepository extends BaseRepository<Restaurant> {
 
     @Query("SELECT r FROM Restaurant r WHERE r.email = LOWER(:email)")
     Optional<Restaurant> findByEmailIgnoreCase(String email);
+
+    //    https://stackoverflow.com/a/46013654/548473
+    @EntityGraph(attributePaths = {"users"}, type = EntityGraph.EntityGraphType.LOAD)
+    @Query("SELECT r FROM Restaurant r")
+    List<Restaurant> getAllWithUsersVotes();
 }

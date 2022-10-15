@@ -56,13 +56,14 @@ public class Restaurant extends NamedEntity implements HasIdAndEmail, Serializab
     }
 
     public Restaurant(Restaurant r) {
-        this(r.id, r.name, r.email, r.dishes);
+        this(r.id, r.name, r.email, r.dishes, r.users);
     }
 
-    public Restaurant(Integer id, String name, String email, List<Dish> dishes) {
+    public Restaurant(Integer id, String name, String email, List<Dish> dishes, List<User> users) {
         super(id, name);
         this.email = email;
         this.dishes = dishes;
+        this.users = users;
     }
 
     @Override

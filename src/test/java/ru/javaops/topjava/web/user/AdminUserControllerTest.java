@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.javaops.topjava.util.UsersUtil.getOrderedList;
 import static ru.javaops.topjava.web.user.UniqueMailValidator.EXCEPTION_DUPLICATE_EMAIL;
 import static ru.javaops.topjava.web.user.UserTestData.*;
 
@@ -132,7 +133,7 @@ class AdminUserControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(USER_MATCHER.contentJson(admin, guest, user1));
+                .andExpect(USER_MATCHER.contentJson(getOrderedList(user1, user2, user3, admin, guest, user4, user5)));
     }
 
     @Test

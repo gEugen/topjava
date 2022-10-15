@@ -17,6 +17,7 @@ public class DishTestData {
     public static final int DISH7_ID = 7;
     public static final int DISH8_ID = 8;
     public static final int DISH9_ID = 9;
+    public static final int DISH10_ID = 10;
 
     public static final Dish dish1 = new Dish(DISH1_ID, "Escalope", 2.5);
     public static final Dish dish2 = new Dish(DISH2_ID, "Grilled chicken", 1.1);
@@ -27,6 +28,7 @@ public class DishTestData {
     public static final Dish dish7 = new Dish(DISH7_ID, "Sponge cake", 3.1);
     public static final Dish dish8 = new Dish(DISH8_ID, "Coconut ice cream", 2.1);
     public static final Dish dish9 = new Dish(DISH9_ID, "Coffee with milk", 0.25);
+    public static final Dish dish10 = new Dish(DISH10_ID, "Coffee", 0.1);
 
 //    public static final Meal meal1 = new Meal(MEAL1_ID, of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500);
 //    public static final Meal meal2 = new Meal(MEAL1_ID + 1, of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000);
