@@ -29,16 +29,6 @@ public class ProfileVoteControllerTest extends AbstractControllerTest {
     @Autowired
     private UserRepository userRepository;
 
-//    @Test
-//    @WithUserDetails(value = ADMIN_MAIL)
-//    void getWithVotes() throws Exception {
-//        perform(MockMvcRequestBuilders.get(REST_URL + RESTAURANT1_ID + "/with-votes"))
-//                .andExpect(status().isOk())
-//                .andDo(print())
-//                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-//                .andExpect(RESTAURANT_WITH_VOTES_MATCHER.contentJson(restaurant1));
-//    }
-
     @Test
     @WithUserDetails(value = USER2_MAIL)
     void getWithDishesAndVote() throws Exception {

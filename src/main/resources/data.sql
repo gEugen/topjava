@@ -41,4 +41,5 @@ VALUES ('Escalope', 2.5, 1),
        ('Sponge cake', 3.1, 3),
        ('Coconut ice cream', 2.1, 3),
        ('Coffee with milk', 0.25, 3),
-       ('Coffee', 0.1, 5);
+       ('Coffee', 0.1, 5),
+       ('Tea', 0.05, 5);

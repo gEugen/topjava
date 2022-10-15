@@ -23,21 +23,10 @@ public class ProfileVoteController extends AbstractVoteController {
 
     static final String REST_URL = "/api/profile/vote/restaurant";
 
-//    @GetMapping("/{id}/with-votes")
-//    public ResponseEntity<Restaurant> getWithVotes(@PathVariable int id) {
-//        return ResponseEntity.of(restaurantRepository1.getWithVotes(id));
-//    }
-
-//    @GetMapping("/{id}/with-dishes")
-//    public ResponseEntity<RestaurantTo> getWithDishesAndVote(@PathVariable int id) {
-//        return super.getWithDishesAndVote(id);
-//    }
-
     @GetMapping("/{id}/with-dishes-and-vote")
     public RestaurantTo getWithDishesAndVote(@AuthenticationPrincipal AuthUser authUser, @PathVariable int id) {
         int authUserId = authUser.id();
         log.info("getWithDishesAndVote {} for user {}", id, authUserId);
-//        Restaurant restaurant = super.get(id);
         Restaurant restaurant = restaurantRepository.getWithDishes(id);
         Integer votedRestaurantId = super.getVotedRestaurant(authUserId).getId();
         RestaurantTo restaurantTo;

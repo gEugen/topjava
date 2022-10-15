@@ -55,17 +55,6 @@ public class AdminRestaurantControllerTest extends AbstractControllerTest {
                 .andExpect(RESTAURANT_GET_MATCHER.contentJson(restaurant1));
     }
 
-//    @Test
-//    @WithUserDetails(value = ADMIN_MAIL)
-//    void getWithDishes() throws Exception {
-//        perform(MockMvcRequestBuilders.get(REST_URL + RESTAURANT1_ID))
-//                .andExpect(status().isOk())
-//                .andDo(print())
-//                // https://jira.spring.io/browse/SPR-14472
-//                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-//                .andExpect(RESTAURANT_GET_MATCHER.contentJson(restaurant1));
-//    }
-
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
     void getByEmail() throws Exception {

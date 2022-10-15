@@ -12,8 +12,8 @@ import ru.javaops.topjava.repository.DishRepository;
 import ru.javaops.topjava.service.DishService;
 
 import javax.validation.Valid;
-
 import java.net.URI;
+import java.util.List;
 
 import static ru.javaops.topjava.util.validation.ValidationUtil.assureIdConsistent;
 import static ru.javaops.topjava.util.validation.ValidationUtil.checkNew;
@@ -28,15 +28,27 @@ public class DishController {
     private final DishRepository repository;
     private final DishService service;
 
+    @GetMapping()
+    public List<Dish> getAllForRestaurant(@PathVariable int restaurantId) {
+        log.info("get {}", restaurantId);
+        return repository.getAll(restaurantId);
+    }
+
+    @GetMapping("/{dishId}")
+    public ResponseEntity<Dish> get(@PathVariable int restaurantId, @PathVariable int dishId) {
+        log.info("get dish {} for restaurant {}", dishId, restaurantId);
+        return ResponseEntity.of(repository.get(dishId, restaurantId));
+    }
+
     @DeleteMapping("/{dishId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable int restaurantId,  @PathVariable int dishId) {
+    public void delete(@PathVariable int restaurantId, @PathVariable int dishId) {
         log.info("delete {} for restaurant {}", restaurantId, dishId);
         Dish dish = repository.checkBelong(dishId, restaurantId);
         repository.delete(dish);
     }
 
-    @PutMapping(value = "/{dishId}",consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{dishId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@Valid @RequestBody Dish dish, @PathVariable int restaurantId, @PathVariable int dishId) {
         log.info("update {} for restaurant {}", dish, restaurantId);

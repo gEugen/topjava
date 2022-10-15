@@ -17,8 +17,8 @@ public interface DishRepository extends BaseRepository<Dish> {
     @Query("SELECT d FROM Dish d WHERE d.id = :id and d.restaurant.id = :restaurantId")
     Optional<Dish> get(int id, int restaurantId);
 
-    @Query("SELECT d FROM Dish d JOIN FETCH d.restaurant WHERE d.id = :id and d.restaurant.id = :restaurantId")
-    Optional<Dish> getWithRestaurant(int id, int restaurantId);
+//    @Query("SELECT d FROM Dish d JOIN FETCH d.restaurant WHERE d.id = :id and d.restaurant.id = :restaurantId")
+//    Dish getWithRestaurant(int id, int restaurantId);
 
     default Dish checkBelong(int id, int restaurantId) {
         return get(id, restaurantId).orElseThrow(

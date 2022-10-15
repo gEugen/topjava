@@ -17,7 +17,7 @@ public class DishService {
 
     @Transactional
     public Dish save(Dish dish, int restaurantId) {
-        dish.setRestaurant(restaurantRepository.getExisted(restaurantId));
+        dish.setRestaurant(restaurantRepository.getReferenceById(restaurantId));
         return dishRepository.save(dish);
     }
 }

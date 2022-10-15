@@ -95,7 +95,7 @@ public class RestaurantTestData {
         restaurant1.setDishes(List.of(dish1, dish2, dish3));
         restaurant2.setDishes(List.of(dish4, dish5, dish6));
         restaurant3.setDishes(List.of(dish7, dish8, dish9));
-        restaurant5.setDishes(List.of(dish10));
+        restaurant5.setDishes(List.of(dish10, dish11));
     }
 
     public static Restaurant createVoted() {
