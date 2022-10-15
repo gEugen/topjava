@@ -10,7 +10,9 @@ import ru.javaops.topjava.repository.RestaurantRepository;
 @Service
 @AllArgsConstructor
 public class DishService {
+
     private final DishRepository dishRepository;
+
     private final RestaurantRepository restaurantRepository;
 
     @Transactional

@@ -34,21 +34,21 @@ class DishControllerTest extends AbstractControllerTest {
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
     void delete() throws Exception {
-        perform(MockMvcRequestBuilders.delete(REST_URL + DISH1_ID, RESTAURANT2_ID))
+        perform(MockMvcRequestBuilders.delete(REST_URL + DISH4_ID, RESTAURANT2_ID))
                 .andExpect(status().isNoContent());
-        assertFalse(repository.get(RESTAURANT2_ID, DISH1_ID).isPresent());
+        assertFalse(repository.get(RESTAURANT2_ID, DISH4_ID).isPresent());
     }
 
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
     void update() throws Exception {
         Dish updated = getUpdated();
-        perform(MockMvcRequestBuilders.put(REST_URL + DISH1_ID, RESTAURANT2_ID)
+        perform(MockMvcRequestBuilders.put(REST_URL + DISH4_ID, RESTAURANT2_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updated)))
                 .andExpect(status().isNoContent());
 
-        DISH_MATCHER.assertMatch(repository.getExisted(DISH1_ID), updated);
+        DISH_MATCHER.assertMatch(repository.getExisted(DISH4_ID), updated);
     }
 
     @Test
@@ -116,9 +116,9 @@ class DishControllerTest extends AbstractControllerTest {
     @Transactional(propagation = Propagation.NEVER)
     @WithUserDetails(value = ADMIN_MAIL)
     void updateDuplicate() {
-        Dish invalid = new Dish(DISH2_ID, "Scrambled eggs", 0.9);
+        Dish invalid = new Dish(DISH5_ID, "Scrambled eggs", 0.9);
         assertThrows(Exception.class, () ->
-                perform(MockMvcRequestBuilders.put(REST_URL + DISH2_ID, RESTAURANT2_ID)
+                perform(MockMvcRequestBuilders.put(REST_URL + DISH5_ID, RESTAURANT2_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(JsonUtil.writeValue(invalid)))
                         .andDo(print())

@@ -1,25 +1,28 @@
 INSERT INTO RESTAURANTS (NAME, EMAIL)
 VALUES ('ASTORIA', 'astoria@yandex.ru'),
        ('CONTINENTAL', 'continental@yandex.ru'),
-       ('PRAGUE', 'prague@gmail.com');
+       ('PRAGUE', 'prague@gmail.com'),
+       ('SUSHI BAR', 'sushibar@gmail.com');
 
 INSERT INTO USERS (NAME, EMAIL, PASSWORD)
-VALUES ('User', 'user@yandex.ru', '{noop}password'),
+VALUES ('User1', 'user1@yandex.ru', '{noop}password1'),
+       ('User2', 'user2@yandex.ru', '{noop}password2'),
+       ('User3', 'user3@yandex.ru', '{noop}password3'),
        ('Admin', 'admin@gmail.com', '{noop}admin'),
        ('Guest', 'guest@gmail.com', '{noop}guest');
 
 INSERT INTO USER_ROLE (ROLE, USER_ID)
 VALUES ('USER', 1),
-       ('ADMIN', 2),
-       ('USER', 2);
+       ('USER', 2),
+       ('USER', 3),
+       ('ADMIN', 4),
+       ('USER', 4);
 
 INSERT INTO VOTES (RESTAURANT_ID, USER_ID)
 VALUES (1, 1),
-       (1, 2);
-
--- INSERT INTO VOTE (ID, RESTAURANT_ID)
--- VALUES (1, 1),
---        (2, 1);
+       (1, 4),
+       (3, 2),
+       (3, 3);
 
 INSERT INTO DISHES (NAME, PRICE, RESTAURANT_ID)
 VALUES ('Escalope', 2.5, 1),

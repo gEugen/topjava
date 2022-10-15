@@ -1,6 +1,6 @@
 package ru.javaops.topjava.model;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +15,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -23,6 +24,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Restaurant extends NamedEntity implements HasIdAndEmail, Serializable {
+//public class Restaurant extends NamedEntity {
 
     @Column(name = "email", nullable = false, unique = true)
     @Email
@@ -36,16 +38,31 @@ public class Restaurant extends NamedEntity implements HasIdAndEmail, Serializab
 //    @Schema(hidden = true)
     private List<Dish> dishes;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "votes")
-//    @Schema(hidden = true)
-    private List<User> user;
+//    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.LAZY)
+//    @JoinTable(name = "votes",
+//            joinColumns = {@JoinColumn(name = "restaurant_id", referencedColumnName = "id")},
+//            inverseJoinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")}
+//    )
+////    @Schema(hidden = true)
+////    @JsonIgnore
+    @OneToMany(mappedBy = "restaurant")
+    private List<User> users;
 
-    public Restaurant(int id, String name, String email) {
+    public Restaurant(Integer id, String name, String email) {
         this.id = id;
         this.name = name;
         this.email = email;
+//        this.dishes = new ArrayList<>();
+    }
 
+    public Restaurant(Restaurant r) {
+        this(r.id, r.name, r.email, r.dishes);
+    }
+
+    public Restaurant(Integer id, String name, String email, List<Dish> dishes) {
+        super(id, name);
+        this.email = email;
+        this.dishes = dishes;
     }
 
     @Override

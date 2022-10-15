@@ -1,5 +1,6 @@
 package ru.javaops.topjava.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -61,10 +62,18 @@ public class User extends NamedEntity implements HasIdAndEmail, Serializable {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<Role> roles;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinTable(name = "vote")
-////    @Schema(hidden = true)
-//    private Restaurant restaurant;
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    @JoinTable(name = "VOTES",
+//            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
+//            inverseJoinColumns = {@JoinColumn(name = "restaurant_id", referencedColumnName = "id")}
+//    )
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinTable(name = "VOTES",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "restaurant_id")
+    )
+    @JsonIgnore
+    private Restaurant restaurant;
 
     public User(User u) {
         this(u.id, u.name, u.email, u.password, u.enabled, u.registered, u.roles);
