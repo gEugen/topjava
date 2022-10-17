@@ -44,17 +44,17 @@ public class RestaurantTestData {
                         throw new UnsupportedOperationException();
                     });
 
-    public static MatcherFactory.Matcher<Restaurant> RESTAURANT_GET_VOTES_MATCHER =
-            MatcherFactory.usingAssertions(Restaurant.class,
-                    //     No need use ignoringAllOverriddenEquals, see https://assertj.github.io/doc/#breaking-changes
-                    (a, e) -> assertThat(a).usingRecursiveComparison()
-                            .ignoringFields("users").isEqualTo(e),
-                    (a, e) -> {
-                        throw new UnsupportedOperationException();
-                    });
+//    public static MatcherFactory.Matcher<Restaurant> RESTAURANT_GET_VOTES_MATCHER =
+//            MatcherFactory.usingAssertions(Restaurant.class,
+//                    //     No need use ignoringAllOverriddenEquals, see https://assertj.github.io/doc/#breaking-changes
+//                    (a, e) -> assertThat(a).usingRecursiveComparison()
+//                            .ignoringFields("users").isEqualTo(e),
+//                    (a, e) -> {
+//                        throw new UnsupportedOperationException();
+//                    });
 
-    public static final MatcherFactory.Matcher<Restaurant> RESTAURANT_MATCHER11 =
-            MatcherFactory.usingIgnoringFieldsComparator(Restaurant.class, "users.registered");
+    public static final MatcherFactory.Matcher<Restaurant> RESTAURANT_GET_VOTES_MATCHER =
+            MatcherFactory.usingIgnoringFieldsComparator(Restaurant.class, "users");
 
     public static final boolean VOTED = true;
     public static final boolean NOT_VOTED = false;

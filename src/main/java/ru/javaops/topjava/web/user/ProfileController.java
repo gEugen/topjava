@@ -1,5 +1,7 @@
 package ru.javaops.topjava.web.user;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -29,21 +31,24 @@ import static ru.javaops.topjava.util.validation.ValidationUtil.checkNew;
 public class ProfileController extends AbstractUserController {
     static final String REST_URL = "/api/profile";
 
+    @Operation(summary = "Get own profile by authorized user", description = "Returns response with found user")
     @GetMapping
     public User get(@AuthenticationPrincipal AuthUser authUser) {
         return authUser.getUser();
     }
 
+    @Operation(summary = "Delete profile by authorized user", description = "Deletes user profile")
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@AuthenticationPrincipal AuthUser authUser) {
         super.delete(authUser.id());
     }
 
+    @Operation(summary = "Register new user profile", description = "Registers new user profile")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @CacheEvict(allEntries = true)
-    public ResponseEntity<User> register(@Valid @RequestBody UserTo userTo) {
+    public ResponseEntity<User> register(@Parameter(description = "registered user (DTO) with details") @Valid @RequestBody UserTo userTo) {
         log.info("register {}", userTo);
         checkNew(userTo);
         User created = prepareAndSave(UserUtil.createNewFromTo(userTo));

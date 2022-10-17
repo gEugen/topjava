@@ -1,5 +1,7 @@
 package ru.javaops.topjava.web.dish;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -28,26 +30,36 @@ public class DishController {
     private final DishRepository repository;
     private final DishService service;
 
+    @Operation(summary = "Get dish list for selected restaurant by its id", description = "Returns dish list")
     @GetMapping()
-    public List<Dish> getAllForRestaurant(@PathVariable int restaurantId) {
+    public List<Dish> getAllForRestaurant(@Parameter(description = "id of selected restaurant") @PathVariable int restaurantId) {
         log.info("get {}", restaurantId);
         return repository.getAll(restaurantId);
     }
 
+    @Operation(summary = "Get selected dish for selected restaurant by its ides", description = "Returns response with dish")
     @GetMapping("/{dishId}")
-    public ResponseEntity<Dish> get(@PathVariable int restaurantId, @PathVariable int dishId) {
+    public ResponseEntity<Dish> get(
+            @Parameter(description = "id of selected restaurant") @PathVariable int restaurantId,
+            @Parameter(description = "id of selected dish") @PathVariable int dishId) {
         log.info("get dish {} for restaurant {}", dishId, restaurantId);
         return ResponseEntity.of(repository.get(dishId, restaurantId));
     }
 
+    @Operation(summary = "Delete selected dish for selected restaurant by its ides", description = "Deletes dish")
     @DeleteMapping("/{dishId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable int restaurantId, @PathVariable int dishId) {
+    public void delete(
+            @Parameter(description = "id of selected restaurant") @PathVariable int restaurantId,
+            @Parameter(description = "id of selected dish") @PathVariable int dishId) {
         log.info("delete {} for restaurant {}", restaurantId, dishId);
         Dish dish = repository.checkBelong(dishId, restaurantId);
         repository.delete(dish);
     }
 
+    @Operation(
+            summary = "Update details selected dish for selected restaurant by its ides",
+            description = "Updates and returns response with updated dish")
     @PutMapping(value = "/{dishId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@Valid @RequestBody Dish dish, @PathVariable int restaurantId, @PathVariable int dishId) {
@@ -57,6 +69,9 @@ public class DishController {
         service.save(dish, restaurantId);
     }
 
+    @Operation(
+            summary = "Create dish with details for selected restaurant by its id",
+            description = "Creates dish and returns response with new dish and its details")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Dish> createWithLocation(@Valid @RequestBody Dish dish, @PathVariable int restaurantId) {
         log.info("create {} for restaurant {}", dish, restaurantId);

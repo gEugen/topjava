@@ -1,5 +1,7 @@
 package ru.javaops.topjava.web.vote;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -23,8 +25,12 @@ public class ProfileVoteController extends AbstractVoteController {
 
     static final String REST_URL = "/api/profile/vote/restaurant";
 
+    @Operation(
+            summary = "Get a restaurant with a mark of a vote cast for it by active user",
+            description = "Returns a restaurant with a mark about the presence / absence of a vote cast for it")
     @GetMapping("/{id}/with-dishes-and-vote")
-    public RestaurantTo getWithDishesAndVote(@AuthenticationPrincipal AuthUser authUser, @PathVariable int id) {
+    public RestaurantTo getWithDishesAndVote(
+            @AuthenticationPrincipal AuthUser authUser, @Parameter(description = "id of selected restaurant") @PathVariable int id) {
         int authUserId = authUser.id();
         log.info("getWithDishesAndVote {} for user {}", id, authUserId);
         Restaurant restaurant = restaurantRepository.getWithDishes(id);
@@ -38,6 +44,9 @@ public class ProfileVoteController extends AbstractVoteController {
         return restaurantTo;
     }
 
+    @Operation(
+            summary = "Get a list of restaurants with vote marks for each one by active user",
+            description = "Returns a list of restaurants with a mark about the presence / absence of a vote cast for them")
     @GetMapping()
     public List<RestaurantTo> getAllWithDishesAndVote(@AuthenticationPrincipal AuthUser authUser) {
         int authUserId = authUser.id();
@@ -55,9 +64,12 @@ public class ProfileVoteController extends AbstractVoteController {
         return restaurantToList;
     }
 
+    @Operation(
+            summary = "Vote for a restaurant selected by the user",
+            description = "Marks a restaurant selected by the user")
     @PostMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void vote(@AuthenticationPrincipal AuthUser authUser, @PathVariable int id) {
+    public void vote(@AuthenticationPrincipal AuthUser authUser, @Parameter(description = "id of selected restaurant") @PathVariable int id) {
         int authUserId = authUser.id();
         log.info("vote {} by user {}", id, authUserId);
         voteService.saveWithVote(authUserId, id);

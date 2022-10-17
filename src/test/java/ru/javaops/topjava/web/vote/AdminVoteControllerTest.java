@@ -5,18 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import ru.javaops.topjava.model.Restaurant;
 import ru.javaops.topjava.repository.RestaurantRepository;
 import ru.javaops.topjava.repository.UserRepository;
 import ru.javaops.topjava.web.AbstractControllerTest;
-import ru.javaops.topjava.web.restaurant.RestaurantTestData;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static ru.javaops.topjava.util.RestaurantsUtil.createTo;
-import static ru.javaops.topjava.util.RestaurantsUtil.createTos;
-import static ru.javaops.topjava.util.Util.initializeAndUnproxy;
 import static ru.javaops.topjava.web.restaurant.RestaurantTestData.*;
 import static ru.javaops.topjava.web.user.UserTestData.*;
 
