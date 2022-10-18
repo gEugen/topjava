@@ -5,33 +5,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import ru.javaops.topjava.model.Restaurant;
-import ru.javaops.topjava.repository.RestaurantRepository;
-import ru.javaops.topjava.repository.UserRepository;
+import ru.javaops.topjava.model.Vote;
+import ru.javaops.topjava.repository.VoteRepository;
 import ru.javaops.topjava.web.AbstractControllerTest;
-import ru.javaops.topjava.web.restaurant.RestaurantTestData;
+
+import java.util.List;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static ru.javaops.topjava.util.RestaurantsUtil.*;
-import static ru.javaops.topjava.util.Util.initializeAndUnproxy;
+import static ru.javaops.topjava.util.RestaurantsUtil.createTo;
+import static ru.javaops.topjava.util.RestaurantsUtil.createTos;
 import static ru.javaops.topjava.web.restaurant.RestaurantTestData.*;
-import static ru.javaops.topjava.web.user.UserTestData.*;
+import static ru.javaops.topjava.web.user.UserTestData.USER2_MAIL;
+import static ru.javaops.topjava.web.user.UserTestData.USER3_MAIL;
+import static ru.javaops.topjava.web.vote.VoteTestData.*;
 
 public class ProfileVoteControllerTest extends AbstractControllerTest {
 
     private static final String REST_URL = ProfileVoteController.REST_URL + '/';
 
     @Autowired
-    private RestaurantRepository restaurantRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    private VoteRepository voteRepository;
 
     @Test
     @WithUserDetails(value = USER2_MAIL)
-    void getWithDishesAndVote() throws Exception {
+    void getWithVoteMark() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + RESTAURANT3_ID + "/with-dishes-and-vote"))
                 .andExpect(status().isOk())
                 .andDo(print())
@@ -41,7 +40,7 @@ public class ProfileVoteControllerTest extends AbstractControllerTest {
 
     @Test
     @WithUserDetails(value = USER2_MAIL)
-    void getAllWithDishesAndVote() throws Exception {
+    void getAllWithVoteMark() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL))
                 .andExpect(status().isOk())
                 .andDo(print())
@@ -57,14 +56,13 @@ public class ProfileVoteControllerTest extends AbstractControllerTest {
     @Test
     @WithUserDetails(value = USER3_MAIL)
     void vote() throws Exception {
-        int previouslyVotedRestaurant = userRepository.findById(USER3_ID).get().getRestaurant().getId();
         perform(MockMvcRequestBuilders.post(REST_URL + RESTAURANT1_ID))
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
-        RESTAURANT_WITH_VOTES_MATCHER.assertMatch(restaurantRepository.findById(RESTAURANT1_ID).get(), RestaurantTestData.createVoted());
-        // https://stackoverflow.com/a/2216603
-        Restaurant unVotedRestaurant = initializeAndUnproxy(restaurantRepository.getExisted(previouslyVotedRestaurant));
-        RESTAURANT_WITH_VOTES_MATCHER.assertMatch(unVotedRestaurant, RestaurantTestData.createTestUnVoted());
+        List<Vote> currentVotes = voteRepository.getVotesByRestaurant(RESTAURANT1_ID);
+        List<Vote> previousVotes = voteRepository.getVotesByRestaurant(RESTAURANT3_ID);
+        VOTE_MATCHER.assertMatch(currentVotes, getTestCurrentVotes());
+        VOTE_MATCHER.assertMatch(previousVotes, getTestPreviousVotes());
     }
 }

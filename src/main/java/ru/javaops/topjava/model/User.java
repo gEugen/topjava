@@ -67,13 +67,18 @@ public class User extends NamedEntity implements HasIdAndEmail, Serializable {
 //            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
 //            inverseJoinColumns = {@JoinColumn(name = "restaurant_id", referencedColumnName = "id")}
 //    )
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinTable(name = "VOTES",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "restaurant_id")
-    )
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinTable(name = "VOTES",
+//        joinColumns = @JoinColumn(name = "user_id"),
+//        inverseJoinColumns = @JoinColumn(name = "restaurant_id")
+//    )
+//    @JsonIgnore
+//    private Restaurant restaurant;
+
+    @OneToOne(mappedBy = "user")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
-    private Restaurant restaurant;
+    private Vote vote;
 
     public User(User u) {
         this(u.id, u.name, u.email, u.password, u.enabled, u.registered, u.roles);

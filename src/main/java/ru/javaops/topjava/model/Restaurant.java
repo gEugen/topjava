@@ -23,7 +23,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Restaurant extends NamedEntity implements HasIdAndEmail, Serializable {
+public class Restaurant extends NamedEntity implements HasIdAndEmail {
 //public class Restaurant extends NamedEntity {
 
     @Column(name = "email", nullable = false, unique = true)
@@ -45,8 +45,13 @@ public class Restaurant extends NamedEntity implements HasIdAndEmail, Serializab
 //    )
 ////    @Schema(hidden = true)
 ////    @JsonIgnore
+//    @OneToMany(mappedBy = "restaurant")
+//    private List<User> users;
+
     @OneToMany(mappedBy = "restaurant")
-    private List<User> users;
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
+    private List<Vote> vote;
 
     public Restaurant(Integer id, String name, String email) {
         this.id = id;
@@ -56,14 +61,13 @@ public class Restaurant extends NamedEntity implements HasIdAndEmail, Serializab
     }
 
     public Restaurant(Restaurant r) {
-        this(r.id, r.name, r.email, r.dishes, r.users);
+        this(r.id, r.name, r.email);
     }
 
     public Restaurant(Integer id, String name, String email, List<Dish> dishes, List<User> users) {
         super(id, name);
         this.email = email;
         this.dishes = dishes;
-        this.users = users;
     }
 
     @Override

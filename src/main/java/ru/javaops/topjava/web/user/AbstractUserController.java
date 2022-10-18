@@ -8,13 +8,17 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import ru.javaops.topjava.model.User;
 import ru.javaops.topjava.repository.UserRepository;
+import ru.javaops.topjava.repository.VoteRepository;
 import ru.javaops.topjava.util.UserUtil;
 
 @Slf4j
 public abstract class AbstractUserController {
 
     @Autowired
-    protected UserRepository repository;
+    protected UserRepository userRepository;
+
+    @Autowired
+    protected VoteRepository voteRepository;
 
     @Autowired
     private UniqueMailValidator emailValidator;
@@ -26,21 +30,22 @@ public abstract class AbstractUserController {
 
     public ResponseEntity<User> get(int id) {
         log.info("get {}", id);
-        return ResponseEntity.of(repository.findById(id));
+        return ResponseEntity.of(userRepository.findById(id));
     }
 
     @CacheEvict(value = "users", allEntries = true)
     public void delete(int id) {
         log.info("delete {}", id);
-        repository.deleteExisted(id);
+        voteRepository.deleteByUserId(id);
+        userRepository.deleteExisted(id);
     }
 
-    public ResponseEntity<User> getWithMeals(int id) {
-        log.info("getWithMeals {}", id);
-        return ResponseEntity.of(repository.getWithRestaurant(id));
-    }
+//    public ResponseEntity<User> getWithMeals(int id) {
+//        log.info("getWithMeals {}", id);
+//        return ResponseEntity.of(repository.getWithRestaurant(id));
+//    }
 
     protected User prepareAndSave(User user) {
-        return repository.save(UserUtil.prepareToSave(user));
+        return userRepository.save(UserUtil.prepareToSave(user));
     }
 }

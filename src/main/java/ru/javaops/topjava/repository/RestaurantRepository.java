@@ -34,14 +34,14 @@ public interface RestaurantRepository extends BaseRepository<Restaurant> {
 //    @Query("SELECT r FROM Restaurant r WHERE r.email = LOWER(:email)")
 //    Optional<Restaurant> findByEmailIgnoreCase(String email);
 //
-    @Query("SELECT r FROM Restaurant r JOIN FETCH r.users WHERE r.id=?1")
+    @Query("SELECT r FROM Restaurant r JOIN FETCH r.vote WHERE r.id=?1")
     Optional<Restaurant> getWithVotes(int id);
 
     @Query("SELECT r FROM Restaurant r WHERE r.email = LOWER(:email)")
     Optional<Restaurant> findByEmailIgnoreCase(String email);
 
     //    https://stackoverflow.com/a/46013654/548473
-    @EntityGraph(attributePaths = {"users"}, type = EntityGraph.EntityGraphType.LOAD)
+    @EntityGraph(attributePaths = {"vote"}, type = EntityGraph.EntityGraphType.LOAD)
     @Query("SELECT r FROM Restaurant r")
     List<Restaurant> getAllWithUsersVotes();
 }

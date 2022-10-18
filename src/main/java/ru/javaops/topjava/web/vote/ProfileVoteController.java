@@ -29,12 +29,12 @@ public class ProfileVoteController extends AbstractVoteController {
             summary = "Get a restaurant with a mark of a vote cast for it by active user",
             description = "Returns a restaurant with a mark about the presence / absence of a vote cast for it")
     @GetMapping("/{id}/with-dishes-and-vote")
-    public RestaurantTo getWithDishesAndVote(
+    public RestaurantTo getWithVoteMark(
             @AuthenticationPrincipal AuthUser authUser, @Parameter(description = "id of selected restaurant") @PathVariable int id) {
         int authUserId = authUser.id();
         log.info("getWithDishesAndVote {} for user {}", id, authUserId);
         Restaurant restaurant = restaurantRepository.getWithDishes(id);
-        Integer votedRestaurantId = super.getVotedRestaurant(authUserId).getId();
+        Integer votedRestaurantId = voteRepository.getVote(authUserId).getRestaurant().getId();
         RestaurantTo restaurantTo;
         if (votedRestaurantId != null && votedRestaurantId == id) {
             restaurantTo = createTo(restaurant, true);
@@ -48,11 +48,11 @@ public class ProfileVoteController extends AbstractVoteController {
             summary = "Get a list of restaurants with vote marks for each one by active user",
             description = "Returns a list of restaurants with a mark about the presence / absence of a vote cast for them")
     @GetMapping()
-    public List<RestaurantTo> getAllWithDishesAndVote(@AuthenticationPrincipal AuthUser authUser) {
+    public List<RestaurantTo> getAllWithVoteMark(@AuthenticationPrincipal AuthUser authUser) {
         int authUserId = authUser.id();
         log.info("getAllWithDishesAndVote for user {}", authUserId);
         List<Restaurant> restaurants = restaurantRepository.getAllWithDishes();
-        Integer votedRestaurantId = super.getVotedRestaurant(authUserId).getId();
+        Integer votedRestaurantId = voteRepository.getVote(authUserId).getRestaurant().getId();
         List<RestaurantTo> restaurantToList = new ArrayList<>();
         for (Restaurant restaurant : restaurants) {
             if (votedRestaurantId != null && votedRestaurantId.equals(restaurant.getId())) {
@@ -64,9 +64,7 @@ public class ProfileVoteController extends AbstractVoteController {
         return restaurantToList;
     }
 
-    @Operation(
-            summary = "Vote for a restaurant selected by the user",
-            description = "Marks a restaurant selected by the user")
+    @Operation(summary = "Vote for a restaurant selected by the user", description = "Marks a restaurant selected by the user")
     @PostMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void vote(@AuthenticationPrincipal AuthUser authUser, @Parameter(description = "id of selected restaurant") @PathVariable int id) {

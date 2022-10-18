@@ -62,7 +62,7 @@ public class AdminRestaurantController extends AbstractRestaurantController {
             @Parameter(description = "id of selected restaurant") @PathVariable int id) {
         log.info("update {}", id);
         assureIdConsistent(restaurant, id);
-        restaurant.setUsers(restaurantRepository.getExisted(id).getUsers());
+        restaurant.setVote(restaurantRepository.getExisted(id).getVote());
         restaurantRepository.save(restaurant);
     }
 

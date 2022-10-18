@@ -30,7 +30,7 @@ public abstract class AbstractRestaurantController {
     protected DishRepository dishRepository;
 
     @Autowired
-    private UniqueMailValidator emailValidator;
+    private RestaurantUniqueMailValidator emailValidator;
 
     @InitBinder
     protected void initBinder(WebDataBinder binder) {

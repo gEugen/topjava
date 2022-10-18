@@ -56,7 +56,7 @@ public class AdminUserController extends AbstractUserController {
     @Cacheable
     public List<User> getAll() {
         log.info("getAll");
-        return repository.findAll(Sort.by(Sort.Direction.ASC, "name", "email"));
+        return userRepository.findAll(Sort.by(Sort.Direction.ASC, "name", "email"));
     }
 
     @Operation(summary = "Create new user with details", description = "Creates new user and returns response with it and its details")
@@ -88,7 +88,7 @@ public class AdminUserController extends AbstractUserController {
     @GetMapping("/by-email")
     public ResponseEntity<User> getByEmail(@Parameter(description = "e-mail for getting user") @RequestParam String email) {
         log.info("getByEmail {}", email);
-        return ResponseEntity.of(repository.findByEmailIgnoreCase(email));
+        return ResponseEntity.of(userRepository.findByEmailIgnoreCase(email));
     }
 
     @Operation(summary = "Enable/disable selected user by its e-mail", description = "Enable/disable user")
@@ -100,7 +100,7 @@ public class AdminUserController extends AbstractUserController {
             @Parameter(description = "id of selected user") @PathVariable int id,
             @Parameter(description = "enable / disable flag") @RequestParam boolean enabled) {
         log.info(enabled ? "enable {}" : "disable {}", id);
-        User user = repository.getExisted(id);
+        User user = userRepository.getExisted(id);
         user.setEnabled(enabled);
     }
 }

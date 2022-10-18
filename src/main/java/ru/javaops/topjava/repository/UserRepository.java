@@ -21,8 +21,8 @@ public interface UserRepository extends BaseRepository<User> {
 //    @Query("SELECT u FROM User u WHERE u.id=?1")
 //    Optional<User> getWithRestaurant(int id);
 
-    @Query("SELECT u FROM User u JOIN FETCH u.restaurant WHERE u.id=?1")
-    Optional<User> getWithRestaurant(int id);
+//    @Query("SELECT u FROM User u JOIN FETCH u.restaurant WHERE u.id=?1")
+//    Optional<User> getWithRestaurant(int id);
 
 //    @Query("UPDATE VOTES FROM User u JOIN FETCH u.restaurant WHERE u.id=?1")
 //    void vote(int id, int authUserId);

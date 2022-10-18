@@ -1,6 +1,7 @@
 package ru.javaops.topjava.web.restaurant;
 
 import ru.javaops.topjava.model.Restaurant;
+import ru.javaops.topjava.model.Vote;
 import ru.javaops.topjava.to.RestaurantTo;
 import ru.javaops.topjava.web.MatcherFactory;
 
@@ -10,6 +11,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static ru.javaops.topjava.web.dish.DishTestData.*;
 import static ru.javaops.topjava.web.user.UserTestData.*;
+import static ru.javaops.topjava.web.vote.VoteTestData.*;
 
 public class RestaurantTestData {
     public static final MatcherFactory.Matcher<Restaurant> RESTAURANT_MATCHER = MatcherFactory.usingIgnoringFieldsComparator(Restaurant.class);
@@ -20,7 +22,9 @@ public class RestaurantTestData {
             MatcherFactory.usingAssertions(Restaurant.class,
                     //     No need use ignoringAllOverriddenEquals, see https://assertj.github.io/doc/#breaking-changes
                     (a, e) -> assertThat(a).usingRecursiveComparison()
-                            .ignoringFields("dishes", "users.password", "users.registered", "users.restaurant").isEqualTo(e),
+                            .ignoringFields("dishes", "vote.voteDate", "vote.voteTime", "vote.restaurant", "vote.user" +
+                                            ".password", "vote.user.registered",
+                                    "vote.user.restaurant", "vote.user.vote").isEqualTo(e),
                     (a, e) -> {
                         throw new UnsupportedOperationException();
                     });
@@ -29,8 +33,10 @@ public class RestaurantTestData {
             MatcherFactory.usingAssertions(Restaurant.class,
                     //     No need use ignoringAllOverriddenEquals, see https://assertj.github.io/doc/#breaking-changes
                     (a, e) -> assertThat(a).usingRecursiveComparison()
-                            .ignoringFields("dishes.restaurant", "users.password", "users.registered",
-                                    "users.restaurant").isEqualTo(e),
+                            .ignoringFields(
+                                    "vote.voteDate", "vote.voteTime", "vote.restaurant.vote", "vote.user.password",
+                                    "vote.user.registered", "vote.user.vote")
+                            .isEqualTo(e),
                     (a, e) -> {
                         throw new UnsupportedOperationException();
                     });
@@ -84,11 +90,11 @@ public class RestaurantTestData {
     static {
         restaurants = getListOfRestaurants();
 
-        restaurant1.setUsers(List.of(user1, admin));
-        restaurant2.setUsers(new ArrayList<>());
-        restaurant3.setUsers(List.of(user2, user3));
-        restaurant4.setUsers(new ArrayList<>());
-        restaurant5.setUsers(List.of(user4, user5));
+//        restaurant1.setUsers(List.of(user1, admin));
+//        restaurant2.setUsers(new ArrayList<>());
+//        restaurant3.setUsers(List.of(user2, user3));
+//        restaurant4.setUsers(new ArrayList<>());
+//        restaurant5.setVote(List.of(user4Vote, user5Vote));
 
         restaurantsWithUserVotes = getListOfRestaurants();
 
@@ -99,12 +105,13 @@ public class RestaurantTestData {
     }
 
     public static Restaurant createVoted() {
-        restaurant1.setUsers(List.of(user1, user3, admin));
-        return restaurant1;
+        Restaurant voted = new Restaurant(restaurant1);
+        voted.setVote(List.of(user1Vote, adminVote, user3Vote));
+        return voted;
     }
 
     public static Restaurant createTestUnVoted() {
-        restaurant3.setUsers(List.of(user2));
+        restaurant3.setVote(List.of(user2Vote));
         return restaurant3;
     }
 
@@ -117,7 +124,11 @@ public class RestaurantTestData {
 
     public static Restaurant getUpdatedForCompare() {
         Restaurant updatedForCompare = new Restaurant(getUpdated());
-        updatedForCompare.setUsers(List.of(user1, admin));
+        Vote updatedVote1 = new Vote(user1Vote);
+        Vote updatedVote2 = new Vote(adminVote);
+        updatedVote1.setRestaurant(getUpdated());
+        updatedVote2.setRestaurant(getUpdated());
+        updatedForCompare.setVote(List.of(updatedVote1, updatedVote2));
         return updatedForCompare;
     }
 
