@@ -2,6 +2,7 @@ package ru.javaops.topjava.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,7 @@ import javax.validation.constraints.Size;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.*;
+
 
 @Entity
 @Table(name = "users")
@@ -61,19 +63,6 @@ public class User extends NamedEntity implements HasIdAndEmail, Serializable {
     @JoinColumn(name = "user_id") //https://stackoverflow.com/a/62848296/548473
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<Role> roles;
-
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinTable(name = "VOTES",
-//            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
-//            inverseJoinColumns = {@JoinColumn(name = "restaurant_id", referencedColumnName = "id")}
-//    )
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinTable(name = "VOTES",
-//        joinColumns = @JoinColumn(name = "user_id"),
-//        inverseJoinColumns = @JoinColumn(name = "restaurant_id")
-//    )
-//    @JsonIgnore
-//    private Restaurant restaurant;
 
     @OneToOne(mappedBy = "user")
     @OnDelete(action = OnDeleteAction.CASCADE)

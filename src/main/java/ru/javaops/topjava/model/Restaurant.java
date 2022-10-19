@@ -1,6 +1,7 @@
 package ru.javaops.topjava.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,9 +15,8 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
+
 
 @Entity
 @Table(name = "restaurants")
@@ -24,7 +24,6 @@ import java.util.List;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Restaurant extends NamedEntity implements HasIdAndEmail {
-//public class Restaurant extends NamedEntity {
 
     @Column(name = "email", nullable = false, unique = true)
     @Email
@@ -35,18 +34,8 @@ public class Restaurant extends NamedEntity implements HasIdAndEmail {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "restaurant")//, cascade = CascadeType.REMOVE, orphanRemoval = true)
     @OnDelete(action = OnDeleteAction.CASCADE) //https://stackoverflow.com/a/44988100/548473
-//    @Schema(hidden = true)
+    @Schema(hidden = true)
     private List<Dish> dishes;
-
-//    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.LAZY)
-//    @JoinTable(name = "votes",
-//            joinColumns = {@JoinColumn(name = "restaurant_id", referencedColumnName = "id")},
-//            inverseJoinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")}
-//    )
-////    @Schema(hidden = true)
-////    @JsonIgnore
-//    @OneToMany(mappedBy = "restaurant")
-//    private List<User> users;
 
     @OneToMany(mappedBy = "restaurant")
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -57,7 +46,6 @@ public class Restaurant extends NamedEntity implements HasIdAndEmail {
         this.id = id;
         this.name = name;
         this.email = email;
-//        this.dishes = new ArrayList<>();
     }
 
     public Restaurant(Restaurant r) {
