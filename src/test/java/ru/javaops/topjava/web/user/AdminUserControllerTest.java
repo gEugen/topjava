@@ -22,6 +22,7 @@ import static ru.javaops.topjava.util.UsersUtil.getOrderedList;
 import static ru.javaops.topjava.web.user.UniqueMailValidator.EXCEPTION_DUPLICATE_EMAIL;
 import static ru.javaops.topjava.web.user.UserTestData.*;
 
+
 class AdminUserControllerTest extends AbstractControllerTest {
 
     private static final String REST_URL = AdminUserController.REST_URL + '/';

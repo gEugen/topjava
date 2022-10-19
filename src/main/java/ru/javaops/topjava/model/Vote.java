@@ -1,7 +1,5 @@
 package ru.javaops.topjava.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -61,5 +59,10 @@ public class Vote extends BaseEntity {
 
     public Vote(Vote vote) {
         this(vote.id, vote.voteDate, vote.voteTime, vote.restaurant, vote.user);
+    }
+
+    @Override
+    public String toString() {
+        return "Vote:" + id + "[Restaurant: " + restaurant.id + ", User: " + user.id + ']';
     }
 }

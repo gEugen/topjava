@@ -10,8 +10,6 @@ import static ru.javaops.topjava.config.SecurityConfiguration.PASSWORD_ENCODER;
 @UtilityClass
 public class UserUtil {
 
-    public static final int DEFAULT_CALORIES_PER_DAY = 2000;
-
     public static User createNewFromTo(UserTo userTo) {
         return new User(null, userTo.getName(), userTo.getEmail().toLowerCase(), userTo.getPassword(), Role.USER);
     }

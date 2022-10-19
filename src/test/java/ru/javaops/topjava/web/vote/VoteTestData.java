@@ -8,6 +8,7 @@ import java.util.List;
 import static ru.javaops.topjava.web.restaurant.RestaurantTestData.*;
 import static ru.javaops.topjava.web.user.UserTestData.*;
 
+
 public class VoteTestData {
     public static final MatcherFactory.Matcher<Vote> VOTE_GET_MATCHER =
             MatcherFactory.usingIgnoringFieldsComparator(
@@ -23,7 +24,6 @@ public class VoteTestData {
     public static final int VOTE4_ID = 4;
     public static final int VOTE5_ID = 5;
     public static final int VOTE6_ID = 6;
-    public static final int NOT_FOUND = 100;
 
     public static final Vote user1Vote = new Vote(VOTE1_ID, restaurant1, user1);
     public static final Vote adminVote = new Vote(VOTE2_ID, restaurant1, admin);

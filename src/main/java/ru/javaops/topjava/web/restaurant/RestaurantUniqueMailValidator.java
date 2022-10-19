@@ -10,10 +10,11 @@ import ru.javaops.topjava.repository.RestaurantRepository;
 
 import javax.servlet.http.HttpServletRequest;
 
+
 @Component
 @AllArgsConstructor
 public class RestaurantUniqueMailValidator implements org.springframework.validation.Validator {
-    public static final String EXCEPTION_DUPLICATE_EMAIL = "User with this email already exists";
+    public static final String EXCEPTION_DUPLICATE_EMAIL = "Restaurant with this email already exists";
 
     private final RestaurantRepository repository;
     private final HttpServletRequest request;

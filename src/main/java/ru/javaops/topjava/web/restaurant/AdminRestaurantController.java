@@ -17,6 +17,7 @@ import java.util.List;
 import static ru.javaops.topjava.util.validation.ValidationUtil.assureIdConsistent;
 import static ru.javaops.topjava.util.validation.ValidationUtil.checkNew;
 
+
 @RestController
 @RequestMapping(value = AdminRestaurantController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
@@ -24,54 +25,52 @@ public class AdminRestaurantController extends AbstractRestaurantController {
 
     static final String REST_URL = "/api/admin/restaurant";
 
-    @Operation(summary = "Get list of restaurants", description = "Returns list of restaurants")
+    @Operation(summary = "Get restaurant profile list", description = "Returns restaurant profile list")
     @GetMapping()
     public List<Restaurant> getAll() {
         log.info("getAll");
         return restaurantRepository.findAll();
     }
 
-    @Operation(summary = "Get restaurant by its id", description = "Returns response with found restaurant")
+    @Operation(summary = "Get restaurant profile by its id", description = "Returns response with found restaurant profile")
     @GetMapping("/{id}")
-    public ResponseEntity<Restaurant> get(@Parameter(description = "id of selected restaurant") @PathVariable int id) {
+    public ResponseEntity<Restaurant> get(@Parameter(description = "id of restaurant") @PathVariable int id) {
         log.info("get {}", id);
-        return super.get(id);
+        return ResponseEntity.of(restaurantRepository.findById(id));
     }
 
-    @Operation(summary = "Get restaurant by its e-mail", description = "Returns response with found restaurant")
+    @Operation(summary = "Get restaurant profile by its e-mail", description = "Returns response with found restaurant profile")
     @GetMapping("/by-email")
     public ResponseEntity<Restaurant> getByEmail(
-            @Parameter(description = "e-mail for getting restaurant") @RequestParam String email) {
+            @Parameter(description = "restaurant e-mail") @RequestParam String email) {
         log.info("getByEmail {}", email);
         return ResponseEntity.of(restaurantRepository.findByEmailIgnoreCase(email));
     }
 
-    @Operation(summary = "Delete restaurant by its id", description = "Delete selected restaurant")
+    @Operation(summary = "Delete restaurant profile by its id", description = "Delete restaurant profile")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@Parameter(description = "id of selected restaurant") @PathVariable int id) {
+    public void delete(@Parameter(description = "id of restaurant") @PathVariable int id) {
         log.info("delete {}", id);
         restaurantRepository.delete(id);
     }
 
-    @Operation(summary = "Update restaurant details", description = "Updates restaurant details")
+    @Operation(summary = "Update restaurant profile by its id", description = "Updates restaurant details")
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(
-            @Parameter(description = "restaurant with updated details") @Valid @RequestBody Restaurant restaurant,
-            @Parameter(description = "id of selected restaurant") @PathVariable int id) {
+            @Parameter(description = "updated restaurant profile") @Valid @RequestBody Restaurant restaurant,
+            @Parameter(description = "id of restaurant") @PathVariable int id) {
         log.info("update {}", id);
         assureIdConsistent(restaurant, id);
         restaurant.setVote(restaurantRepository.getExisted(id).getVote());
         restaurantRepository.save(restaurant);
     }
 
-    @Operation(
-            summary = "Create new restaurant with details",
-            description = "Creates new restaurant and returns response with it and its details")
+    @Operation(summary = "Create new restaurant profile", description = "Creates new restaurant profile and returns response with it")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Restaurant> createWithLocation(
-            @Parameter(description = "created restaurant with details") @Valid @RequestBody Restaurant restaurant) {
+            @Parameter(description = "created restaurant profile") @Valid @RequestBody Restaurant restaurant) {
         log.info("create {}", restaurant);
         checkNew(restaurant);
         Restaurant created = restaurantRepository.save(restaurant);

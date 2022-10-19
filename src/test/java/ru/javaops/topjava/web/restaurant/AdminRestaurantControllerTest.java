@@ -22,8 +22,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static ru.javaops.topjava.util.Util.initializeAndUnproxy;
 import static ru.javaops.topjava.web.restaurant.RestaurantTestData.NOT_FOUND;
 import static ru.javaops.topjava.web.restaurant.RestaurantTestData.*;
-import static ru.javaops.topjava.web.user.UniqueMailValidator.EXCEPTION_DUPLICATE_EMAIL;
+import static ru.javaops.topjava.web.restaurant.RestaurantUniqueMailValidator.EXCEPTION_DUPLICATE_EMAIL;
 import static ru.javaops.topjava.web.user.UserTestData.*;
+
 
 public class AdminRestaurantControllerTest extends AbstractControllerTest {
 

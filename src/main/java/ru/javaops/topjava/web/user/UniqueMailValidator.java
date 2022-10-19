@@ -11,6 +11,7 @@ import ru.javaops.topjava.web.SecurityUtil;
 
 import javax.servlet.http.HttpServletRequest;
 
+
 @Component
 @AllArgsConstructor
 public class UniqueMailValidator implements org.springframework.validation.Validator {

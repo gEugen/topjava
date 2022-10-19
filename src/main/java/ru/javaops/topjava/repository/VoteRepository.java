@@ -15,20 +15,10 @@ public interface VoteRepository extends BaseRepository<Vote> {
     @Query("SELECT v FROM Vote v WHERE v.user.id=?1")
     Vote getVote(int authUserId);
 
-//    @Query("SELECT v FROM Vote v WHERE v.restaurant.id=:id")
-//    List<Vote> getRestaurantVotes(int id);
-
     @Query("SELECT v FROM Vote v WHERE v.restaurant.id=:id")
     List<Vote> getVotesByRestaurant(int id);
 
     @Modifying
     @Query("DELETE FROM Vote v WHERE v.user.id=?1")
     void deleteByUserId(int id);
-
-//    @EntityGraph(attributePaths = {"vote"}, type = EntityGraph.EntityGraphType.LOAD)
-//    @Query("SELECT r FROM Restaurant r")
-//    List<Restaurant> getAllVotes();
-
-//    @Query("UPDATE v FROM Vote v WHERE u.id=?1")
-//    void update(LocalTime time, int restaurantId, int userId);
 }

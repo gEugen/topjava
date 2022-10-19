@@ -13,6 +13,7 @@ import static ru.javaops.topjava.web.restaurant.RestaurantTestData.RESTAURANT5_I
 import static ru.javaops.topjava.web.user.UserTestData.ADMIN_MAIL;
 import static ru.javaops.topjava.web.vote.VoteTestData.*;
 
+
 public class AdminVoteControllerTest extends AbstractControllerTest {
 
     private static final String REST_URL = AdminVoteController.REST_URL + '/';

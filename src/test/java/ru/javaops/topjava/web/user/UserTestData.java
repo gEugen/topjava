@@ -9,19 +9,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class UserTestData {
-    public static final MatcherFactory.Matcher<User> USER_MATCHER = MatcherFactory.usingIgnoringFieldsComparator(User.class, "registered", "meals", "password");
-    public static MatcherFactory.Matcher<User> USER_WITH_MEALS_MATCHER =
-            MatcherFactory.usingAssertions(User.class,
-                    //     No need use ignoringAllOverriddenEquals, see https://assertj.github.io/doc/#breaking-changes
-                    (a, e) -> assertThat(a).usingRecursiveComparison()
-                            .ignoringFields("registered", "meals.user", "password").isEqualTo(e),
-                    (a, e) -> {
-                        throw new UnsupportedOperationException();
-                    });
-
+    public static final MatcherFactory.Matcher<User> USER_MATCHER =
+            MatcherFactory.usingIgnoringFieldsComparator(User.class, "registered", "meals", "password", "vote");
     public static final int USER1_ID = 1;
     public static final int USER2_ID = 2;
     public static final int USER3_ID = 3;
@@ -48,11 +39,6 @@ public class UserTestData {
     public static final User user4 = new User(USER4_ID, "User4", USER4_MAIL, "password4", Role.USER);
     public static final User user5 = new User(USER5_ID, "User5", USER5_MAIL, "password5", Role.USER);
 
-//    static {
-//        user.setMeals(meals);
-//        admin.setMeals(List.of(adminMeal2, adminMeal1));
-//    }
-
     public static User getNew() {
         return new User(null, "New", "new@gmail.com", "newPass", false, new Date(), Collections.singleton(Role.USER));
     }
@@ -61,7 +47,7 @@ public class UserTestData {
         return new User(USER1_ID, "UpdatedName", USER1_MAIL, "newPass", false, new Date(), List.of(Role.ADMIN));
     }
 
-    public static String jsonWithPassword(User user, String passw) {
-        return JsonUtil.writeAdditionProps(user, "password", passw);
+    public static String jsonWithPassword(User user, String password) {
+        return JsonUtil.writeAdditionProps(user, "password", password);
     }
 }

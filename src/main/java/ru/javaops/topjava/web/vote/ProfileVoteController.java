@@ -9,6 +9,9 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import ru.javaops.topjava.model.Restaurant;
+import ru.javaops.topjava.repository.RestaurantRepository;
+import ru.javaops.topjava.repository.VoteRepository;
+import ru.javaops.topjava.service.VoteService;
 import ru.javaops.topjava.to.RestaurantTo;
 import ru.javaops.topjava.web.AuthUser;
 
@@ -17,36 +20,44 @@ import java.util.List;
 
 import static ru.javaops.topjava.util.RestaurantsUtil.createTo;
 
+
 @RestController
 @RequestMapping(value = ProfileVoteController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 @AllArgsConstructor
-public class ProfileVoteController extends AbstractVoteController {
+public class ProfileVoteController {
+
+    public static final boolean VOTED = true;
+    public static final boolean NOT_VOTED = false;
 
     static final String REST_URL = "/api/profile/vote/restaurant";
 
-    @Operation(
-            summary = "Get a restaurant with a mark of a vote cast for it by active user",
-            description = "Returns a restaurant with a mark about the presence / absence of a vote cast for it")
+    private final VoteService voteService;
+
+    private final VoteRepository voteRepository;
+
+    private final RestaurantRepository restaurantRepository;
+
+    @Operation(summary = "Get restaurant with vote mark by user", description = "Returns restaurant with vote mark")
     @GetMapping("/{id}/with-dishes-and-vote")
     public RestaurantTo getWithVoteMark(
-            @AuthenticationPrincipal AuthUser authUser, @Parameter(description = "id of selected restaurant") @PathVariable int id) {
+            @AuthenticationPrincipal AuthUser authUser, @Parameter(description = "id of restaurant") @PathVariable int id) {
         int authUserId = authUser.id();
         log.info("getWithDishesAndVote {} for user {}", id, authUserId);
         Restaurant restaurant = restaurantRepository.getWithDishes(id);
         Integer votedRestaurantId = voteRepository.getVote(authUserId).getRestaurant().getId();
         RestaurantTo restaurantTo;
         if (votedRestaurantId != null && votedRestaurantId == id) {
-            restaurantTo = createTo(restaurant, true);
+            restaurantTo = createTo(restaurant, VOTED);
         } else {
-            restaurantTo = createTo(restaurant, false);
+            restaurantTo = createTo(restaurant, NOT_VOTED);
         }
         return restaurantTo;
     }
 
     @Operation(
-            summary = "Get a list of restaurants with vote marks for each one by active user",
-            description = "Returns a list of restaurants with a mark about the presence / absence of a vote cast for them")
+            summary = "Get restaurant list with vote marks for each one by user",
+            description = "Returns restaurant list with vote marks")
     @GetMapping()
     public List<RestaurantTo> getAllWithVoteMark(@AuthenticationPrincipal AuthUser authUser) {
         int authUserId = authUser.id();
@@ -56,18 +67,18 @@ public class ProfileVoteController extends AbstractVoteController {
         List<RestaurantTo> restaurantToList = new ArrayList<>();
         for (Restaurant restaurant : restaurants) {
             if (votedRestaurantId != null && votedRestaurantId.equals(restaurant.getId())) {
-                restaurantToList.add(createTo(restaurant, true));
+                restaurantToList.add(createTo(restaurant, VOTED));
             } else {
-                restaurantToList.add(createTo(restaurant, false));
+                restaurantToList.add(createTo(restaurant, NOT_VOTED));
             }
         }
         return restaurantToList;
     }
 
-    @Operation(summary = "Vote for a restaurant selected by the user", description = "Marks a restaurant selected by the user")
+    @Operation(summary = "Vote for restaurant selected by user", description = "Marks restaurant as voted selected by user")
     @PostMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void vote(@AuthenticationPrincipal AuthUser authUser, @Parameter(description = "id of selected restaurant") @PathVariable int id) {
+    public void vote(@AuthenticationPrincipal AuthUser authUser, @Parameter(description = "id of restaurant") @PathVariable int id) {
         int authUserId = authUser.id();
         log.info("vote {} by user {}", id, authUserId);
         voteService.saveWithVote(authUserId, id);

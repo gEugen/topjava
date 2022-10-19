@@ -19,9 +19,9 @@ import static ru.javaops.topjava.model.Vote.END_VOTE_TIME;
 @AllArgsConstructor
 public class VoteService {
 
-    private final  UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    private final  RestaurantRepository restaurantRepository;
+    private final RestaurantRepository restaurantRepository;
 
     private final VoteRepository voteRepository;
 

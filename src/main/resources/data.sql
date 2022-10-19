@@ -23,14 +23,6 @@ VALUES ('USER', 1),
        ('USER', 6),
        ('USER', 7);
 
--- INSERT INTO VOTES (RESTAURANT_ID, USER_ID)
--- VALUES (1, 1),
---        (1, 4),
---        (3, 2),
---        (3, 3),
---        (5, 6),
---        (5, 7);
-
 INSERT INTO VOTE (RESTAURANT_ID, USER_ID)
 VALUES (1, 1),
        (1, 4),

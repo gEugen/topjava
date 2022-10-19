@@ -3,6 +3,7 @@ package ru.javaops.topjava.web.dish;
 import ru.javaops.topjava.model.Dish;
 import ru.javaops.topjava.web.MatcherFactory;
 
+
 public class DishTestData {
     public static final MatcherFactory.Matcher<Dish> DISH_MATCHER = MatcherFactory.usingIgnoringFieldsComparator(Dish.class, "restaurant");
 

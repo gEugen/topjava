@@ -5,29 +5,18 @@ import ru.javaops.topjava.model.Vote;
 import ru.javaops.topjava.to.RestaurantTo;
 import ru.javaops.topjava.web.MatcherFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static ru.javaops.topjava.web.dish.DishTestData.*;
-import static ru.javaops.topjava.web.user.UserTestData.*;
-import static ru.javaops.topjava.web.vote.VoteTestData.*;
+import static ru.javaops.topjava.web.vote.VoteTestData.adminVote;
+import static ru.javaops.topjava.web.vote.VoteTestData.user1Vote;
+
 
 public class RestaurantTestData {
     public static final MatcherFactory.Matcher<Restaurant> RESTAURANT_MATCHER = MatcherFactory.usingIgnoringFieldsComparator(Restaurant.class);
 
     public static final MatcherFactory.Matcher<RestaurantTo> RESTAURANT_TO_MATCHER = MatcherFactory.usingIgnoringFieldsComparator(RestaurantTo.class);
-
-    public static MatcherFactory.Matcher<Restaurant> RESTAURANT_WITH_VOTES_MATCHER =
-            MatcherFactory.usingAssertions(Restaurant.class,
-                    //     No need use ignoringAllOverriddenEquals, see https://assertj.github.io/doc/#breaking-changes
-                    (a, e) -> assertThat(a).usingRecursiveComparison()
-                            .ignoringFields("dishes", "vote.voteDate", "vote.voteTime", "vote.restaurant", "vote.user" +
-                                            ".password", "vote.user.registered",
-                                    "vote.user.restaurant", "vote.user.vote").isEqualTo(e),
-                    (a, e) -> {
-                        throw new UnsupportedOperationException();
-                    });
 
     public static MatcherFactory.Matcher<Restaurant> RESTAURANT_UPDATE_MATCHER =
             MatcherFactory.usingAssertions(Restaurant.class,
@@ -49,18 +38,6 @@ public class RestaurantTestData {
                     (a, e) -> {
                         throw new UnsupportedOperationException();
                     });
-
-//    public static MatcherFactory.Matcher<Restaurant> RESTAURANT_GET_VOTES_MATCHER =
-//            MatcherFactory.usingAssertions(Restaurant.class,
-//                    //     No need use ignoringAllOverriddenEquals, see https://assertj.github.io/doc/#breaking-changes
-//                    (a, e) -> assertThat(a).usingRecursiveComparison()
-//                            .ignoringFields("users").isEqualTo(e),
-//                    (a, e) -> {
-//                        throw new UnsupportedOperationException();
-//                    });
-
-    public static final MatcherFactory.Matcher<Restaurant> RESTAURANT_GET_VOTES_MATCHER =
-            MatcherFactory.usingIgnoringFieldsComparator(Restaurant.class, "users");
 
     public static final boolean VOTED = true;
     public static final boolean NOT_VOTED = false;
@@ -89,30 +66,11 @@ public class RestaurantTestData {
 
     static {
         restaurants = getListOfRestaurants();
-
-//        restaurant1.setUsers(List.of(user1, admin));
-//        restaurant2.setUsers(new ArrayList<>());
-//        restaurant3.setUsers(List.of(user2, user3));
-//        restaurant4.setUsers(new ArrayList<>());
-//        restaurant5.setVote(List.of(user4Vote, user5Vote));
-
         restaurantsWithUserVotes = getListOfRestaurants();
-
         restaurant1.setDishes(List.of(dish1, dish2, dish3));
         restaurant2.setDishes(List.of(dish4, dish5, dish6));
         restaurant3.setDishes(List.of(dish7, dish8, dish9));
         restaurant5.setDishes(List.of(dish10, dish11));
-    }
-
-    public static Restaurant createVoted() {
-        Restaurant voted = new Restaurant(restaurant1);
-        voted.setVote(List.of(user1Vote, adminVote, user3Vote));
-        return voted;
-    }
-
-    public static Restaurant createTestUnVoted() {
-        restaurant3.setVote(List.of(user2Vote));
-        return restaurant3;
     }
 
     public static Restaurant getUpdated() {
